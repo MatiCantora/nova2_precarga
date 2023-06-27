@@ -72,7 +72,7 @@
             //vListButtons.MostrarListButton()
             vMenu1.MostrarMenu();
 
-            nro_credito = win.options.userData.param['nro_credito']
+            nro_credito = win.options.userData.filtros['nro_credito']
             mostrar_archivos()
             window_onresize()
         }
@@ -95,26 +95,16 @@
                 alert(msj_captura)
                 return
             }
-            var param = {}
-            param['nro_credito'] = nro_credito
-            win_files = window.top.createWindow2({
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+            
+            win_files = top.window.precarga.show_modal_window({
                 url: 'ABMDocumentos.aspx',
-                title: '<b>Adjuntar Documentos</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 500,
-                //setHeightToContent: true,
-                //setWidthMaxWindow: true,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
+                title: '<b>ABM Documentos</b>',
+                userData: { filtros: filtros },
                 onClose: ABMArchivos_return
             });
-            win_files.options.userData = { param: param }
+            win_files.options.userData = { filtros: filtros }
             win_files.showCenter(true)
         }
 

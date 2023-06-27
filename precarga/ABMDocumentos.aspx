@@ -201,7 +201,7 @@
                 nvFW.bloqueo_desactivar($(document.documentElement), 'Ajax_bloqueo')
                 win.close();
             }
-            nro_credito = win.options.userData.param['nro_credito']
+            nro_credito = win.options.userData.filtros['nro_credito']
             ismobile = (isMobile()) ? true : false
             cargarDefArchivos();
 

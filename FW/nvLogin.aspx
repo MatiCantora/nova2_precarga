@@ -160,7 +160,7 @@
         <tr class="tbLabelNormal">
             <td>
                <!-- <iframe id="novaLobo" src="image/nvLogin/nova.svg" style="border: 0px; width:150px; height:64px" marginheight="0" marginwidth="0" noresize scrolling="No" frameborder="0"></iframe>-->
-                 <object data="/precarga/image/Logo red mutual azul-02 1.svg" width="150" height="64px" type="image/svg+xml">
+                 <object data="/precarga/image/Logo red mutual azul-02 1.svg" width="200" height="64" type="image/svg+xml">
                             <%--<img src="image/nvLogin/nvLogin_logo.png" alt="PNG image of standAlone.svg" />--%>
                  </object>
             </td>
@@ -243,7 +243,7 @@
                         <input type="button" id="btnAceptar" name="btnAceptar" value="Iniciar Sesión" onclick="btnAceptar_onclick()"/>
                     </div>
 
-                    <img id="spinner" src="image/icons/spinner24x24_azul.gif" style="display: none" />
+                    <img id="spinner" src="image/icons/spinner24x24_azul.gif" style="display: none; position: absolute" />
                 </div>
             </td>
         </tr>

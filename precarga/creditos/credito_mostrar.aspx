@@ -144,69 +144,41 @@
         var win_files
 
         function MostrarArchivos() {
-            var param = {}
-            param['nro_credito'] = nro_credito
-            win_files = window.top.createWindow2({
-                url: 'Credito_archivos.aspx',
+            
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+            win_files = window.top.precarga.show_modal_window({
+                url: '/precarga/creditos/Credito_archivos.aspx',
                 title: '<b>Archivos - ' + nro_credito + '</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 500,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
-                onClose: MostrarArchivos_return
+                onClose: MostrarArchivos_return,
+                userData: { filtros: filtros }
             });
-            win_files.options.userData = { param: param }
-            win_files.showCenter(true)
+            win_files.options.userData = { filtros: filtros },
+                win_files.showCenter(true)
         }
 
         function MostrarArchivos_return()
         { }
 
         function ABMArchivos() {
-            var param = {}
-            param['nro_credito'] = nro_credito
-            win_files = window.top.createWindow2({
-                url: 'ABMDocumentos.aspx',
+
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+            win_files = window.top.precarga.show_modal_window({
+                url: '/precarga/ABMDocumentos.aspx',
                 title: '<b>ABM Documentos</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 500,
-                //setHeightToContent: true,
-                //setWidthMaxWindow: true,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
-                onClose: ABMArchivos_return
+                onClose: ABMArchivos_return,
+                userData: { filtros: filtros }
             });
-            win_files.options.userData = { param: param }
+            win_files.options.userData = { filtros: filtros },
             win_files.showCenter(true)
         }
 
-        function ABMArchivos_return()
-        { }
+        function ABMArchivos_return() {}
         
         var win_rpt_impresion
         function btnPrintSolicitudes() {
-            //            if ((permisos_web & 32) == 0) {
-            //                alert('No posee permiso para realizar esta acción.')
-            //                return
-            //            }
-            //            var estado = $('estado').value
-//            if (cuotas == 0) {
-//                alert('No puede imprimir las solicitudes si no tiene plan asignado')
-//                return
-            //            }
-            
+           
             if (estado == null)
             {
                 estado = $('estado').value
@@ -316,6 +288,7 @@
         var sincuenta = true;
 
         function credito_mostrar() {
+            debugger
             var importe_mano = 0
             var rsVerCredito = new tRS();
             rsVerCredito.name = 'rsVerCredito'
