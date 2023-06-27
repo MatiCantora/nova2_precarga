@@ -187,10 +187,10 @@ img[id^=vMenu_img] {
 
 .mnuTB_M {
 	width: 200px;
-	/*height: 100%;*/
 	background-color: var(--blanco);
 	opacity: 1;
 	box-sizing: content-box;
+	margin-inline: auto;
 }
 
 	.mnuTB_M table {
@@ -199,23 +199,19 @@ img[id^=vMenu_img] {
 		border-radius: 0em !important;
 		font: bolder 13px Tahoma, Verdana, sans-serif !important;
 		white-space: nowrap;
-		/*background-color: var(--blanco) !Important;*/
 	}
 
 .mnuCELL_Normal_M {
 	height: 50px !important;
-	padding: 3px;
 	padding-left: 10px;
 	color: var(--azul);
-	/*border-radius: none !important;*/
-	box-shadow: 0 !important;
 	transition: height 0.5s linear;
 }
 
-mnuCELL_Normal_M:hover {
+.mnuCELL_Normal_M:hover {
 	background-color: rgb(76,102,183, 0.2);
 	color: #4C66B7;
-	border-radius:  5px;
+	border-radius: 5px;
 }
 
 	.mnuCELL_Normal_M img {
@@ -225,7 +221,6 @@ mnuCELL_Normal_M:hover {
 .mnuCELL_OnOver_M {
 	padding: 3px;
 	color: black !important;
-	/*border: #FFFFFF solid 1px;*/
 	border-bottom: none;
 	border-right: solid 1px #0066CC;
 	cursor: pointer;
@@ -234,3 +229,32 @@ mnuCELL_Normal_M:hover {
 .mnuCELL_Sep_M {
 	display: none;
 }
+
+.mnuCELL_Normal_M td {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/*.mnuCELL_Normal_M:first-child {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 30px;
+	width: 30px;
+}*/
+
+/*
+	td
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+	span 
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+*/
+

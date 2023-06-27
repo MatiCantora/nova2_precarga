@@ -331,7 +331,7 @@
             <div class="conteinerCreditos" id="containerDiv">
 
 
-                    <div id="filtro_creditos2" style="width: 90%; display:none">
+                    <div id="filtro_creditos2" style="display:none">
                         <table class="tb1">
                             <tr class="tbLabel">
                                 <td>

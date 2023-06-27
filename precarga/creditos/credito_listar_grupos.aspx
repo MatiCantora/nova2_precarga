@@ -274,7 +274,7 @@
                         <div id="divCrFiltroLeft">
                             
                             <div id="divFiltroDNI">
-                                 <input type="number" placeholder="DNI" name="nro_docu" id="nro_docu" style="text-align:right" maxlength="10" onkeypress="return nro_docu_onkeypress(event)" />
+                                 <input type="number" placeholder="DNI" name="nro_docu" id="nro_docu" style="text-align:right; height: 30px;" maxlength="10" onkeypress="return nro_docu_onkeypress(event)" />
                                  
                             </div>
                             <div id="divBuscar"></div>

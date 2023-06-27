@@ -64,8 +64,8 @@
         background: transparent url(alphacube/volver-azul.svg) no-repeat 0 0;
         background-size: 20px 20px;
         position: absolute;
-        top: 32px;
-        left: 25px;
+        top: 6px;
+        left: 12px;
         cursor: pointer;
         z-index: 1000;
     }
@@ -122,10 +122,10 @@
         width: 24px;
         height: 24px;
         background: transparent url(alphacube/volver-azul.svg) no-repeat 0 0;
-        background-size: 20px 20px;
+        /*background-size: 20px 20px;*/
         position: absolute;
-        top: 17px;
-        left: 25px;
+        top: 6px;
+        left: 12px;
         cursor: pointer;
         z-index: 1000;
     }

@@ -513,7 +513,7 @@ function tMenu_mostrarMenuMobile() {
     //var estiloMobile = ""
     //estiloMobile = "style = 'width: 100%;border: 0px solid white; padding-left: 10px;border-spacing: 4px 9px;font-size:14px;color: black; text-align: left';"
     
-    var strHTML = '<table id="' + this.nombre + '" class="mnuTB_' + this.estilo + '" cellspacing="0" cellpadding="0" style="margin: 0px; padding: 0px;">'
+    var strHTML = '<table id="' + this.nombre + '" class="mnuTB_' + this.estilo + '" cellspacing="0" cellpadding="0" style="padding: 0px;">'
     var cont = 0;
     for (var i in this.MenuItems) {
        

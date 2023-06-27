@@ -284,7 +284,7 @@
                         </div>
                     </div>
                     <div class="filtro" style="float: left;">
-                        <div style="width: 100%; text-align: center">
+                        <div style="width: 100%; text-align: center;padding: 0px;">
                             <div id="divAceptar"></div>
                         </div>
                         <!--<select id="cbEstructura" style="width:100%"></select>-->

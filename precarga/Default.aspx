@@ -51,7 +51,7 @@
     <div id="div_body" class="centered_div">
         <table id='top_menu' border='0' style="height: 8.5vh">
             <tr>
-                <td style='width: 42px; padding-left: 1%;' id='imgMenu'>
+                <td style='width: 42px; padding-left: 2%;' id='imgMenu'>
                     <img id='img_Menu' style='height: 32px; width: 32px;' border='0' class='img_button_sesion' alt='Menu' title='Menú' src='image/menu.svg' onclick='drawcontrol.menu_izquierdo_swipe()' />
                 </td>
                 <td style='text-align: center; width: 60%'>
@@ -75,7 +75,7 @@
                 <span id="strVendedor" class="Seller"></span>
             </div>
             <div id="divMenuLeft" style="height: 100%; width: 100%"></div>
-            <div id="divMenuLeftMobile" style="height: 100%; width: 100%"></div>
+            <div id="divMenuLeftMobile" style="height: 100%; width: 100%; padding-left: 15px;"></div>
 
         </div>
 
@@ -105,10 +105,9 @@
                                     <div id="contBuscar">
                                         <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='cuit' onclick="return rddoc_onclick()" />
                                         <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='dni' onclick="return rddoc_onclick()" checked />
-                                        <input style="text-align: right;" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
-                                        <div id="divPLimpiar">
-                                        </div>
-                                        <div style="position: absolute; bottom: 0; top: 90%">
+                                        <input style="text-align: right; height:30px" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
+                                        <div id="divPLimpiar"></div>
+                                        <div style="margin-top: 35%;">
                                             <div id="divPBuscar" class="nextButton" />
                                         </div>
                                     </div>

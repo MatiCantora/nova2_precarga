@@ -43,7 +43,7 @@
 }
 
 .btnNormal_L {
-    display: inline-block;
+   /* display: inline-block;
     position: relative;
     margin: 1px;
     padding: 8px 24px;
@@ -56,10 +56,20 @@
     border-radius: 11px;
     cursor: pointer;
     overflow: hidden;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s;*/
+
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 24px;
+    font: 14px Tahoma, Verdana, Segoe, sans-serif;
+    font-weight: 600;
+    color: #000;
+    border-radius: 11px;
+    cursor: pointer;
 }
+
     .btnNormal_L:hover {
-        outline: solid #B0B0B0 1px;
+        outline: solid 1px #B0B0B0;
     }
 
 
@@ -178,4 +188,14 @@
         opacity: 1;
     }
 
+.btnNormal_E {
+    background-color: var(--azul);
+    color: white;
+    border-radius: 4px;
+    padding: 2px 9px 2px 5px;
+    cursor: pointer;
+}
 
+.btnTB_E {
+    height: 25px;
+}

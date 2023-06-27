@@ -596,7 +596,7 @@ Window.prototype = {
     else
       content ="<div id=\"" + id + "_content\" class=\"" +className + "_content\"> </div>";
       
-    var closeDiv = this.options.closable ? "<div class='" + className + "_close' id='" + id + "_close' onclick='Windows.close(\"" + id + "\", event)'><a style='font-size: 17px' class='" + className + "_close_back' id='" + id + "_close_back' onclick='Windows.close(\"" + id + "\", event)'>Volver</a></div>" : "";
+    var closeDiv = this.options.closable ? "<div class='" + className + "_close' id='" + id + "_close' onclick='Windows.close(\"" + id + "\", event)'></div>" : "";
     var minDiv = this.options.minimizable ? "<div class='"+ className + "_minimize' id='"+ id +"_minimize' onclick='Windows.minimize(\""+ id +"\", event)'> </div>" : "";
     var maxDiv = this.options.maximizable ? "<div class='" + className + "_maximize' id='" + id + "_maximize' onclick='Windows.maximize(\"" + id + "\", event)'> </div>" : "";
     var seAttributes = this.options.resizable ? "class='" + className + "_sizer' id='" + id + "_sizer'" : "class='"  + className + "_se'";

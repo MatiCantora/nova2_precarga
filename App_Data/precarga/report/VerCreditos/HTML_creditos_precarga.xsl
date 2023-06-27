@@ -99,18 +99,19 @@
                     </xsl:comment>
                 </script>
             </head>
+			
             <body onload="window_onload()" id ="body_iframe_cr" onresize="return window_onresize()" style="width:100%;height:100%;">                    
                       
-        <div id="div_lst_creditos" style="width:100%; overflow:auto;position:relative">
-              <table class="tb1 highlightEven highlightTROver" id="tbDetalle">
-                        <xsl:apply-templates select="xml/rs:data/z:row" />
-                      </table>
-           </div> 
-		 <div class="div_paginador">
-                <script type="text/javascript">
-                  document.write(campos_head.paginas_precarga_getHTML())
-                </script>
-              </div>
+                <div id="div_lst_creditos" style="width:100%; overflow:auto;position:relative">
+                      <table class="tb1 highlightTROver" id="tbDetalle">
+                                <xsl:apply-templates select="xml/rs:data/z:row" />
+                              </table>
+                   </div> 
+		         <div class="div_paginador">
+                        <script type="text/javascript">
+                          document.write(campos_head.paginas_precarga_getHTML())
+                        </script>
+                      </div>
         
             </body>
         </html>
@@ -120,16 +121,15 @@
         <xsl:variable name="pos" select="position()"/>
 
 		
-        <tr>
+        <tr style="margin-bottom: 5px ; ">
 			<xsl:attribute name="onclick">
 				MostrarCredito('<xsl:value-of select="@nro_credito"/>')
 			</xsl:attribute>
 			<xsl:attribute name="style">color:#194693; cursor:pointer; text-align: right;</xsl:attribute>
-			<xsl:attribute name="style">color:##464646; text-transform: capitalize;</xsl:attribute>
+			<!--<xsl:attribute name="style">color:#464646; text-transform: capitalize;</xsl:attribute>-->
             <xsl:attribute name="id">tr_ver<xsl:value-of select="$pos"/></xsl:attribute>
-              <td style='text-align: left;width:60%' rowspan='true'>
-				  
-				<div>
+              <td style='text-align: left; padding:15px; border-radius: 10px;box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.10);' rowspan='true'>
+				<!--<div>
 				  <xsl:attribute name="style">color: #194693;;</xsl:attribute>
 			    <xsl:choose>
                   <xsl:when test="@estado = 'propuestas'">
@@ -147,22 +147,36 @@
 					  <p style="background-color: #yellow; display: inline;"><xsl:value-of select="@descripcion" /></p>
                   </xsl:otherwise>
                 </xsl:choose>
-			   </div>
-					  
-			   <div>
-				   
-			       <xsl:value-of  select="@strNombreCompleto" /><br />
-			       <xsl:value-of  select="format-number(@nro_credito,'0000000')" /><br />
-			  </div>
+			   </div>-->
+				  <div style='display: flex; justify-content: space-between;'>
+					  <div>
+						  <xsl:value-of  select="@descripcion" />
+					  </div>
+					  <div>
+						  <xsl:value-of  select="@cuotas" />
+						  <xsl:text> cuotas de $</xsl:text>
+						  <xsl:value-of  select="@importe_cuota" />
+					  </div>
+				  </div>
+				  
+			       <div style="margin: 5px 0px 3px 0px">
+			           <xsl:value-of  select="@strNombreCompleto" /><br />
+			      </div>
+				  
+				  <div style='display: flex; justify-content: space-between;'>
+					  <div> 
+						  <xsl:value-of  select="format-number(@nro_credito,'0000000')" />
+					  </div>
+					  <div>
+						  <xsl:text>Consultar Resultado</xsl:text>
+					  </div>
+
+				  </div>
               </td>
 			
-			<td style="text-align: rigth; width: 40%;cursor:hand">
-                <!--<xsl:attribute name="onclick">MostrarCredito('<xsl:value-of select="@nro_credito"/>')</xsl:attribute>-->
-				<xsl:value-of  select="@cuotas" /><xsl:text> cuotas de $</xsl:text><xsl:value-of  select="@importe_cuota" />
-				<br />
-				
-			     <xsl:text>Consultar Resultado</xsl:text>
-		     </td>
+			<!--<td style="text-align: center; width: 40%;cursor:hand">
+                <xsl:attribute name="onclick">MostrarCredito('<xsl:value-of select="@nro_credito"/>')</xsl:attribute>
+		     </td>-->
         </tr>
     </xsl:template>
 </xsl:stylesheet>
