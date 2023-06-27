@@ -1,0 +1,6 @@
+{
+  "//": "Some browsers will use this to enable push notifications.",
+  "//": "It is the same for all projects, this is not your project's sender ID",
+  "//": "El ID de remitente del navegador de manifest.json es un valor fijo que es idéntico para todos los clientes JavaScript de FCM.",
+  "gcm_sender_id": "103953800507"
+}

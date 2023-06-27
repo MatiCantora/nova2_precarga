@@ -1,0 +1,206 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<%
+
+    Dim modo As String = nvFW.nvUtiles.obtenerValor("modo", "")
+    If modo = "" Then
+        modo = "N"
+    End If
+
+    'Me.contents("filtroGrupo") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='archivos_def_grupo' PageSize='14' AbsolutePage='1' cacheControl='Session'><campos>*</campos><orden>nro_archivo_def_grupo</orden><filtro></filtro></select></criterio>")
+    Me.contents("filtroGrupo") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='archivos_def_grupo' ><campos>*</campos><orden>nro_archivo_def_grupo</orden><filtro></filtro></select></criterio>")
+    ''Me.contents("filtroDetalle") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='archivos_def_detalle'><campos>COUNT(*) as cant_detalles</campos><filtro><nro_archivo_def_grupo type='igual'>%nro_archivo_def_grupo%</nro_archivo_def_grupo></filtro></select></criterio>")
+%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Tipos de Archivos</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+
+    <script type="text/javascript" src="/FW/script/nvFW.js" ></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js" ></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js" ></script>
+    <script type="text/javascript" src="/FW/script/tcampo_def.js" ></script>
+    <script type="text/javascript" src="/FW/script/tcampo_head.js" ></script>
+    
+    <%= Me.getHeadInit() %>
+
+    <script type="text/javascript">
+    
+
+        var alert = function (msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); }
+
+        var filtroGrupo = nvFW.pageContents.filtroGrupo
+        //var filtroDetalle = nvFW.pageContents.filtroDetalle
+
+    var vButtonItems = {}
+
+    vButtonItems[0] = {}
+    vButtonItems[0]["nombre"] = "Buscar";
+    vButtonItems[0]["etiqueta"] = "Buscar";
+    vButtonItems[0]["imagen"] = "buscar";
+    vButtonItems[0]["onclick"] = "return buscar_archivos_def_grupo()";
+
+    var vListButtons = new tListButton(vButtonItems, 'vListButtons')
+    vListButtons.loadImage("buscar","/fw/image/icons/buscar.png")
+
+    function window_onresize() {
+        try {
+            var dif = Prototype.Browser.IE ? 5 : 2
+            body_height = $$('body')[0].getHeight()
+            divMenuArchivosDefGrupoSeleccion_h = $('divMenuArchivosDefGrupoSeleccion').getHeight()
+            tb_definicion_grupo_archivos_h = $('tb_definicion_grupo_archivos').getHeight()
+
+            $('iframe_definicion_grupo_archivos').setStyle({ 'height': body_height - divMenuArchivosDefGrupoSeleccion_h - tb_definicion_grupo_archivos_h - dif + 'px' })
+        }
+        catch (e) { }
+    }
+
+    function window_onload() 
+    {
+        // mostramos los botones creados
+        vListButtons.MostrarListButton()
+        window_onresize()
+        nvFW.enterToTab = false
+    }
+
+    function buscar_archivos_def_grupo()
+    {
+        var desc_archivo_def_grupo = campos_defs.get_value('desc_def_grupo3')
+        var nro_archivo_def_grupo = campos_defs.get_value('nro_def_grupo3')
+        var filtro = ''
+
+        if (nro_archivo_def_grupo != '') {
+            filtro = "<nro_archivo_def_grupo type='igual'>" + nro_archivo_def_grupo + "</nro_archivo_def_grupo>"
+        } else if (desc_archivo_def_grupo != ''){
+            filtro = "<archivo_def_grupo type='like'>%" + desc_archivo_def_grupo + "%</archivo_def_grupo>"
+        }
+
+        var filtroXML = filtroGrupo
+        var filtroWhere = "<criterio><select ><campos>*</campos><orden></orden><filtro>" + filtro + "</filtro></select></criterio>"
+
+        nvFW.exportarReporte({
+            filtroXML: filtroXML,
+            filtroWhere: filtroWhere,
+            path_xsl: 'report\\def_archivos\\verArchivos_def_grupo\\HTML_verArchivos_def_grupo.xsl',
+            formTarget: 'iframe_definicion_grupo_archivos',
+            nvFW_mantener_origen: true,
+            id_exp_origen: 0,
+            bloq_contenedor: $('iframe_definicion_grupo_archivos'),
+            cls_contenedor: 'iframe_definicion_grupo_archivos'
+        })
+            
+    }
+
+  
+
+    // Elimina un Grupo de Archivos
+    function eliminar_archivos_def_grupo(nro_archivo_def_grupo) {
+        var rs = new tRS()
+        var params = "<criterio><params nro_archivo_def_grupo='" + nro_archivo_def_grupo + "'/></criterio>"
+        //rs.open(filtroDetalle, '', '', '', params)       
+
+        //if (!rs.eof()) {
+            var xmldato = "<?xml version='1.0' encoding='iso-8859-1'?>"
+            xmldato += "<archivos_def_grupo modo='B' nro_archivo_def_grupo='" + nro_archivo_def_grupo + "'>"            
+            xmldato += "</archivos_def_grupo>"
+
+            Dialog.confirm('¿Desea eliminar el Grupo de Archivos seleccionado.?', { width: 300, className: "alphacube",
+                onOk: function (win) {
+                    nvFW.error_ajax_request('/fw/def_archivos/archivos_def_grupo_ABM.aspx', {
+                        parameters: { modo: 'B', strXML: xmldato},
+                        onSuccess: function (err, transport) {
+                            if (err.numError == 0) {
+                                buscar_archivos_def_grupo()
+                                win.close()
+                            }
+                            else {
+                                alert(err.mensaje)
+                                return
+                            }
+                        }
+                    });
+                },
+                okLabel: 'Aceptar',
+                cancelLabel: 'Cancelar',
+                onCancel: function (win) { win.close() }
+            })
+            
+        //}
+    }
+    
+
+    //ABM Grupo de Archivos Def
+    var win_archivos_def_grupo_abm
+    function archivos_def_grupo_abm(nro_archivo_def_grupo) {
+
+        var w = window.top.nvFW != undefined ? window.top.nvFW : nvFW
+        win_archivos_def_grupo_abm = w.createWindow({
+            url: '/fw/def_archivos/archivos_def_grupo_ABM.aspx?nro_archivo_def_grupo=' + nro_archivo_def_grupo,
+            title: '<b>ABM Grupos</b>',
+            minimizable: true,
+            maximizable: false,
+            draggable: true,
+            resizable: false,
+            width: 700,
+            height: 200,
+            onClose: function () {
+                if (win_archivos_def_grupo_abm.options.userData.nro_archivo_def_grupo != -1)
+                    buscar_archivos_def_grupo()
+            }
+        });
+
+        win_archivos_def_grupo_abm.options.userData = { nro_archivo_def_grupo: nro_archivo_def_grupo }
+        win_archivos_def_grupo_abm.showCenter()
+    }
+    
+    </script>
+</head>
+<body onload="return window_onload()" onresize='window_onresize()' style='width:100%;height:100%;overflow:hidden'>
+<form name="frm_definicion_grupo_archivos" id="frm_definicion_grupo_archivos" action="" method="post" style='width:100%;height:100%;overflow:hidden'>
+<div id="divMenuArchivosDefGrupoSeleccion" style="margin: 0px; padding: 0px;"></div>
+<script  type="text/javascript">
+    var vMenuArchivosDefGrupoSeleccion = new tMenu('divMenuArchivosDefGrupoSeleccion', 'vMenuArchivosDefGrupoSeleccion');
+    vMenuArchivosDefGrupoSeleccion.loadImage("nuevo","/fw/image/icons/nueva.png")
+    Menus["vMenuArchivosDefGrupoSeleccion"] = vMenuArchivosDefGrupoSeleccion
+    Menus["vMenuArchivosDefGrupoSeleccion"].alineacion = 'centro';
+    Menus["vMenuArchivosDefGrupoSeleccion"].estilo = 'A';
+    Menus["vMenuArchivosDefGrupoSeleccion"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 100%'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
+    Menus["vMenuArchivosDefGrupoSeleccion"].CargarMenuItemXML("<MenuItem id='1'><Lib TipoLib='offLine'>DocMNG</Lib><icono>nuevo</icono><Desc>Nuevo</Desc><Acciones><Ejecutar Tipo='script'><Codigo>archivos_def_grupo_abm(-1)</Codigo></Ejecutar></Acciones></MenuItem>")
+    vMenuArchivosDefGrupoSeleccion.MostrarMenu()
+</script>
+<table class="tb1" style="width:100%" id="tb_definicion_grupo_archivos">
+     <tr>
+       <td style="width:80%">
+          <table class="tb1" style="width:100%">
+               <tr class="tbLabel" style="width:100%">
+                <td style='width:20%;text-align:center;'>ID</td>
+                <td style='width:80%;text-align:center;'>Descripción</td>
+               </tr>
+               <tr> 
+                    <td style='width:20%; padding:0;'><%= nvFW.nvCampo_def.get_html_input("nro_def_grupo3", enDB:=False, nro_campo_tipo:=100)%></td>
+                    <script type="text/javascript">
+                    $('nro_def_grupo3').addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                        buscar_archivos_def_grupo()
+                        }
+                    })
+                   </script>
+                   <td style='width:80%; padding:0;'><%= nvFW.nvCampo_def.get_html_input("desc_def_grupo3", enDB:=False, nro_campo_tipo:=104)%></td>
+                   <script type="text/javascript">
+                     $('desc_def_grupo3').addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                        buscar_archivos_def_grupo()
+                        }
+                     })
+                    </script>                         
+                </tr>
+            </table>
+       </td>
+       <td style="width:20%"><div id="divBuscar"></div></td>
+     </tr> 
+</table>
+<iframe name="iframe_definicion_grupo_archivos" id="iframe_definicion_grupo_archivos" style='width: 100%; height: 100%; overflow: auto; border:none; max-height:700px' frameborder="0" src="/fw/enBlanco.htm"></iframe>
+</form>
+</body>
+</html>

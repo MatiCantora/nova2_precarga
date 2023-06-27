@@ -1,0 +1,177 @@
+
+:root {
+    --azul: #1f4098;
+    --blanco: #ffffff;
+    --fondo: #1946930D;
+    --azul_claro: #19469380;
+    --verde: #5BA44B;
+    --anaranjado: #E46D00;
+    --negro: #464646;
+    --fondo: #1946930D;
+    --gris: #E0E0E0;
+}
+
+
+/* Hack para que 1rem=10px */
+/*html {
+    font-size: 62.5%;
+}*/
+
+/** {
+    box-sizing: border-box;
+}*/
+
+body {
+    font-size: 16px;
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    height: 100%;
+    background-position: center center;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    background-color: var(--blanco);
+    overflow: hidden; /*Quita la posibilidad de refrescar la pantalla deslizando hacia abajo*/
+}
+
+
+input {
+    width: 90%;
+    border-radius: 5px;
+    font: 12px Arial, Helvetica, sans-serif;
+    color: var(--azul);
+    border: 1px solid var(--azul);
+    text-align: left;
+    padding-left: 0.41em;
+    padding-right: 0.41em;
+    height: 25px;
+    margin: 5px;
+}
+
+input::placeholder {
+    color: var(--azul);
+    text-align: left;
+}
+
+input[type=text]:focus {
+    outline: var(--azul) solid 0.25px;
+}
+
+input[type=password]:focus {
+    outline: var(--azul) solid 0.25px;
+}
+
+input[type=button]:focus {
+    outline: gray solid 1px;
+    box-shadow: 0 0 1px gray;
+    border: 0px;
+    border: solid #B0B0B0 1px;
+}
+
+input[type="button"]:hover {
+    cursor: pointer;
+}
+
+
+#tb_Loginbody {
+    position: absolute;
+    width: 300px;
+    height: 350px;
+    border: solid white 2px;
+    top: calc(50% - (350px / 2));
+    left: calc(50vw - (300px / 2));
+}
+
+
+.tb1 {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: var(--blanco);
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    color: var(--azul);
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+}
+
+
+@media screen and (max-device-width: 640px) {
+    #tb_Loginbody {
+        /*transform: translate(-50%, -50%) !important;*/
+        top: calc(50% - (250 / 2)) !important;
+    }
+}
+
+@media screen and (max-height: 500px) {
+    #tb_Loginbody {
+        top: calc(50% - (250 / 2));
+    }
+}
+
+#btnAceptar {
+    box-sizing: border-box;
+    width: 45%;
+    height: 25px;
+    background-color: var(--azul);
+    color: var(--blanco);
+    border-radius: 8px;
+    text-align: center;
+    padding: 0px 10px 0px 10px;
+    margin-top: 30px;
+}
+
+
+.wrap-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    /*border-color: var(--azul);*/
+    width: 32px;
+    height: 16px;
+    cursor: pointer;
+    background-color: var(--gris);
+    border-radius: 10px;
+    border: 1px solid #00000014;
+    margin-right: 5px;
+}
+
+ input[type='checkbox']::after {
+     content: '';
+     position: absolute;
+     width: 14px;
+     height: 14px;
+     border-radius: 10px;
+     background-color: var(--blanco);
+     transition: all 0.3s;
+     margin-left: -5px;
+ }
+
+input [type="checkbox"]:checked {
+    /* Cambiar el fondo del checkbox cuando está marcado */
+    background-color: var(--azul);
+}
+
+input[type='checkbox']:checked::after {
+    transform: translateX(16px);
+    background-color: var(--azul);
+}
+
+input[type='checkbox']:checked {
+    background-color: var(--azul_claro);
+}
+
+
+

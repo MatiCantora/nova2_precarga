@@ -1,0 +1,22 @@
+﻿{
+  "background_color": "#d9d5d8",
+  "display": "standalone",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/precarga/image/icons/nv_mutual.ico",
+      "type": "image/png",
+      "sizes": "212x212"
+    },
+    {
+      "sizes": "193x193",
+      "src": "/precarga/image/icons/image.png",
+      "type": "image/png"
+    }
+  ],
+  "name": "Precarga web",
+  "short_name": " Precarga web",
+  "start_url": "/?app_cod_sistema=precarga",
+  "theme_color": "#d9d5d8"
+} 
+             

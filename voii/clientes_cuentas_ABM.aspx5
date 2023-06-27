@@ -1,0 +1,585 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageVOII" %>
+
+<% 
+    'nvFW.nvDBUtiles.DBCloseRecordset(rs)
+
+
+
+
+    Try
+        Dim strSQL As String = "create table #tmp_tipo_oper (tipo int,sistcod int, moncod int)"
+        Dim rs As ADODB.Recordset = nvFW.nvDBUtiles.DBOpenRecordset("SELECT dato1_desde from calc_pizarra_det where nro_calc_pizarra = 256 and pizarra_valor = '1'")
+        Dim arr_tipo_oper As String
+        Dim att_tipo_oper_split As String()
+        While rs.EOF = False
+            arr_tipo_oper = rs.Fields("dato1_desde").Value
+
+            If arr_tipo_oper.Length > 5 Then
+                att_tipo_oper_split = arr_tipo_oper.Split("_")
+                strSQL += " insert into #tmp_tipo_oper(tipo,sistcod,moncod) values (" & att_tipo_oper_split(0) & "," & att_tipo_oper_split(1) & ", " & att_tipo_oper_split(2) & ")" & vbCrLf
+            End If
+            rs.MoveNext()
+        End While
+        Stop
+        nvFW.nvDBUtiles.DBExecute(strSQL:=strSQL, cod_cn:="BD_IBS_ANEXA")
+
+    Catch ex As Exception
+        Stop
+    End Try
+
+
+
+
+
+
+
+    Me.contents("filtro") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verApi_clientes_cfg'><campos>[tipdoc],[tipdoc_desc],[nrodoc],[sistcod],[cuecod],[cbu],[vigente],[fe_vigencia],[operador],[Login],[id_api_cc_cfg],[ISO_cod],[moneda_desc]</campos><filtro></filtro><orden></orden></select></criterio>")
+    Dim op As nvFW.nvSecurity.tnvOperador = nvApp.operador
+    If (Not op.tienePermiso("permisos_api_clientes_cfg", 2)) Then Response.Redirect("/FW/error/httpError_401.aspx")
+    Me.addPermisoGrupo("permisos_api_clientes_cfg")
+    Dim modo As String = nvFW.nvUtiles.obtenerValor("modo", "")
+    Dim err = New tError()
+    Dim tipdoc As String
+    Dim nro_docu As Int64
+    Dim ibs_sistcod As Integer
+    Dim cuecod As Integer
+    Dim cbu As String
+    Dim operador As String
+    Dim fe_vigencia As String
+    Dim id As Integer
+    Dim estado As Integer
+    Dim cambio_vig As String
+    Dim cambio_vigSQL As String
+    Dim moneda As String
+    Dim moncod As Integer
+
+
+
+
+
+    If modo <> "" Then
+
+        If (Not op.tienePermiso("permisos_api_clientes_cfg", 2)) Then
+            err.numError = 403
+            err.mensaje = "No posee permisos para realizar esta operación."
+            err.debug_desc = "No posee permisos para realizar esta operación."
+            err.debug_src = "clientes_cuentas_ABM.aspx"
+            err.response()
+        End If
+
+
+        err = New tError()
+        tipdoc = nvFW.nvUtiles.obtenerValor("tipdoc", 0)
+        nro_docu = nvFW.nvUtiles.obtenerValor("nro_docu", 0)
+        ibs_sistcod = nvFW.nvUtiles.obtenerValor("ibs_sistcod", 0)
+        cuecod = nvFW.nvUtiles.obtenerValor("cuecod", 0)
+        cbu = nvFW.nvUtiles.obtenerValor("cbu", 0)
+        'fe_desde = nvFW.nvUtiles.obtenerValor("fe_desde", 0)
+        'fe_hasta = nvFW.nvUtiles.obtenerValor("fe_hasta", 0)
+        id = nvFW.nvUtiles.obtenerValor("id", 0)
+        estado = nvFW.nvUtiles.obtenerValor("estado", 0)
+        operador = nvFW.nvUtiles.obtenerValor("operador", False)
+        fe_vigencia = nvFW.nvUtiles.obtenerValor("fe_vigencia", "")
+        cambio_vig = nvFW.nvUtiles.obtenerValor("cambio_vig", "")
+        moneda = nvFW.nvUtiles.obtenerValor("moneda", "")
+        moncod = nvFW.nvUtiles.obtenerValor("moncod", 0)
+
+
+        If cambio_vig = "null_vig" Then
+            cambio_vigSQL = ",fe_vigencia = null"
+        ElseIf cambio_vig = "nueva_vig" Then
+            cambio_vigSQL = ",fe_vigencia =CONVERT(DATETIME,GETDATE())"
+        Else
+            cambio_vigSQL = ""
+        End If
+
+        If (modo = "new") Then
+            If (Not op.tienePermiso("permisos_api_clientes_cfg", 2)) Then
+                err.numError = 403
+                err.mensaje = "No posee permisos para realizar esta operación."
+                err.debug_desc = "No posee permisos para realizar esta operación."
+                err.debug_src = "clientes_cuentas_ABM.aspx"
+                err.response()
+            End If
+
+            Try
+                Dim sqlInsert As String = "Insert into API_clientes_cuentas_cfg(tipdoc,nrodoc,sistcod,cuecod,cbu,vigente,moneda,moneda_desc,operador,fe_vigencia) values (" & tipdoc & "," & nro_docu & "," & ibs_sistcod & "," & cuecod & ",'" & cbu & "'," & estado & "," & moncod & ",'" & moneda & "',dbo.rm_nro_operador(),getdate())"
+
+                nvFW.nvDBUtiles.DBExecute(sqlInsert)
+
+                err.numError = 0
+
+                err.mensaje = "el agregar ha sido un exito rotundo"
+            Catch ex As Exception
+                'Stop poner stop para ver los tipos de error que te pueden surgir en la consuklta
+                err.numError = 1000
+                err.mensaje = "Error al cargar el recurso"
+                err.debug_desc = ex.Message
+            End Try
+
+            'If (cambio_vig = "null_vig") Then
+            '    Try
+            '        Dim sqlInsert As String = "UPDATE API_clientes_cuentas_cfg SET fe_vigencia = null  WHERE id = (SELECT MAX(id ) FROM API_clientes_cuentas_cfg)"
+
+            '        nvFW.nvDBUtiles.DBExecute(sqlInsert)
+
+            '        err.numError = 0
+
+            '        err.mensaje = "el agregar ha sido un exito rotundo"
+            '    Catch ex As Exception
+            '        'Stop poner stop para ver los tipos de error que te pueden surgir en la consuklta
+            '        err.numError = 1000
+            '        err.mensaje = "Error al cargar el recurso"
+            '        err.debug_desc = ex.Message
+            '    End Try
+            'End If
+
+
+
+        End If
+
+        If (modo = "edit") Then
+            If (Not op.tienePermiso("permisos_api_clientes_cfg", 2)) Then
+                err.numError = 403
+                err.mensaje = "No posee permisos para realizar esta operación."
+                err.debug_desc = "No posee permisos para realizar esta operación."
+                err.debug_src = "clientes_cuentas_ABM.aspx"
+                err.response()
+            End If
+
+            Try
+                Dim sqlInsert As String = "UPDATE API_clientes_cuentas_cfg Set tipdoc=" & tipdoc & ",nrodoc=" & nro_docu & ",sistcod=" & ibs_sistcod & ",cuecod=" & cuecod & ",moneda=" & moncod & ",vigente=" & estado & ",moneda_desc='" & moneda & "',cbu=" & cbu & ",operador= dbo.rm_nro_operador() " & cambio_vigSQL & " WHERE id_api_cc_cfg=" & id
+
+                nvFW.nvDBUtiles.DBExecute(sqlInsert)
+
+                err.numError = 0
+
+                err.mensaje = "el agregar ha sido un exito rotundo"
+
+
+            Catch ex As Exception
+                'Stop poner stop para ver los tipos de error que te pueden surgir en la consuklta
+                err.numError = 1000
+                err.mensaje = "error al cargar el recurso"
+                err.debug_desc = ex.Message
+            End Try
+        End If
+
+        If (modo = "delete") Then
+            If (Not op.tienePermiso("permisos_api_clientes_cfg", 2)) Then
+                err.numError = 403
+                err.mensaje = "No posee permisos para realizar esta operación."
+                err.debug_desc = "No posee permisos para realizar esta operación."
+                err.debug_src = "clientes_cuentas_ABM.aspx"
+                err.response()
+            End If
+
+            Try
+                Dim sqlInsert As String = "delete from API_clientes_cuentas_cfg where id_api_cc_cfg=" & id
+
+                nvFW.nvDBUtiles.DBExecute(sqlInsert)
+
+                err.numError = 0
+
+                err.mensaje = "el agregar ha sido un exito rotundo"
+
+
+            Catch ex As Exception
+                'Stop poner stop para ver los tipos de error que te pueden surgir en la consuklta
+                err.numError = 1000
+                err.mensaje = "Error al cargar el recurso"
+                err.debug_desc = ex.Message
+            End Try
+        End If
+        err.response()
+
+    End If
+
+
+
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Transferencias conf ABM</title>
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    <link href="/FW/css/cabe.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <script type="text/javascript" src="/FW/script/nvUtiles.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript">
+
+
+
+        var win = nvFW.getMyWindow()
+        var modo = win.options.userData.modo
+        var cambio_vig = ''
+
+
+        function window_onload() {
+
+            
+            if (!nvFW.tienePermiso('permisos_api_clientes_cfg', 2)) {
+                alert('No posee permisos para hacer esta operacion, consulte al administrador del sistema')
+                return
+            }
+            campos_defs.habilitar('fe_desde', false)
+            campos_defs.habilitar('nro_operador', false)
+
+            
+            if (modo == "edit") {
+                campos_defs.set_value('tipdoc_codext', win.options.userData.tipdoc)
+                campos_defs.set_value('nrodoc', win.options.userData.nrodoc)
+                campos_defs.set_value('ibs_cuecod_ca_cc', win.options.userData.cuecod)
+                campos_defs.set_value('cbu', campos_defs.getRS('ibs_cuecod_ca_cc').getdata('cbubloque1').toString() + '0' + campos_defs.getRS('ibs_cuecod_ca_cc').getdata('cbubloque2').toString())
+                campos_defs.set_value('fe_desde', win.options.userData.fe_vigencia)
+                campos_defs.set_value('nro_operador', win.options.userData.operador)
+                campos_defs.habilitar('nro_operador', false)
+
+                switch (win.options.userData.vigente) {
+                    case "True":
+                        $('estado').value = "vigente"
+                        break
+                    case "False":
+                        $('estado').value = "novigente"
+                        break
+                    case null:
+                        $('estado').value = ""
+                        break
+                }
+            }
+
+        }
+
+        
+
+
+        function guardar() {
+            
+            if (!nvFW.tienePermiso('permisos_api_clientes_cfg', 2)) {
+                alert('No posee permisos para hacer esta operacion, consulte al administrador del sistema')
+                return
+            }
+
+            var id = (modo == 'new' ? 0 : win.options.userData.id)
+
+
+          
+            if (modo != 'delete') {
+                
+                if ($('estado').value == 'novigente') {
+                    campos_defs.set_value('fe_desde', "")
+                    cambio_vig = 'null_vig'
+                }
+
+                
+                if (campos_defs.get_value('nrodoc') == '') {
+                    alert('Ingresar numero de documento')
+                    return
+                }
+                if (campos_defs.get_value('ibs_cuecod_ca_cc') == '') {
+                    alert('Ingresar tipo de cuenta')
+                    return
+                }
+
+                var tipdoc = campos_defs.get_value('tipdoc_codext')
+                var nro_docu = campos_defs.get_value('nrodoc')
+                var ibs_sistcod = campos_defs.getRS('ibs_cuecod_ca_cc').getdata('sistcod');
+                var cuecod = campos_defs.get_value('ibs_cuecod_ca_cc') == "" ? 0 : campos_defs.get_value('ibs_cuecod_ca_cc')
+                var cbu = campos_defs.get_value('cbu').toString()
+                var fe_vigencia = campos_defs.get_value('fe_desde')
+                var operador = campos_defs.get_value('nro_operador')
+
+                var moneda = campos_defs.getRS('ibs_cuecod_ca_cc').getdata('moneda');
+                var moncod = campos_defs.getRS('ibs_cuecod_ca_cc').getdata('moncod');
+                var estado = $('estado').value
+                var errStr = ""
+                
+                if (tipdoc == '') { errStr += '- Ingresar tipo de documento' }
+                
+                if (cuecod == '') { errStr += '<br>- Ingresar tipo de cuenta' }
+                if (cbu == '') { errStr += '<br>- Ingresar CBU' }else if (cbu.length < 22) {errStr += '<br>- el CBU debe tener al menos 22 dígitos'}
+                
+                if (estado == '') { errStr += '<br>- Seleccionar un estado' }
+
+                if (errStr == '')
+                    errStr += verificarExistenciaCBU(cbu, moneda)
+               
+                if (errStr != '') {
+                    alert(errStr);
+                    return
+                }
+            }
+
+            estado = estado == 'vigente' ? estado = 1 : estado = 0;
+
+            nvFW.error_ajax_request("clientes_cuentas_ABM.aspx", {
+
+                parameters: {
+                    modo: modo,
+                    id: id,
+                    tipdoc: tipdoc,
+                    nro_docu: nro_docu,
+                    ibs_sistcod: ibs_sistcod,
+                    cuecod: cuecod,
+                    cbu: cbu,
+                    fe_vigencia: fe_vigencia,
+                    operador: operador,
+                    estado: estado,
+                    cambio_vig: cambio_vig,
+                    moneda: moneda,
+                    moncod:moncod
+
+                },
+                onSuccess: function (err, transport) {
+                    win.close()
+                },
+                onFailure: function (err) {
+                    nvFW.alert("Ocurrió un error. Contacte al administrador.")
+                },
+                error_alert: false
+            })
+
+            if (modo != 'delete') {
+                modo = 'edit'
+            }
+        }
+
+        function verificarExistenciaCBU(cbu, moneda)
+        {
+   
+            var filtroWhereRs = "<cbu type='igual'>'" + cbu + "'</cbu><moneda type='igual'>'" + moneda + "'</moneda>"
+
+            var rs = new tRS()
+            rs.open(nvFW.pageContents.filtro, '', filtroWhereRs)
+            if (!rs.eof()) 
+                return "ya existe el cbu asociado al cliente"
+
+            return ''
+        }
+
+        function nuevo() {
+            modo = "new"
+            campos_defs.clear('tipdoc_codext')
+            campos_defs.clear('nrodoc')
+            campos_defs.clear('ibs_sistcod')
+            campos_defs.clear('ibs_cuecod_ca_cc')
+            campos_defs.clear('cbu')
+            campos_defs.clear('fe_desde')
+            campos_defs.clear('operador')
+            campos_defs.clear('moneda_ISO_cod')
+            campos_defs.habilitar('nro_operador', false)
+          
+
+        }
+
+        function eliminar() {
+            
+            Dialog.confirm(`¿Desea eliminar el elemento?`, {
+                width: 300, className: "alphacube",
+                onOk: function (win) {                    
+                    modo = "delete"
+                    guardar()
+                },
+                onCancel: function (win) { },
+                okLabel: 'Aceptar',
+                cancelLabel: 'Cancelar'
+            });
+
+
+
+
+
+
+
+        }
+
+        function fe_vig() {
+            if ($('estado').value == 'novigente') {
+                campos_defs.set_value('fe_desde', "")
+                cambio_vig = 'null_vig'
+            } else if ($('estado').value == 'vigente') {
+                cambio_vig = 'nueva_vig'
+            }
+        }
+
+
+        function validarCBU(cbu) {
+
+            var ponderador = '97139713971397139713971397139713'
+            var i
+            var nDigito
+            var nPond
+            var bloque1 = '0' + cbu.substring(0, 7)
+            var bloque2
+            var nTotal = 0
+
+            for (i = 0; i <= 7; i++) {
+                nDigito = bloque1.charAt(i)
+                nPond = ponderador.charAt(i)
+                nTotal = nTotal + (nPond * nDigito) - (Math.floor(nPond * nDigito / 10) * 10)
+            }
+
+            i = 0;
+
+            while ((Math.floor((nTotal + i) / 10) * 10) != (nTotal + i)) {
+                i += 1;
+            }
+
+            // i = digito verificador
+            //es CVU
+            if (cbu.substring(0, 3) == '000') {
+                return false;
+            }
+
+            if (cbu.substring(7, 8) != i) {
+                return false;
+            }
+
+            nTotal = 0;
+
+            bloque2 = '000' + cbu.substring(8, 21)
+
+            for (i = 0; i <= 15; i++) {
+                nDigito = bloque2.charAt(i)
+                nPond = ponderador.charAt(i)
+                nTotal = nTotal + (nPond * nDigito) - (Math.floor(nPond * nDigito / 10) * 10)
+            }
+
+            i = 0;
+
+            while ((Math.floor((nTotal + i) / 10) * 10) != (nTotal + i)) {
+                i += 1;
+            }
+
+            // i = digito verificador
+
+            if (cbu.substring(21, 22) != i) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        function onchange_ibs() {
+            campos_defs.set_value('cbu', campos_defs.getRS('ibs_cuecod_ca_cc').getdata('cbubloque1').toString() +'0'+ campos_defs.getRS('ibs_cuecod_ca_cc').getdata('cbubloque2').toString())
+        }
+
+
+
+    </script>
+</head>
+<body id="cuerpo" onload="window_onload()"  style="width: 100%;height: 100%; overflow: hidden">
+    <div id="divMenuDig"></div>
+    <script type="text/javascript">
+        var vMenuAgregar = new tMenu('divMenuDig', 'vMenuAgregar');
+        Menus["vMenuAgregar"] = vMenuAgregar
+        Menus["vMenuAgregar"].loadImage("guardar", '/fw/image/icons/guardar.png')
+        Menus["vMenuAgregar"].loadImage("nuevo", '/fw/image/icons/nueva.png')
+        Menus["vMenuAgregar"].loadImage("eliminar", '/fw/image/icons/eliminar.png')
+        Menus["vMenuAgregar"].loadImage("parametros", '/fw/image/icons/parametros.png')
+        Menus["vMenuAgregar"].alineacion = 'centro';
+        Menus["vMenuAgregar"].estilo = 'A';
+        Menus["vMenuAgregar"].CargarMenuItemXML("<MenuItem id='0'><Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>guardar()</Codigo></Ejecutar></Acciones></MenuItem>")
+        Menus["vMenuAgregar"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 70%;text-align:left'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
+        Menus["vMenuAgregar"].CargarMenuItemXML("<MenuItem id='3'><Lib TipoLib='offLine'>DocMNG</Lib><icono>eliminar</icono><Desc>Eliminar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>eliminar()</Codigo></Ejecutar></Acciones></MenuItem>")
+        Menus["vMenuAgregar"].CargarMenuItemXML("<MenuItem id='4'><Lib TipoLib='offLine'>DocMNG</Lib><icono>nuevo</icono><Desc>Nuevo</Desc><Acciones><Ejecutar Tipo='script'><Codigo>nuevo()</Codigo></Ejecutar></Acciones></MenuItem>")
+
+        vMenuAgregar.MostrarMenu()
+    </script>
+
+    <table class="tb1 " style="width: 100%">
+         <tr>
+            <td class="Tit2" style="width:20%;text-align:center">
+                Tipo de documento:
+            </td>
+            <td>
+                 <script type="text/javascript">
+                    campos_defs.add('tipdoc_codext')
+                 </script>
+            </td>
+             <td style="text-align:center" class="Tit2">
+                Nro. documento:
+            </td>
+             <td colspan="2">
+                 <script type="text/javascript">
+                     campos_defs.add('nrodoc'/*, { nro_campo_tipo: 100, enDB: false }*/)
+                 </script>
+            </td>
+        </tr>
+        <tr>
+             <td class="Tit2" style="text-align:center" >
+                Número de cuenta:
+            </td>
+            <td colspan="3" >
+                 <script type="text/javascript">
+                     campos_defs.add('ibs_cuecod_ca_cc', {onchange:onchange_ibs})
+                 </script>
+            </td>
+           
+        </tr>
+        <tr>
+            
+             <td class="Tit2" style="text-align:center">
+                CBU:
+            </td>
+             <td >
+                 <script type="text/javascript">
+                     campos_defs.add('cbu', {
+                         enDB: false,
+                         nro_campo_tipo: 104,
+                         mask: {
+                             mask: '0000000000000000000000',
+                             lazy: false,
+                             placeholderChar: '#'
+                         },
+                         onmask_complete: function (campo_def, objcampo_def) { if (validarCBU(campos_defs.get_value(campo_def))) { } else { } }
+                     });
+                     campos_defs.habilitar('cbu',false)
+
+                 </script>
+            </td>
+             <td class="Tit2" style="text-align:center">
+                Estado:
+            </td>
+             <td >
+                 <select name="select" id="estado" onchange="fe_vig()" style="width:100%">
+                      <option value=""></option>
+                     <option value= "vigente" selected>Vigente</option>
+                     <option value= "novigente"  >No vigente</option>
+                 </select>
+             </td>
+        </tr>
+
+         <tr>
+             <td class="Tit2" style="text-align:center">Operador
+             </td>
+             <td>
+                 <script type="text/javascript">
+                     campos_defs.add('nro_operador')
+                 </script>
+             </td>
+             
+             <td class="Tit2" style="text-align:center">
+                Vigencia:
+            </td>
+             <td>
+                 <script type="text/javascript">
+                     campos_defs.add('fe_desde', {
+                         nro_campo_tipo: 103, enDB: false
+                     })
+                 </script>
+            </td>
+             
+        </tr>
+
+    </table>
+    <iframe name="iframe1" id="iframe1" style="width: 100%; height: 100%; max-height: 817px; overflow: auto" frameborder='0'></iframe>
+</body>
+</html>

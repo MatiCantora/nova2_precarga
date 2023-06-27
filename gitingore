@@ -1,0 +1,9 @@
+.vs
+/.vs
+/app_data/dtsx
+/app_data/localfile
+/App_LocalResources
+.txt
+*.apw~
+.gitignore
+gitignore

@@ -1,0 +1,1148 @@
+var sit_bcra = 99
+
+var consulta = {}
+consulta.nro_vendedor = nvFW.operador.nro_vendedor
+consulta.nro_estructura = nvFW.operador.nro_estructura
+consulta.estructura = nvFW.operador.estructura
+consulta.cod_prov = nvFW.operador.cod_prov
+consulta.cp = nvFW.operador.cp
+
+consulta.cliente = {}
+consulta.cliente.fe_naci = ''
+consulta.cliente.sexo = ''
+consulta.cliente.tipo_docu = 0
+consulta.cliente.nro_docu = 0
+consulta.cliente.cuit = ''
+consulta.cliente.razon_social = ''
+consulta.cliente.domicilio = ''
+consulta.cliente.localidad = ''
+consulta.cliente.CP = 0
+consulta.cliente.provincia = ''
+consulta.cliente.cod_prov_persona = 0
+consulta.cliente.nro_archivo_nosis = 0
+consulta.cliente.nro_docu_db = 0
+
+consulta.cliente.trabajo = {}
+consulta.cliente.trabajo.nro_sistema = 0
+consulta.cliente.trabajo.sistema = ''
+consulta.cliente.trabajo.nro_lote = 0
+consulta.cliente.trabajo.lote = ''
+consulta.cliente.trabajo.clave_sueldo = ''
+consulta.cliente.trabajo.nro_grupo = 0
+
+consulta.cliente.trabajos = {}
+
+consulta.resultado = {}
+
+function window_onload() {
+    $("user_name").innerHTML = nvFW.operador.login
+    $("user_sucursal").innerHTML = nvFW.operador.sucursal
+    //No guarda el scrolling en el historial
+
+
+    history.scrollRestoration = 'manual'
+    ismobile = (isMobile()) ? true : false
+
+    //Anulo el cartel default de nova cuando abandono la aplicacion
+    nvFW.alertUnload = false
+    vListButtons.MostrarListButton()
+
+    if (nvFW.pageContents["nro_credito"] != "") MostrarCredito(nvFW.pageContents['nro_credito'])
+
+    vendedor_check()
+
+    //ObtenerSucursalOperador()
+    document.getElementById('nro_docu1').focus()
+
+    //&& (permisos_precarga & 4)<= 0
+    if (!nvFW.tienePermiso('permisos_precarga', 2)) {
+        $('divNoti').hide()
+        $('divNotiR').hide()
+        $('tbResultado').hide()
+    }
+    //&& (permisos_precarga & 64) == 0
+    if (!nvFW.tienePermiso('permisos_precarga', 6))
+        $('spanFiltroCuenta').style.visibility = 'hidden';
+
+    // && (permisos_precarga & 128) == 0
+    if (!nvFW.tienePermiso('permisos_precarga', 7))
+        $('spanFiltroBCRA').style.visibility = 'hidden';
+
+    consulta.limpiar()
+
+    //Esta funcion determina los tamaños de los componentes, menu sup, inf, body, etc
+    tamanio = nvtWinDefault()
+
+    //muestra menu dependiendo si debe ser menu movil o no
+    vMenuLeft.MostrarMenu(tamanio.ocultarMenu)
+
+    //para operadores de mendoza o que no tengan estructura            
+    //mostrar_boton_generarcodigo(nro_estructura==11)
+
+
+    //funciones de scrolling para mostrar o ocultar el menu.
+    detectSwipe($$("BODY")[0], "mostrar", 50);
+    //detectSwipe($("divComponentes"), mostrarMenuIzquierdoSwipe, 50, "izq");
+    detectSwipe($("menu_left_vidrio"), "colapsar");
+    detectSwipe($("menu_left_mobile"), "colapsar");
+    detectSwipe($("menu_right_vidrio"), "colapsar");
+    //detectSwipe($(vMenuRight.canvasMobile), "colapsar");
+
+    window_onresize()
+    //ocultar el vidrio porque el menu no se muestra desde el inicio
+    $("menu_left_vidrio").style.right = "-540px";
+    //Para mostrar el body cuando termine el onload
+    $$("body")[0].style.visibility = "visible"
+
+    campos_defs.items['banco']['onchange'] = banco_onchange
+    campos_defs.items['mutual']['onchange'] = mutual_onchange
+}
+
+function Persona_Trabajos_cargar(nro_docu) {
+
+    consulta.cliente.trabajos = {}
+    //nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga', 'Identificando trabajos...')
+    var rs = new tRS();
+    Trabajos = {}
+    var i = 0
+    var cod_prov = cod_prov_op
+    rs.async = true
+    rs.onError = function (rs) {
+        rserror_handler("Error al consultar los datos. Intente nuevamente (trabajo).")
+    }
+    rs.onComplete = function (rs) {
+
+        var i = 0
+        while (!rs.eof()) {
+            if (rs.getdata('nro_grupo') != 0) {
+                i++
+                consulta.cliente.trabajos[i] = {}
+                consulta.cliente.trabajos[i]['tipo'] = rs.getdata('tipo')
+                consulta.cliente.trabajos[i]['sistema'] = rs.getdata('sistema')
+                consulta.cliente.trabajos[i]['nro_sistema'] = rs.getdata('nro_sistema')
+                consulta.cliente.trabajos[i]['lote'] = rs.getdata('lote')
+                consulta.cliente.trabajos[i]['nro_lote'] = rs.getdata('nro_lote')
+                consulta.cliente.trabajos[i]['clave_sueldo'] = rs.getdata('clave_sueldo')
+                consulta.cliente.trabajos[i]['nro_docu'] = rs.getdata('nro_docu')
+                consulta.cliente.trabajos[i]['nombre'] = rs.getdata('nombre')
+                consulta.cliente.trabajos[i]['disponible'] = ((rs.getdata('id_origen') == 11210) || (rs.getdata('id_origen') == 651) || (rs.getdata('id_origen') == 11100)) ? -1 : rs.getdata('disponible')
+                consulta.cliente.trabajos[i]['fecha_actualizacion'] = rs.getdata('fecha_actualizacion')
+                consulta.cliente.trabajos[i]['nro_grupo'] = rs.getdata('nro_grupo')
+                consulta.cliente.trabajos[i]['grupo'] = rs.getdata('grupo')
+                consulta.cliente.trabajos[i]['id_origen'] = rs.getdata('id_origen')
+            }
+            rs.movenext()
+        }
+        if (i > 0) {
+            i++
+            consulta.cliente.trabajos[i] = {}
+            consulta.cliente.trabajos[i]['tipo'] = ''
+            consulta.cliente.trabajos[i]['sistema'] = ''
+            consulta.cliente.trabajos[i]['nro_sistema'] = 99999
+            consulta.cliente.trabajos[i]['lote'] = ''
+            consulta.cliente.trabajos[i]['nro_lote'] = 0
+            consulta.cliente.trabajos[i]['clave_sueldo'] = ''
+            consulta.cliente.trabajos[i]['nro_docu'] = nro_docu
+            consulta.cliente.trabajos[i]['nombre'] = 'Seleccionar otro mercado...'
+            consulta.cliente.trabajos[i]['disponible'] = -1
+            consulta.cliente.trabajos[i]['fecha_actualizacion'] = ''
+            consulta.cliente.trabajos[i]['nro_grupo'] = 0
+            consulta.cliente.trabajos[i]['grupo'] = ''
+            consulta.cliente.trabajos[i]['id_origen'] = ''
+        }
+
+        //(permisos_precarga & 4) > 0
+        if (nvFW.tienePermiso("permisos_precarga", 2))
+            $('divNotiR').show()
+        $('tbResultado').show()
+        if (i == 0) {
+            $('divMostrarTrabajos').innerHTML = ''
+            var strHTML = ""
+            strHTML += "<table class='tb1' cellspacing='5' cellpadding='1'>"
+            strHTML += "<tr><td class='Tit1' colspan='2' style='text-align:center'><b>Seleccione el mercado para continuar.<b></td></tr>"
+            strHTML += "<tr><td style='width:100%'>"
+            strHTML += "<table class='tb1' style='max-width:450px; margin:auto'><tr><td id='tdgrupos'></td><td id='divGAceptar'></td></tr></table>"
+            strHTML += "</td>"
+            strHTML += "</tr></table>"
+            $('divMostrarTrabajos').insert({ bottom: strHTML })
+            $('divMostrarTrabajos').show()
+            var vButtonItems = {}
+            vButtonItems[0] = {}
+            vButtonItems[0]["nombre"] = "GAceptar";
+            vButtonItems[0]["etiqueta"] = "Aceptar";
+            vButtonItems[0]["imagen"] = "aceptar";
+            vButtonItems[0]["onclick"] = "consulta.grupo_seleccionar()";
+            var vListButtons = new tListButton(vButtonItems, 'vListButtons');
+            vListButtons.loadImage("aceptar", "image/search_16.png");
+
+            vListButtons.MostrarListButton()
+            campos_defs.add("grupos", { nro_campo_tipo: 1, target: "tdgrupos", enDB: false, cacheControl: 'Session', filtroXML: nvFW.pageContents["grupos_cda"] })
+            //JMO
+            campos_defs.items["grupos"].onchange = function () { campos_defs.items["grupos"].input_text.focus() }
+            $(campos_defs.items["grupos"].input_text).observe('keypress', function (e) {
+                var tecla = !e.keyCode ? e.which : e.keyCode
+                if (tecla = 13)
+                    consulta.grupo_seleccionar()
+            })
+            campos_defs.items["grupos"].input_text.ondblclick(event)
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+            return
+        }
+        nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+        consulta.trabajos_dibujar()
+
+    }
+    rs.open({ filtroXML: nvFW.pageContents["trabajo"], params: "<criterio><params nro_docu='" + consulta.cliente.nro_docu + "' /></criterio>" })
+
+
+    //var onError = function () { nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga') }
+    //var nro_docu = $('nro_docu1').value
+    //Persona_buscar(nro_docu, tipo, onSusses, onError)
+}
+
+consulta.limpiar = function () {
+    consulta.cliente.nro_docu = 0
+    consulta.cliente.cuit = ""
+    consulta.cliente.nombre = ""
+    consulta.cliente.razon_social = ""
+    consulta.cliente.fe_naci = ""
+    consulta.cliente.edad = ""
+    consulta.cliente.sexo = ""
+    consulta.cliente.nro_docu_db = ""
+    consulta.cliente.sexo = ""
+    consulta.cliente.tipo_docu = 0
+
+    //Trabajo
+    consulta.cliente.trabajo.tipo = ''
+    consulta.cliente.trabajo.sistema = ''
+    consulta.cliente.trabajo.nro_sistema = 0
+    consulta.cliente.trabajo.lote = ''
+    consulta.cliente.trabajo.nro_lote = 0
+    consulta.cliente.trabajo.clave_sueldo = ''
+    consulta.cliente.trabajo.disponible = -1
+    consulta.cliente.trabajo.fecha_actualizacion = ''
+    consulta.cliente.trabajo.nro_grupo = 0
+    consulta.cliente.trabajo.grupo = ''
+
+    //trabajos
+    consulta.trabajos = {}
+
+    $('strApeyNomb').innerHTML = ''
+    $('strFNac').innerHTML = ''
+    $('strInfoCuit').innerHTML = ""
+    $('tdResultado').innerHTML = ""
+
+
+    $("btn1").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].show()
+    $("btn2").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].setStyle({ width: "33%" }) //devuelvo tamaño original
+    //$('strCUIT').innerHTML = ''
+
+    $('divMostrarTrabajos').innerHTML = ''
+    $('strSitBCRA').innerHTML = ''
+    $('strDictamen').innerHTML = ''
+    $('strFuentes').innerHTML = ''
+    $('strInfoCuit').innerHTML = ''
+    $('divNotiR').hide()
+    $('tbResultado').hide()
+    $('nro_docu1').value = ''
+
+    $('strEnMano').innerHTML = ''
+
+    $('tbButtons').hide()
+
+    $('retirado_desde').value = ''
+    $('retirado_hasta').value = ''
+    $('importe_cuota_desde').value = ''
+    $('importe_cuota_hasta').value = ''
+    $('cuota_desde').value = ''
+    $('cuota_hasta').value = ''
+    //$('importe_cuota').value="0"
+
+    $('divHaberes').innerHTML = ''
+    $('divHaberesNoVisibles').innerHTML = ''
+    $('saldo_a_cancelar').innerHTML = ''
+    $('haber_neto').innerHTML = ''
+    $('importe_max_cuota').innerHTML = ''
+    $('divHaberes').innerHTML = ""
+    $('divHaberesNoVisibles').innerHTML = ""
+
+
+    $('divVendedor').show()
+    $('divDatosPersonales').hide()
+    $('divSelTrabajo').show()
+    $('divGrupo').hide()
+    $('divSocio').hide()
+    $('divFiltros').hide()
+    $('divFiltrosLeft').hide()
+    $('divFiltrosRight').hide()
+    $('divFiltros2Left').hide()
+    $('divFiltros2Right').hide()
+    $('divFiltros3Left').hide()
+    $('divFiltros3Right').hide()
+    $('divProducto').hide()
+    $('divMostrarTrabajos').hide()
+    $('divAnalisis').hide()
+
+    campos_defs.clear("cbAnalisis") //$('cbAnalisis').options.length = 0
+    $('td_canc_int').hide()
+    $('td_canc_3').hide()
+
+    //           cupo_disponible = 0
+    //           nro_sistema = 0
+    //           sistema = ''
+    //           nro_lote = 0
+    //           lote = ''
+    //           clave_sueldo = ''
+    //           nro_grupo = 0
+    //           prueba = ''
+    //           NroConsulta = 0
+    //           razon_social = ''
+    //           nombre = ''
+    //           domicilio = ''
+    //           localidad = ''
+    //           CP = ''
+    //           provincia = ''
+    //           cod_prov_persona = 0
+    //           edad = ''
+    //           consulta.cliente.sexo = ''
+    //           consulta.cliente.fe_naci = ''
+    //           fe_naci_str = ''
+    //           consulta.cliente.tipo_docu = 0
+    //           consulta.cliente.nro_docu = 0
+    //           nro_docu_db = 0
+    //           consulta.cliente.cuit = ''
+    //           NosisXML = ''
+    //           nro_archivo_nosis = 0
+    //           sit_bcra = 99
+    //           HTMLCDA = ''
+    //           TotalCancelaciones1 = 0
+    //           LiberaCuota = 0
+    //           cancelaciones = 0
+    //           importe_max_cuota = 0
+    //           importe_neto = 0
+    //           gastoscomerc = 0
+    //           strHTMLNosis = ''
+    //           persona_existe = true
+    //           fe_naci_socio = ''
+    //           nro_plan_sel = 0
+    //           plan_lineas = ''
+    //           nro_tipo_cobro = 0
+    //           nro_banco_cobro = 0
+    //           nro_analisis = 0
+    //           btn_cobro_aceptar = false
+    $('selplan').checked = false
+    $('chkmax_disp').checked = false
+    $('ifrplanes').src = 'enBlanco.htm'
+    document.getElementById('nro_docu1').focus()
+    //           hpx = 0
+    //           tipo_rechazo_call = ''
+    //           nro_credito_random = 0
+    //           nro_archivo_noti_prov = 0
+    //           noti_prov = false
+    //           tiene_cupo = false
+    //           importe_cs_analisis = 0
+    //if (nro_credito) {
+    //   var filtros = {}
+    //   filtros['nro_credito'] = nro_credito
+    //   win_estado = createWindow2({
+    //       url: 'Credito_cambiar_estado.aspx',
+    //       title: '<b>Crédito: ' + nro_credito + ' </b>',
+    //       //centerHFromElement: $("contenedor"),
+    //       //parentWidthElement: $("contenedor"),
+    //       //parentWidthPercent: 0.9,
+    //       //parentHeightElement: $("contenedor"),
+    //       //parentHeightPercent: 0.9,
+    //       maxHeight: 500,
+    //       minimizable: false,
+    //       maximizable: false,
+    //       draggable: true,
+    //       resizable: true,
+    //       onClose: Cambiar_estado_return
+    //   });
+    //   win_estado.options.userData = { filtros: filtros }
+    //   win_estado.showCenter(true)
+
+    //           }
+    Btn_cancelaciones_onclick()
+    btnStatus(false)
+
+}
+
+
+consulta.mostrar = function () {
+    if (this.cliente.nro_docu > 0) {
+        $('strApeyNomb').innerHTML = this.cliente.razon_social
+        $('strFNac').innerHTML = this.cliente.fe_naci + ' (' + this.cliente.edad + ')'
+        $('strInfoCuit').innerHTML = this.cliente.razon_social
+        $('tdResultado').innerHTML = "Resultado: " + this.cliente.cuit
+    }
+
+
+}
+
+consulta.cliente_buscar = function () {
+    var strAlert = ''
+    var tipo = $$('input:checked[type="radio"][name="rddoc"]').pluck('value')[0]
+    var control = (tipo == 'dni') ? 8 : 11
+    if ($('nro_docu1').value == '')
+        strAlert = 'Ingrese un número de documento para realizar la busqueda.<br>'
+    if ($('nro_docu1').value.length > control)
+        strAlert = 'La cantidad de digitos ingresados es incorrecta.<br>'
+    if ((tipo == 'cuit') && ($('nro_docu1').value.length != 11))
+        strAlert += 'El CUIT/CUIL debe tener 11 dígitos.<br>'
+    if (consulta.nro_vendedor == 0)
+        strAlert += 'Seleccione un vendedor para realizar la búsqueda.<br>'
+    if (strAlert != '') {
+        nvFW.alert(strAlert, { width: "300" })
+        document.getElementById('nro_docu1').focus()
+        return
+    }
+
+    consulta.cliente.nro_docu = $('nro_docu1').value
+
+    nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga', 'Evaluando identidad...')
+
+    var rs = new tRS();
+    rs.async = true
+    rs.onError = function (rs) {
+        rserror_handler("Error al consultar los datos. Intente nuevamente(DBCuit).")
+    }
+
+    rs.onComplete = function (rs) {
+
+        if (rs.recordcount == 1) {
+            consulta.cliente.cuit = rs.getdata('cuit')
+            //consulta.cliente.nombre = rs.getdata('nombre')
+            consulta.cliente.razon_social = rs.getdata('nombre')
+            consulta.cliente.fe_naci = rs.getdata('fe_naci_str')
+            consulta.cliente.edad = rs.getdata('edad')
+            consulta.cliente.sexo = rs.getdata('sexo')
+            consulta.cliente.nro_docu = rs.getdata('nro_docu')
+            consulta.cliente.nro_docu_db = rs.getdata('nro_docu')
+            consulta.cliente.sexo = rs.getdata('sexo') ? rs.getdata('sexo') : ''
+            consulta.cliente.tipo_docu = 3
+            consulta.mostrar()
+            Persona_Trabajos_cargar(consulta.cliente.nro_docu)
+        }
+        if (rs.recordcount == 0) {
+            rserror_handler('No se encontro la persona buscada.')
+        }
+        if (rs.recordcount > 1) {
+            win_sel_dbcuit = createWindow2({
+                title: '<b>Seleccionar Persona</b>',
+                maxHeight: 500,
+                minimizable: false,
+                maximizable: false,
+                draggable: true,
+                resizable: true,
+                onClose: function (win) {
+                    var e
+                    try {
+
+                        res = win_sel_dbcuit.options.userData.res
+
+                        nro_docu_db = res['nro_docu']
+                        //consulta.cliente.nro_docu = res['nro_docu']
+                        //$('nro_docu').value = res['nro_docu']
+                        consulta.cliente.cuit = res['cuit']
+                        consulta.cliente.razon_social = res['nombre']
+                        consulta.cliente.fe_naci = res['fe_naci_str']
+                        consulta.cliente.edad = res['edad']
+                        consulta.cliente.sexo = res['sexo']
+                        consulta.cliente.tipo_docu = 3
+                        consulta.mostrar()
+                        Persona_Trabajos_cargar(consulta.cliente.nro_docu)
+                    }
+                    catch (e) {
+                        rserror_handler('Error al seleccionar la persona.')
+                        return
+                    }
+                }
+            });
+            win_sel_dbcuit.options.userData = { nro_docu: nro_docu }
+            win_sel_dbcuit.setURL('NOSIS_sel_DBCuit.aspx')
+            win_sel_dbcuit.showCenter(true)
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+        }
+    }
+
+    if (tipo == 'dni')
+        rs.open({ filtroXML: nvFW.pageContents["DBCuit"], params: "<criterio><params nro_docu='" + this.cliente.nro_docu + "' /></criterio>" })
+    else
+        rs.open({ filtroXML: nvFW.pageContents["DBCuit2"], params: "<criterio><params cuit='" + this.cliente.nro_docu + "' /></criterio>" })
+
+
+}
+
+consulta.grupo_seleccionar = function () {
+    if ($('grupos').value == '')
+        nvFW.alert('Debe seleccionar un grupo para continuar')
+    else {
+        this.cliente.trabajo.nro_grupo = $('grupos').value
+        this.cliente.trabajo.grupo = campos_defs.get_desc("grupos").substring(0, campos_defs.get_desc("grupos").indexOf('('))
+        this.cobro_seleccionar()
+    }
+}
+
+consulta.cobro_seleccionar = function (indice) {
+
+    debugger
+    consulta.cliente.trabajo = consulta.cliente.trabajos[indice]
+    nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga', 'Obteniendo información comercial...')
+    //consulta.cliente.trabajo.nro_sistema = Trabajos[x]['nro_sistema']
+    //consulta.cliente.trabajo.sistema = Trabajos[x]['sistema']
+    //consulta.cliente.trabajo.nro_lote = Trabajos[x]['nro_lote']
+    //consulta.cliente.trabajo.lote = Trabajos[x]['lote']
+    //consulta.cliente.trabajo.clave_sueldo = Trabajos[x]['clave_sueldo']
+    //consulta.cliente.trabajo.nro_grupo = Trabajos[x]['nro_grupo']
+    //consulta.cliente.trabajo.grupo = Trabajos[x]['grupo']
+    //consulta.cliente.nro_docu = Trabajos[x]['nro_docu']
+    //consulta.cliente.trabajo.nro_lote = nro_lote
+    //consulta.cliente.trabajo.nro_sistema = nro_sistema            
+    //$('nro_docu').value = nro_docu_db          
+    //consulta.cliente.trabajo.clave_sueldo = clave_sueldo
+    //$('cuit').value = consulta.cliente.cuit
+    //razon_social = nombre
+    $('divSelTrabajo').hide()
+    $('divDatosPersonales').show()
+    var rs = new tRS();
+    rs.async = true
+    rs.onComplete = function (rs) {
+        if (rs.recordcount == 0) {
+            rserror_handler("No existen productos para el trabajo/grupo.")
+        }
+        if (rs.recordcount == 1) {
+            consulta.nro_tipo_cobro = rs.getdata("nro_tipo_cobro")
+            consulta.tipo_cobro = rs.getdata("tipo_cobro")
+            consulta.nro_banco_cobro = rs.getdata("nro_banco")
+            consulta.banco_cobro = rs.getdata("abreviacion")
+            consulta.evaluar()
+        }
+        if (rs.recordcount > 1) {
+            win_cobro = createWindow2({
+                title: '<b>Seleccionar Cobro</b>',
+                parentWidthPercent: 0.8,
+                //parentWidthElement: $("contenedor"),
+                maxWidth: 450,
+                maxHeight: 150,
+                //centerHFromElement: $("contenedor"),
+                minimizable: false,
+                maximizable: false,
+                draggable: false,
+                resizable: true,
+                closable: false,
+                recenterAuto: true,
+                setHeightToContent: true,
+                //destroyOnClose: true,
+                onClose: function () {
+                    if (btn_cobro_aceptar) {
+                        //nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga');
+                        consulta.evaluar()
+                    }
+                    else
+                        consulta.limpiar()
+
+
+                }
+            });
+            var html = "<html><head></head><body style='width:100%;height:100%;overflow:hidden'>"
+            html += "<table class='tb1'>"
+            html += "<tr><td colspan=2 class='Tit1'><br><b>Seleccione un tipo de cobro para continuar:</b><br><br></td></tr><table>"
+            html += "<table class='tb1 highlightEven highlightTROver'>"
+            var strchecked = ''
+            var i = 0
+            while (!rs.eof()) {
+                strchecked = (i == 0) ? 'checked' : ''
+                i++
+                cobro_array[i] = {}
+                cobro_array[i]['nro_tipo_cobro'] = rs.getdata('nro_tipo_cobro')
+                cobro_array[i]['tipo_cobro'] = rs.getdata('tipo_cobro')
+                cobro_array[i]['nro_banco'] = rs.getdata('nro_banco')
+                cobro_array[i]['abreviacion'] = rs.getdata('abreviacion')
+                html += "<tr onclick='selcobro(" + i + ")' style='cursor:pointer' ><td><input type='radio' name='rdcobro' id='rdcobro' value='" + i + "' " + strchecked + "/>" + ((rs.getdata('nro_banco') == undefined) ? rs.getdata('tipo_cobro') : rs.getdata('tipo_cobro') + " - " + rs.getdata('abreviacion')) + "</td></tr>"
+                rs.movenext()
+            }
+            html += "</table>"
+            html += "<table class='tb1'><tr><td style='text-align:center;width:50%'><br><input type='button' style='width:100%' value='Cancelar' onclick='win_cobro_cerrar(false)'/></td><td><br><input type='button' style='width:100%' value='Aceptar' onclick='win_cobro_cerrar(true)'/></td></tr>"
+            html += "</table></body></html>"
+            win_cobro.setHTMLContent(html)
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+            win_cobro.showCenter(true)
+        }
+
+    }
+    rs.open({ filtroXML: nvFW.pageContents["nosis_cda_def"], params: "<criterio><params nro_grupo='" + this.cliente.trabajo.nro_grupo + "'/></criterio>" })
+
+}
+
+consulta.evaluar2 = function () {
+
+    ofertas = new Array()
+
+    var oXML = new tXML();
+    oXML.async = true
+    oXML.method = 'POST'
+    oXML.intervalID = null;
+    oXML.onUploadProgress = function () {
+        msg_waitingcupo()
+        oXML.intervalID = setInterval(msg_waitingcupo, 5000);
+    }
+    oXML.onComplete = function () {
+
+        clearInterval(oXML.intervalID);
+        strXML = XMLtoString(oXML.xml)
+
+        //Scu_Id:=2, Sce_Id:=7, Scm_Id:=2, Clave_Sueldo:="27272675142"
+        // strXML='<?xml version="1.0" encoding="ISO-8859-1"?><error_mensajes><error_mensaje numError="0"><titulo/><mensaje/><debug_src/><debug_desc/><params><dictamen>Aprobado</dictamen><mensaje_usuario>asdasdsad</mensaje_usuario><bcra_sit_financiera>1</bcra_sit_financiera><bcra_calificacion_cendeu>OK</bcra_calificacion_cendeu><cant_sit_juridica>0</cant_sit_juridica><ch_rechazados>0</ch_rechazados><control_edad>1</control_edad><nro_grupo>1</nro_grupo><grupo>Santa Fe - Activos centralizados</grupo><nro_tipo_cobro>1</nro_tipo_cobro><tipo_cobro>Descuento de haberes</tipo_cobro><ent_excluidas>0</ent_excluidas><nosis_cda>2086068</nosis_cda><nosis_cda_desc>VOII - Orig cuenta y orden version 3</nosis_cda_desc><motivo/><nro_entidad_cda>800</nro_entidad_cda><clave_sueldo>27272675142</clave_sueldo><sueldo_bruto>104505.84</sueldo_bruto><desc_ley>0</desc_ley><sueldo_neto>62546.65</sueldo_neto><cupo_disponible>16334.99</cupo_disponible><id_transf_log>2035131</id_transf_log><nro_motor_decision>1538</nro_motor_decision><rechaza_motor>0</rechaza_motor><evalua_motor>1</evalua_motor><socio_nuevo>1</socio_nuevo><Scu_Id>2</Scu_Id><Sce_Id>7</Sce_Id><Scm_Id>2</Scm_Id><strXML>&lt;xml xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:rs="urn:schemas-microsoft-com:rowset" xmlns:z="#RowsetSchema"&gt;&lt;s:Schema id="RowsetSchema"&gt;&lt;s:ElementType name="row" content="eltOnly"&gt;&lt;s:AttributeType name="nro_banco" rs:number="1" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="nro_mutual" rs:number="2" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="estado" rs:number="3" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="string" rs:dbtype="str" dt:maxLength="4294967295" rs:long="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="cuota_maxima" rs:number="4" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="neto_maximo" rs:number="5" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="max_cuotas" rs:number="6" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="id_origen" rs:number="7" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="nro_analisis" rs:number="8" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false" /&gt;&lt;/s:AttributeType&gt;&lt;s:extends type="rs:rowbase" /&gt;&lt;/s:ElementType&gt;&lt;/s:Schema&gt;&lt;rs:data&gt;&lt;z:row nro_banco="800" nro_mutual="55" estado="A" cuota_maxima="16334.99" neto_maximo="600000" max_cuotas="36" id_origen="10601" nro_analisis="585" /&gt;&lt;z:row nro_banco="170" nro_mutual="55" estado="A" cuota_maxima="16334.99" neto_maximo="800000" max_cuotas="36" id_origen="10601" nro_analisis="584" /&gt;&lt;/rs:data&gt;&lt;params vista="#tmp_respuesta" timeout="0" PageSize="0" AbsolutePage="0" recordcount="2" PageCount="1" cacheControl="none" cache="False" /&gt;&lt;/xml&gt;</strXML></params></error_mensaje></error_mensajes>'
+        //strXML='<?xml version="1.0" encoding="ISO-8859-1"?><error_mensajes><error_mensaje numError="0"><titulo /><mensaje /><debug_src /><debug_desc /><params><dictamen>Aprobado</dictamen><mensaje_usuario></mensaje_usuario><bcra_sit_financiera>1</bcra_sit_financiera><cant_sit_juridica>0</cant_sit_juridica><ch_rechazados>0</ch_rechazados><control_edad>1</control_edad><nro_grupo>1</nro_grupo><grupo>Santa Fe - Activos centralizados</grupo><nro_tipo_cobro>1</nro_tipo_cobro><tipo_cobro>Descuento de haberes</tipo_cobro><ent_excluidas>0</ent_excluidas><nosis_cda>2086068</nosis_cda><nosis_cda_desc>VOII - Orig cuenta y orden version 3</nosis_cda_desc><motivo /><nro_entidad_cda>800</nro_entidad_cda><clave_sueldo>27272675142</clave_sueldo><sueldo_bruto>110051.12</sueldo_bruto><desc_ley>0</desc_ley><sueldo_neto>67988.29</sueldo_neto><cupo_disponible>25042.82</cupo_disponible><id_transf_log>2070599</id_transf_log><nro_motor_decision>1538</nro_motor_decision><bcra_calificacion_cendeu>califica VOII</bcra_calificacion_cendeu><Scu_Id>2</Scu_Id><Sce_Id>7</Sce_Id><Scm_Id>3</Scm_Id><socio_nuevo>true</socio_nuevo><rechaza_motor>0</rechaza_motor><evalua_motor>1</evalua_motor><strXML>&lt;xml xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:rs="urn:schemas-microsoft-com:rowset" xmlns:z="#RowsetSchema"&gt;&lt;s:Schema id="RowsetSchema"&gt;&lt;s:ElementType name="row" content="eltOnly"&gt;&lt;s:AttributeType name="nro_banco" rs:number="1" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="nro_mutual" rs:number="2" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="estado" rs:number="3" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="string" rs:dbtype="str" dt:maxLength="4294967295" rs:long="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="cuota_maxima" rs:number="4" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="neto_maximo" rs:number="5" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="max_cuotas" rs:number="6" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="id_origen" rs:number="7" rs:nullable="true" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name="nro_analisis" rs:number="8" rs:writeunknown="true"&gt;&lt;s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false" /&gt;&lt;/s:AttributeType&gt;&lt;s:extends type="rs:rowbase" /&gt;&lt;/s:ElementType&gt;&lt;/s:Schema&gt;&lt;rs:data&gt;&lt;z:row nro_banco="800" nro_mutual="55" estado="A" cuota_maxima="25042.82" neto_maximo="600000" max_cuotas="36" id_origen="10601" nro_analisis="585" /&gt;&lt;z:row nro_banco="170" nro_mutual="55" estado="A" cuota_maxima="25042.82" neto_maximo="800000" max_cuotas="36" id_origen="10601" nro_analisis="584" /&gt;&lt;/rs:data&gt;&lt;params vista="#tmp_respuesta" timeout="0" PageSize="0" AbsolutePage="0" recordcount="2" PageCount="1" cacheControl="none" cache="False" /&gt;&lt;/xml&gt;</strXML></params></error_mensaje></error_mensajes>'
+        /*NosisXML = strXML*/
+        objXML = new tXML();
+        objXML.async = false
+        $("divHaberes").show();
+        if (objXML.loadXML(strXML)) {
+            var error_mensaje = objXML.selectSingleNode("error_mensajes/error_mensaje")
+            var numError = error_mensaje.getAttribute("numError")
+            if (numError == 0) {
+                var datos = {}
+                //datos['trabajo'] = this.cliente.trabajo
+                //datos['nro_vendedor'] = this.nro_vendedor
+                //datos['nro_banco_cobro'] = this.nro_banco_cobro
+                //datos['nro_grupo'] = this.cliente.trabajo.nro_grupo
+                var params = objXML.selectSingleNode("error_mensajes/error_mensaje/params")
+                for (n = 0; n < params.childNodes.length; n++) {
+                    datos[params.childNodes[n].nodeName] = (params.childNodes[n].innerHTML).replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+                    //console.log("parametro "+params.childNodes[n].nodeName+" valor "+params.childNodes[n].innerHTML)
+                }
+                if (datos['bcra_sit']) {
+                    consulta.sit_bcra = datos["bcra_sit"]
+                }
+
+                datos.trabajo = consulta.cliente.trabajo
+                consulta.resultado = datos
+
+                //motor['datos'] = datos;
+
+                if (datos['evalua_motor'] == 1) {
+                    if ((nvFW.tienePermiso("permisos_precarga", 14) || consulta.resultado.es_poder_judicial == '1') > 0) { //permisos_precarga & 16384
+                        $("divHaberes").show();
+                    } else {
+                        $("divHaberes").hide();
+                    }
+                    $("btn1").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].hide() //oculto el boton pendiente
+                    $("btn2").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].setStyle({ width: "50%" }) //oculto el boton pendiente
+
+                    $("span_criterio").update("Ver informes")
+                    var xmlText = objXML.selectSingleNode("error_mensajes/error_mensaje/params/strXML").innerHTML
+                    ofertas = rsdataToArray(xmlText) //obtengo las filas del xml data en forma de array
+                    //ofertas=ofertas.filter(that=>that.estado!=null && that=>that.estado!="") //saco los elementos que no tienen estado
+                    ofertas = ofertas.filter(that => (that.estado != undefined) && (that.estado != ""));
+                    motor['ofertas'] = ofertas;
+                    consulta.resultado_mostrar()
+                } else {
+                    $("span_criterio").update("CDA")
+                    displayProductosPrecargaCDA(trabajo)
+                }
+
+            } else {
+                var mensaje = objXML.selectSingleNode("error_mensajes/error_mensaje/mensaje").innerHTML
+                //rserror_handler(mensaje)
+                Dialog.confirm(mensaje + "<br/> ¿Probamos otra vez?",
+                    {
+                        width: 300,
+                        className: "alphacube",
+                        okLabel: "Si",
+                        cancelLabel: "No",
+                        onOk: function (w) {
+                            w.close();
+                            nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga');
+                            consulta.evaluar()
+                            return
+                        },
+                        onCancel: function (w) {
+                            w.close();
+                        }
+                    });//dialog
+
+
+
+            }// else error
+        }
+        nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+
+    }//oncomplete
+    oXML.onFailure = function () {
+        nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+        clearInterval(oXML.intervalID);
+        rserror_handler("Error al consultar los datos. Intente nuevamente.")
+    }
+    /*luego poner en accion=precarga_motor*/
+    var clave_sueldo = consulta.cliente.trabajo.clave_sueldo
+    oXML.load('/FW/servicios/ROBOTS/getXML.aspx', "accion=evaluar&criterio=<criterio><nro_vendedor>" + consulta.nro_vendedor + "</nro_vendedor><nro_grupo>" + consulta.cliente.trabajo.nro_grupo + "</nro_grupo><nro_tipo_cobro>" + consulta.nro_tipo_cobro + "</nro_tipo_cobro><nro_banco>" + consulta.nro_banco_cobro + "</nro_banco><cuit>" + consulta.cliente.cuit + "</cuit><clave_sueldo>" + consulta.cliente.trabajo.clave_sueldo + "</clave_sueldo></criterio>")
+
+}
+
+consulta.evaluar = function () {
+
+    //ofertas = new Array()
+    debugger
+    var errEvaluar = nvFW.error_ajax_request("motor/evaluar_mock.aspx", {
+        method: "post",
+        async: true,
+        parameters: {
+            accion: 'evaluar',
+            criterio: "<criterio><nro_vendedor>" + consulta.nro_vendedor + "</nro_vendedor><nro_grupo>" + consulta.cliente.trabajo.nro_grupo + "</nro_grupo><nro_tipo_cobro>" + consulta.nro_tipo_cobro + "</nro_tipo_cobro><nro_banco>" + consulta.nro_banco_cobro + "</nro_banco><cuit>" + consulta.cliente.cuit + "</cuit><clave_sueldo>" + consulta.cliente.trabajo.clave_sueldo + "</clave_sueldo></criterio>"
+        },
+
+        onSuccess: function (a, b, c) {
+
+            debugger
+
+            //this.params = JSON.parse('{"cuil":23259103649,"nro_docu":25910364,"sexo":"M","apellido":"ROMERO","nombres":"SERGIO DAVID","fe_naci":"24/9/1977","nro_grupo":1,"nro_tipo_cobro":1,"nro_vendedor":4416,"dictamen":"Aprobado","nosis_cda":2086068,"nro_motor_decision":1538,"motivo":"","explicacion":"Socio con deuda en 2 o más sit. irregulares con proveedores financieros y que las mismas superen el 40% del total del endeudamiento del mismo segmento. | Socio con deuda en 2 o más sit. irregulares con proveedores financieros y que las mismas superen el 40% del total del endeudamiento del mismo segmento. |","nro_banco_debito":0,"mensaje_usuario":"SIN OFERTA EN VOII POR SIT. BCRA. &lt;br/&gt; SIN OFERTA EN VOII POR SIT. BCRA. &lt;br/&gt;","bcra_sit_financiera":5,"situacion":5,"count_12":2,"count_345":5,"count_2345":6,"sum_345":255,"sum_2345":289,"sum_total":305,"ent_excluidas":0,"cant_sit_juridica":0,"ch_rechazados":0,"esquema":"rm","fe_periodo_ch":"30/6/2022","control_edad":1,"tipo_cobro":"Descuento de haberes","grupo":"Santa Fe - Activos centralizados","nosis_cda_desc":"VOII - Orig cuenta y orden version 3","nro_entidad_cda":800,"clave_sueldo":23259103649,"sueldo_bruto":"215385,88","desc_ley":"0,0000","sueldo_neto":"106274,14","cupo_disponible":"121,21","id_transf_log":5667821,"bcra_calificacion_cendeu":"NO CALIFICA","socio_nuevo":0,"Scu_Id":2,"Sce_Id":7,"Scm_Id":3,"nosis_id_consulta":5162182,"bcra_sit":5,"es_poder_judicial":0,"cupo_chacra":"","cupo_iplyc":"","afectado_federacion":"","cupo_consumido":"","cuota_maxima_rci_iplyc":"","cuota_maxima_afec_iplyc":"","cod_servidor":"gerona4","respuesta_usr":"False","cuota_maxima_calculada":"True","mensaje_error":"","importe_cs":0,"rechaza_motor":0,"usa_cuad_robot":1,"evalua_motor":1,"strXML":"&lt;xml xmlns:s=\\"uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882\\" xmlns:dt=\\"uuid:C2F41010-65B3-11d1-A29F-00AA00C14882\\" xmlns:rs=\\"urn:schemas-microsoft-com:rowset\\" xmlns:z=\\"#RowsetSchema\\"&gt;&lt;s:Schema id=\\"RowsetSchema\\"&gt;&lt;s:ElementType name=\\"row\\" content=\\"eltOnly\\"&gt;&lt;s:AttributeType name=\\"nro_banco\\" rs:number=\\"1\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"i2\\" dt:maxLength=\\"2\\" rs:precision=\\"5\\" rs:fixedlength=\\"true\\" rs:maybenull=\\"false\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"banco\\" rs:number=\\"2\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"string\\" dt:maxLength=\\"50\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"nro_mutual\\" rs:number=\\"3\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"int\\" dt:maxLength=\\"4\\" rs:precision=\\"10\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"mutual\\" rs:number=\\"4\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"string\\" dt:maxLength=\\"255\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"estado\\" rs:number=\\"5\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"string\\" rs:dbtype=\\"str\\" dt:maxLength=\\"4294967295\\" rs:long=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"cuota_maxima\\" rs:number=\\"6\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"neto_maximo\\" rs:number=\\"7\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"max_cuotas\\" rs:number=\\"8\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"i8\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"id_origen\\" rs:number=\\"9\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"i8\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"nro_analisis\\" rs:number=\\"10\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"int\\" dt:maxLength=\\"4\\" rs:precision=\\"10\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"Analisis\\" rs:number=\\"11\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"string\\" rs:dbtype=\\"str\\" dt:maxLength=\\"100\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"disponible\\" rs:number=\\"12\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"sueldo_bruto\\" rs:number=\\"13\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"desc_ley\\" rs:number=\\"14\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"sueldo_neto\\" rs:number=\\"15\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"bcra_sit\\" rs:number=\\"16\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"i8\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"bcra_calificacion_cendeu\\" rs:number=\\"17\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"string\\" rs:dbtype=\\"str\\" dt:maxLength=\\"4294967295\\" rs:long=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"socio_nuevo\\" rs:number=\\"18\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"boolean\\" dt:maxLength=\\"2\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"importe_cs\\" rs:number=\\"19\\" rs:nullable=\\"true\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"number\\" rs:dbtype=\\"currency\\" dt:maxLength=\\"8\\" rs:precision=\\"19\\" rs:fixedlength=\\"true\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:AttributeType name=\\"orden\\" rs:number=\\"20\\" rs:writeunknown=\\"true\\"&gt;&lt;s:datatype dt:type=\\"int\\" dt:maxLength=\\"4\\" rs:precision=\\"10\\" rs:fixedlength=\\"true\\" rs:maybenull=\\"false\\" /&gt;&lt;/s:AttributeType&gt;&lt;s:extends type=\\"rs:rowbase\\" /&gt;&lt;/s:ElementType&gt;&lt;/s:Schema&gt;&lt;rs:data&gt;&lt;z:row nro_banco=\\"800\\" banco=\\"BANCO VOII S.A.\\" nro_mutual=\\"55\\" mutual=\\"AMSDA\\" cuota_maxima=\\"121.21\\" neto_maximo=\\"1170000\\" id_origen=\\"10601\\" nro_analisis=\\"611\\" Analisis=\\"VOII Santa Fe Activos Automatico v2 - PRUEBA\\" disponible=\\"121.21\\" sueldo_bruto=\\"215385.88\\" desc_ley=\\"0\\" sueldo_neto=\\"106274.14\\" bcra_sit=\\"5\\" bcra_calificacion_cendeu=\\"NO CALIFICA\\" socio_nuevo=\\"False\\" importe_cs=\\"675\\" orden=\\"1\\" /&gt;&lt;z:row nro_banco=\\"170\\" banco=\\"ASOCIACION MUTUAL UNION SOLIDARIA\\" nro_mutual=\\"55\\" mutual=\\"AMSDA\\" estado=\\"A\\" cuota_maxima=\\"121.21\\" neto_maximo=\\"729948.9\\" id_origen=\\"10601\\" nro_analisis=\\"592\\" Analisis=\\"AMUS Santa Fe Activos Automatico\\" disponible=\\"121.21\\" sueldo_bruto=\\"215385.88\\" desc_ley=\\"0\\" sueldo_neto=\\"106274.14\\" bcra_sit=\\"5\\" bcra_calificacion_cendeu=\\"NO CALIFICA\\" socio_nuevo=\\"False\\" importe_cs=\\"675\\" orden=\\"2\\" /&gt;&lt;/rs:data&gt;&lt;params vista=\\"#tmp_respuesta\\" timeout=\\"0\\" PageSize=\\"0\\" AbsolutePage=\\"0\\" orden_original=\\"orden\\" recordcount=\\"2\\" PageCount=\\"1\\" cacheControl=\\"none\\" orden=\\"orden\\" cache=\\"False\\" /&gt;&lt;/xml&gt;"}');
+
+            //this.params["mensaje_usuario"] = !!this.params["mensaje_usuario"] ? this.params["mensaje_usuario"] : this.params["mensaje_error"];
+            //if (!!this.params["mensaje_usuario"] && this.params["mensaje_usuario"] != "") {
+            //    alert(this.params["mensaje_usuario"]);
+            //    consulta.limpiar();
+            //    return;
+            //}
+
+
+            if (this.numError == 0) {
+
+                if (!!this.params.bcra_sit) {
+                    consulta.sit_bcra = this.params.bcra_sit
+                }
+
+                this.params.trabajo = consulta.cliente.trabajo
+                consulta.resultado = this.params
+
+                //motor['datos'] = datos;
+
+                if (this.params.evalua_motor == 1) {
+                    if ((nvFW.tienePermiso("permisos_precarga", 14) || consulta.resultado.es_poder_judicial == '1') > 0) { //permisos_precarga & 16384
+                        $("divHaberes").show();
+                    } else {
+                        $("divHaberes").hide();
+                    }
+                    $("btn1").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].hide() //oculto el boton pendiente
+                    $("btn2").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].setStyle({ width: "50%" }) //oculto el boton pendiente
+
+                    $("span_criterio").update("Ver informes")
+                    var xmlText = this.params.strXML.replace(/&gt;/g, '>').replace(/&lt;/g, '<');
+                    ofertas = rsdataToArray(xmlText) //obtengo las filas del xml data en forma de array
+                    //ofertas=ofertas.filter(that=>that.estado!=null && that=>that.estado!="") //saco los elementos que no tienen estado
+                    ofertas = ofertas.filter(that => (that.estado != undefined) && (that.estado != ""));
+                    motor['ofertas'] = ofertas;
+                    consulta.resultado_mostrar()
+                } else {
+                    $("span_criterio").update("CDA")
+                    displayProductosPrecargaCDA(trabajo)
+                }
+
+            } else {
+                var mensaje = objXML.selectSingleNode("error_mensajes/error_mensaje/mensaje").innerHTML
+                //rserror_handler(mensaje)
+                Dialog.confirm(mensaje + "<br/> ¿Probamos otra vez?",
+                    {
+                        width: 300,
+                        className: "alphacube",
+                        okLabel: "Si",
+                        cancelLabel: "No",
+                        onOk: function (w) {
+                            w.close();
+                            nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga');
+                            consulta.evaluar()
+                            return
+                        },
+                        onCancel: function (w) {
+                            w.close();
+                        }
+                    });//dialog
+
+
+
+                //}// else error
+            }
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+
+        },//onSucces,
+        onFailure: function () {
+            debugger
+        },
+        onUploadProgress: function () {
+            //msg_waitingcupo()
+            //oXML.intervalID = setInterval(msg_waitingcupo, 5000);
+        },
+        bloq_contenedor_on: null,
+        bloq_contenedor: null,
+        bloq_id: null,
+        error_alert: true
+
+    }
+
+
+    )
+
+
+
+
+}
+
+consulta.trabajos_dibujar = function () {
+    $('divMostrarTrabajos').innerHTML = ''
+    $('divMostrarTrabajos').show()
+    var strHTML = ""
+    strHTML += "<table class='tb1 highlightEven highlightTROver' cellspacing='1' cellpadding='1'>"
+    strHTML += "<tr><td class='Tit1' style='width:5px'></td><td class='Tit1' style='width:40%'>Nombre</td><td class='Tit1' style='width:30%'>Trabajo</td><td class='Tit1' style='width:30%'>Clave</td></tr>"
+    for (var x in consulta.cliente.trabajos) {
+        var trab = this.cliente.trabajos[x]
+        if (trab['nro_sistema'] == 99999)
+            strHTML += "<tr style='text-align:center' onclick='return Mostrar_grupos()'><td style='text-align:center' title='Seleccionar trabajo'><img class='img_button_sel' src='image/seleccionar_32.png'/></td><td>" + trab['nombre'] + "</td><td>" + trab['sistema'] + "</td><td>" + trab['clave_sueldo'] + "</td></tr>"
+        else
+            strHTML += "<tr style='text-align:center' onclick='return consulta.cobro_seleccionar(" + x + ")'><td style='text-align:center' title='Seleccionar trabajo'><img class='img_button_sel' src='image/seleccionar_32.png'/></td><td>" + trab['nombre'] + "</td><td>" + trab['sistema'] + " - " + trab['lote'] + "</td><td>" + trab['clave_sueldo'] + "</td></tr>"
+
+    }
+    strHTML += "</table>"
+    $('divMostrarTrabajos').insert({ bottom: strHTML })
+}
+
+
+consulta.resultado_mostrar = function () { //displayProductosMotor
+
+    //var datos = motor['datos']
+    //datos['rechaza_motor'] = motor['datos']['rechaza_motor'];
+    this.resultado_genera_html()
+
+    var ofertas = motor['ofertas']
+    if (ofertas.length > 0) {
+
+        var nro_banco = ofertas[0]['nro_banco']
+        campos_defs.set_value('banco', nro_banco)
+        var nro_mutual = ofertas[0]['nro_mutual']
+
+        //obtengo los array de las mutuales que tienen el banco en cuestion
+        //motor['ofertas'].filter(oferta=>oferta.nro_banco==nro_banco)
+
+        campos_defs.set_value('mutual', nro_mutual)
+        nro_analisis = ofertas[0]['nro_analisis']
+        //campos_defs.habilitar('cbAnalisis', true)
+        //campos_defs.set_value('cbAnalisis',nro_analisis)
+        //campos_defs.habilitar('cbAnalisis', false)
+        //motor.set_campos()
+        /*var neto_maximo=ofertas[0]['neto_maximo']
+        campos_defs.set_value('retirado_hasta',neto_maximo)
+        campos_defs.habilitar('retirado_hasta', false)
+        var max_cuotas=ofertas[0]['max_cuotas']
+        campos_defs.set_value('cuota_hasta',max_cuotas)
+        campos_defs.habilitar('cuota_hasta', false)*/
+    }
+    nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+    //si no fue rechazado o si el rechazo no viene del motor, sino que por otro camino, cargo la pantalla
+    if (this.resultado['rechaza_motor'] == 0) {
+        Control_socio()
+    } else {
+        //Precarga_Limpiar()
+        var limpiaronclose = true
+        VerCDA(limpiaronclose)
+    }
+}//displayProductosMotor
+
+consulta.resultado_genera_html = function () {
+    //cupo_disponible = (datos['trabajo']['disponible'] == -1 || datos['es_poder_judicial']==1) ? 0 : parseFloat(datos['trabajo']['disponible']).toFixed(2)
+    cupo_disponible = (consulta.resultado.trabajo.disponible == -1 || consulta.resultado['es_poder_judicial'] == 1) ? 0 : parseFloat(motor.get('disponible')).toFixed(2)
+    tiene_cupo = (consulta.resultado.trabajo['disponible'] == -1) ? false : true
+    var nosis_cda = (consulta.resultado['nosis_cda'] == undefined) ? 'No existen productos para la combinación seleccionada.' : consulta.resultado['nosis_cda'] + ' - ' + consulta.resultado['nosis_cda_desc']
+    var nosis_cda_log = (consulta.resultado['nosis_cda'] == undefined) ? '' : consulta.resultado['nosis_cda']
+    var str_edad = (consulta.resultado['control_edad'] == 1) ? '<td style="color:#008000"><b>Cumple</b></td>' : '<td style="color:#800000"><b>No Cumple</b></td>'
+    var str_ent_exc = (consulta.resultado['ent_excluidas'] == 0) ? '<td style="color:#008000;text-align:right"><b>' + consulta.resultado['ent_excluidas'] + '</b></td>' : '<td style="color:#800000;text-align:right"><b>' + consulta.resultado['ent_excluidas'] + ' *</b></td>'
+    var str_ch_rech = (consulta.resultado['ch_rechazados'] == 0) ? '<td style="color:#008000;text-align:right"><b>' + consulta.resultado['ch_rechazados'] + '</b></td>' : '<td style="color:#800000;text-align:right"><b>' + consulta.resultado['ch_rechazados'] + '</b></td>'
+    //dictamen = (rsN.getdata("nosis_cda") != null) ? 'APROBADO' : 'RECHAZADO'
+    dictamen = consulta.resultado['dictamen'].toUpperCase()
+    var strHTML_CDA = ""
+    var strHTML_CDA_noti = ""
+
+    strHTML_CDA += '<table class="tb1">'
+    strHTML_CDA_noti += '<table>'
+
+    var dct_style = ''
+    switch (dictamen) {
+        case 'APROBADO':
+            dct_style = 'width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px;color:#008000 !important'
+            break;
+        case 'OBSERVADO':
+            dct_style = 'width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px;color:#ffd800 !important'
+            break;
+        case 'MANUAL':
+            dct_style = 'width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px;color:#ffd800 !important'
+            break;
+        case 'RECHAZADO':
+            dct_style = 'width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px;color:#800000 !important'
+            break;
+        case 'RECHAZAR':
+            dct_style = 'width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px;color:#800000 !important'
+            break;
+    }
+
+
+    strHTML_CDA += '<tr><td style="' + dct_style + '"><b>' + dictamen + '</b></td></tr>'
+    var strHTMLMensaje = ""
+    if (consulta.resultado['mensaje_usuario'] != "") {
+        strHTMLMensaje = "<b>OBSERVACIONES</b><br/>" + consulta.resultado['mensaje_usuario'].replace("|", "<br/>")
+    } else {
+        strHTMLMensaje = "<b></b>"
+    }
+    strHTML_CDA += '<tr><td style="width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px">' + strHTMLMensaje + '</td></tr></table>'
+
+    strHTML_CDA_noti += '<tr><td style="' + dct_style + '"><b>' + dictamen + '</b></td></tr>'
+    strHTML_CDA_noti += '<tr><td style="width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 14px"><b>' + consulta.resultado['mensaje_usuario'] + '</b></td></tr></table>'
+    strHTML_CDA_noti += '<table style="font-family: Verdana,Arial,Sans-serif;font-size: 12px"><tr><td><b>CUIT/CUIL:</b></td><td style="text-align:left">' + consulta.cliente.cuit + '</td></tr>'
+    strHTML_CDA_noti += '<tr><td><b>Nombre:</b></td><td>' + consulta.cliente.razon_social + '</td></tr>'
+    strHTML_CDA_noti += '<tr><td><b>Cobro:</b></td><td>' + consulta.resultado['tipo_cobro'] + '</td></tr>'
+    strHTML_CDA_noti += '<tr><td><b>Grupo:</b></td><td>' + consulta.resultado.trabajo['grupo'] + '</td></tr>'
+    strHTML_CDA_noti += '<tr><td><b>Edad:</b></td>' + str_edad + '</tr>'
+    strHTML_CDA_noti += '<tr><td><b>Ent. Excluyentes:</b></td>' + str_ent_exc + '</tr>'
+    strHTML_CDA_noti += '<tr><td><b>Cheques Rech.:</b></td>' + str_ch_rech + '</tr></table>'
+
+    strHTML_CDA += '<table class="tb1"><tr><td class="Tit1">CUIT/CUIL</td><td class="Tit1">Nombre</td></tr>'
+    strHTML_CDA += '<tr><td style="text-align:left">' + consulta.cliente.cuit + '</td><td>' + consulta.cliente.razon_social + '</td></tr></table>'
+    strHTML_CDA += '<table class="tb1"><tr><td class="Tit1">Cobro</td><td class="Tit1">Grupo</td></tr>'
+    strHTML_CDA += '<td>' + consulta.resultado['tipo_cobro'] + '</td><td>' + consulta.resultado.trabajo['grupo'] + '</td></tr></table>'
+    strHTML_CDA += '<table class="tb1"><tr><td class="Tit1" style="width:30%">Edad</td><td class="Tit1" style="width:30%">Ent. Excluyentes</td><td class="Tit1">Cheques Rech.</td></tr>'
+    strHTML_CDA += str_edad + str_ent_exc + str_ch_rech + '</tr></table>'
+    strHTML_CDA += '</tr></table>'
+    $('strSitBCRA').innerHTML = ''
+    sit_bcra = consulta.resultado['bcra_sit']
+    //sit_bcra =datos['bcra_sit_financiera'] //rsN.getdata('situacion')
+    $('strSitBCRA').insert({ bottom: sit_bcra })
+    $('strSitBCRA').removeClassName($('strSitBCRA').className)
+    switch (sit_bcra) {
+        case '1':
+            $('strSitBCRA').addClassName('sit1')
+            break;
+        case '2':
+            $('strSitBCRA').addClassName('sit2')
+            break;
+        case '3':
+            $('strSitBCRA').addClassName('sit3')
+            break;
+        case '4':
+            $('strSitBCRA').addClassName('sit4')
+            break;
+        case '5':
+            $('strSitBCRA').addClassName('sit5')
+            break;
+        case '6':
+            $('strSitBCRA').addClassName('sit6')
+            break;
+    }
+
+    $('strDictamen').innerHTML = ''
+    $('strDictamen').insert({ bottom: dictamen })
+    $('strDictamen').removeClassName($('strDictamen').className)
+    switch (dictamen) {
+        case 'APROBADO':
+            $('strDictamen').addClassName('cdaAC')
+            break;
+        case 'OBSERVADO':
+            $('strDictamen').addClassName('cdaOB')
+            break;
+        case 'MANUAL':
+            $('strDictamen').addClassName('cdaOB')
+            break;
+        case 'RECHAZADO':
+            $('strDictamen').addClassName('cdaRC')
+            break;
+        case 'RECHAZAR':
+            $('strDictamen').addClassName('cdaRC')
+            break;
+    }
+
+    //codigo en  lo que respecta BCRA, siempre y cuando el rechazo no haya venido del motor 1538 porque si esto es asi, no muestra nada
+    if (this.resultado['rechaza_motor'] != 1) {
+        strHTML_CDA += '<br><table style="width:100%;font-family: Verdana,Arial,Sans-serif;font-size: 11px"><tr style="background-color: #f7f7f7;font-weight: normal;border-bottom: 1px solid #dbdbdb"><td>Entidad</td><td>Periodo</td><td>Base {fecha_info}</td><td>Sit.</td><td></td></tr>'
+        strHTML_CDA += '{tr_body_bcra}<tr><td colspan="5"><br>B) Recategorización obligatoria. C) Situación jurídica.</td></tr>'
+        strHTML_CDA += '</table>'
+        strHTML_CDA_noti += '<br><table style="width:60%;font-family: Verdana,Arial,Sans-serif;font-size: 11px"><tr style="background-color: #f7f7f7;font-weight: normal;border-bottom: 1px solid #dbdbdb"><td>Entidad</td><td>Periodo</td><td>Base {fecha_info}</td><td>Sit.</td><td></td></tr>'
+        strHTML_CDA_noti += '{tr_body_bcra}<tr><td colspan="5"><br>B) Recategorización obligatoria. C) Situación jurídica.</td></tr>'
+        strHTML_CDA_noti += '</table>'
+        var arHTML = {}
+        arHTML['strHTML_CDA'] = {}
+        arHTML['strHTML_CDA_noti'] = {}
+        arHTML['strHTML_CDA']['html'] = strHTML_CDA
+        arHTML['strHTML_CDA_noti']['html'] = strHTML_CDA_noti
+        //agrego el cuerpo de la consulta a la bd del bcra
+        arHTML = BCRABodyHTML(consulta.cliente.cuit, consulta.cliente.trabajo.nro_grupo, consulta.nro_tipo_cobro, consulta.nro_banco_cobro, arHTML)
+        strHTML_CDA = arHTML['strHTML_CDA']['html']
+        strHTML_CDA_noti = arHTML['strHTML_CDA_noti']['html']
+
+        nro_banco = consulta.resultado['nro_entidad_cda']
+        CDA = consulta.resultado['nosis_cda']
+        campos_defs.habilitar('nro_tipo_cobro_precarga', true)
+        campos_defs.set_value('nro_tipo_cobro_precarga', consulta.nro_tipo_cobro)
+        campos_defs.habilitar('nro_tipo_cobro_precarga', false)
+        $('divGrupo').show()
+        $('strGrupo').innerHTML = ''
+        if (consulta.resultado.trabajo.clave_sueldo != '')
+            $('strGrupo').insert({ bottom: consulta.cliente.trabajo.grupo + ' (' + consulta.cliente.trabajo.clave_sueldo + ')' })
+        else
+            $('strGrupo').insert({ bottom: consulta.cliente.trabajo.grupo })
+        $('strCobro').innerHTML = ''
+        var strCobroDesc = (consulta.nro_tipo_cobro == 4) ? consulta.tipo_cobro + ' - ' + consulta.banco_cobro : consulta.tipo_cobro
+        $('strCobro').insert({ bottom: strCobroDesc })
+    }
+
+    this.resultado.strHTML_CDA = strHTML_CDA
+    this.resultado.strHTML_CDA_noti = strHTML_CDA_noti
+}
+
+
+
+function rserror_handler(msg) {
+    nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+    nvFW.alert(msg, { onClose: function () { consulta.limpiar() } })
+}
+
+ //function Precarga_Limpiar(nro_credito) {
+ //           //$("consultarRobot").value="0"
+ //           motor.reset()
+ //           Trabajos = {}
+ //           Creditos = {}
+ //           Etiquetas = {}
+ //           Cancelaciones = {}
+ //           $("btn1").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].show()
+ //           $("btn2").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].setStyle({width:"33%"}) //devuelvo tamaño original
+ //           $('strApeyNomb').innerHTML = ''
+ //           //$('strCUIT').innerHTML = ''
+ //           //$('strFNac').innerHTML = ''
+ //           $('divMostrarTrabajos').innerHTML = ''
+ //           $('strSitBCRA').innerHTML = ''
+ //           $('strDictamen').innerHTML = ''
+ //           $('strFuentes').innerHTML = ''
+ //           $('strInfoCuit').innerHTML = ''
+ //           $('divNotiR').hide()
+ //            $('tbResultado').hide()
+ //           $('nro_docu1').value = ''
+ //           //$('nro_docu').value = ''
+
+ //           $('strEnMano').innerHTML = ''
+
+ //           $('tbButtons').hide()
+
+ //           $('retirado_desde').value = ''
+ //           $('retirado_hasta').value = ''
+ //           $('importe_cuota_desde').value = ''
+ //           $('importe_cuota_hasta').value = ''
+ //           $('cuota_desde').value = ''
+ //           $('cuota_hasta').value = ''
+ //           //$('importe_cuota').value="0"
+
+ //           $('divHaberes').innerHTML = ''
+ //           $('divHaberesNoVisibles').innerHTML = ''
+ //           $('saldo_a_cancelar').innerHTML = ''
+ //           $('haber_neto').innerHTML = ''
+ //           $('importe_max_cuota').innerHTML = ''
+ //           $('divHaberes').innerHTML = ""
+ //           $('divHaberesNoVisibles').innerHTML = ""
+
+
+ //           $('divVendedor').show()
+ //           $('divDatosPersonales').hide()
+ //           $('divSelTrabajo').show()
+ //           $('divGrupo').hide()
+ //           $('divSocio').hide()
+ //           $('divFiltros').hide()
+ //           $('divFiltrosLeft').hide()
+ //           $('divFiltrosRight').hide()
+ //           $('divFiltros2Left').hide()
+ //           $('divFiltros2Right').hide()
+ //           $('divFiltros3Left').hide()
+ //           $('divFiltros3Right').hide()
+ //           $('divProducto').hide()
+ //           $('divMostrarTrabajos').hide()
+ //           $('divAnalisis').hide()
+
+ //           campos_defs.clear("cbAnalisis") //$('cbAnalisis').options.length = 0
+ //           $('td_canc_int').hide()
+ //           $('td_canc_3').hide()
+
+ //           cupo_disponible = 0
+ //           nro_sistema = 0
+ //           sistema = ''
+ //           nro_lote = 0
+ //           lote = ''
+ //           clave_sueldo = ''
+ //           nro_grupo = 0
+ //           prueba = ''
+ //           NroConsulta = 0
+ //           razon_social = ''
+ //           nombre = ''
+ //           domicilio = ''
+ //           localidad = ''
+ //           CP = ''
+ //           provincia = ''
+ //           cod_prov_persona = 0
+ //           edad = ''
+ //           consulta.cliente.sexo = ''
+ //           consulta.cliente.fe_naci = ''
+ //           fe_naci_str = ''
+ //           consulta.cliente.tipo_docu = 0
+ //           consulta.cliente.nro_docu = 0
+ //           nro_docu_db = 0
+ //           consulta.cliente.cuit = ''
+ //           NosisXML = ''
+ //           nro_archivo_nosis = 0
+ //           sit_bcra = 99
+ //           HTMLCDA = ''
+ //           TotalCancelaciones1 = 0
+ //           LiberaCuota = 0
+ //           cancelaciones = 0
+ //           importe_max_cuota = 0
+ //           importe_neto = 0
+ //           gastoscomerc = 0
+ //           strHTMLNosis = ''
+ //           persona_existe = true
+ //           fe_naci_socio = ''
+ //           nro_plan_sel = 0
+ //           plan_lineas = ''
+ //           nro_tipo_cobro = 0
+ //           nro_banco_cobro = 0
+ //           nro_analisis = 0
+ //           btn_cobro_aceptar = false
+ //           $('selplan').checked = false
+ //           $('chkmax_disp').checked = false
+ //           $('ifrplanes').src = 'enBlanco.htm'
+ //           document.getElementById('nro_docu1').focus()
+ //           strHTML_CDA = ''
+ //           hpx = 0
+ //           tipo_rechazo_call = ''
+ //           nro_credito_random = 0
+ //           nro_archivo_noti_prov = 0
+ //           noti_prov = false
+ //           tiene_cupo = false
+ //           importe_cs_analisis = 0
+ //            if (nro_credito) {
+ //               var filtros = {}
+ //               filtros['nro_credito'] = nro_credito
+ //               win_estado = createWindow2({
+ //                   url: 'Credito_cambiar_estado.aspx?codesrvsw=true',
+ //                   title: '<b>Crédito: ' + nro_credito + ' </b>',
+ //                   //centerHFromElement: $("contenedor"),
+ //                   //parentWidthElement: $("contenedor"),
+ //                   //parentWidthPercent: 0.9,
+ //                   //parentHeightElement: $("contenedor"),
+ //                   //parentHeightPercent: 0.9,
+ //                   maxHeight: 500,
+ //                   minimizable: false,
+ //                   maximizable: false,
+ //                   draggable: true,
+ //                   resizable: true,
+ //                   onClose: Cambiar_estado_return
+ //               });
+ //               win_estado.options.userData = { filtros: filtros }
+ //               win_estado.showCenter(true)
+
+ //           }
+ //           Btn_cancelaciones_onclick()
+ //           btnStatus(false)
+
+ //       }

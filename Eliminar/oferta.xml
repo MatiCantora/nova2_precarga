@@ -1,0 +1,58 @@
+﻿<targets>
+	<target transf_det="XML Respuesta" url="FILE://directorio_archivos/MotorDSStaFe/5382344_respuesta.xml">
+		<xml xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:rs="urn:schemas-microsoft-com:rowset" xmlns:z="#RowsetSchema">
+			<s:Schema id="RowsetSchema">
+				<s:ElementType name="row" content="eltOnly">
+					<s:AttributeType name="nro_banco" rs:number="1" rs:writeunknown="true">
+						<s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false"/>
+					</s:AttributeType>
+					<s:AttributeType name="nro_mutual" rs:number="2" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="estado" rs:number="3" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="string" rs:dbtype="str" dt:maxLength="4294967295" rs:long="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="cuota_maxima" rs:number="4" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="neto_maximo" rs:number="5" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="max_cuotas" rs:number="6" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="id_origen" rs:number="7" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="i8" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="nro_analisis" rs:number="8" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="disponible" rs:number="9" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="sueldo_bruto" rs:number="10" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="desc_ley" rs:number="11" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="sueldo_neto" rs:number="12" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="number" rs:dbtype="currency" dt:maxLength="8" rs:precision="19" rs:fixedlength="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="bcra_calificacion_cendeu" rs:number="13" rs:nullable="true" rs:writeunknown="true">
+						<s:datatype dt:type="string" rs:dbtype="str" dt:maxLength="4294967295" rs:long="true"/>
+					</s:AttributeType>
+					<s:AttributeType name="orden" rs:number="14" rs:writeunknown="true">
+						<s:datatype dt:type="int" dt:maxLength="4" rs:precision="10" rs:fixedlength="true" rs:maybenull="false"/>
+					</s:AttributeType>
+					<s:extends type="rs:rowbase"/>
+				</s:ElementType>
+			</s:Schema>
+			<rs:data>
+				<z:row nro_banco="800" nro_mutual="55" estado="A" cuota_maxima="42657.87" neto_maximo="1200000" id_origen="10601" nro_analisis="611" disponible="42657.87" sueldo_bruto="200718.92" desc_ley="0" sueldo_neto="115527.2" bcra_calificacion_cendeu="VOII SIT 1" orden="1"/>
+				<z:row nro_banco="170" nro_mutual="55" estado="A" cuota_maxima="42657.87" neto_maximo="1000000" max_cuotas="36" id_origen="10601" nro_analisis="592" disponible="42657.87" sueldo_bruto="200718.92" desc_ley="0" sueldo_neto="115527.2" bcra_calificacion_cendeu="VOII SIT 1" orden="2"/>
+			</rs:data>
+			<params vista="#tmp_respuesta" timeout="0" PageSize="0" AbsolutePage="0" SQL="SELECT   *  FROM #tmp_respuesta     ORDER BY orden  " orden_original="orden" recordcount="2" PageCount="1" cacheControl="none" orden="orden" cache="False"/>
+		</xml>
+	</target>
+</targets>

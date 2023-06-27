@@ -1,0 +1,53 @@
+HTML {height: 100%; 
+      vertical-align: top
+      }
+
+BODY {height: 100%;
+      padding:0px;
+	  margin:0px;
+	  border: 0px;
+	  /*background: url(../../fw/image/cabecera/bg.png) top repeat-x #60a6d4 !Important; */
+	  vertical-align: top 
+     }
+
+
+#user_name 
+    {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	color: #183884;
+	font-weight:bold;
+    vertical-align: bottom;
+	}
+
+#user_sucursal 
+   {
+   font-size: 0.7em
+   }
+
+#data_user 
+    {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color: #183884;
+    }
+
+
+.img_button    
+  {
+  cursor: hand;
+  cursor: pointer;
+  height: 3em;
+  width: 3em;
+  
+  }
+
+#tb_body_td_move 
+  {
+  background-color: #a2a2a2;
+  }
+
+#tb_body 
+  {
+  border-top: solid #a2a2a2 2px;
+  }

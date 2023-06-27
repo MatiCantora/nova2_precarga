@@ -1,0 +1,13 @@
+cod_sistema	sistema	path_rel	sistema_nro_permiso_grupo
+nv_admin	Nova Administrador	admin	21
+nv_ceradmin	Administración de Certificados	ceradmin	159
+nv_clip	The Clip	clip	100
+nv_control_lavado	Nova SCIF	lavado	76
+nv_helpdesk	helpdesk	helpdesk	90
+nv_mutuales	Nova Mutuales	meridiano	218
+nv_mutualprecarga	Nova Mutual Precarga	precarga	178
+nv_rrhh	Nova Recursos Humanos	rrhh	70
+nv_voii	Nova Voii	voii	20
+nv_wiki	Nova Wiki	wiki	167
+sislog	sisLog	sisl	246
+Test_sica	Test_sica	Test_sica	190

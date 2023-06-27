@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://localhost:99/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://localhost:99/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://localhost:99/">
+      <s:element name="ProbarWS">
+        <s:complexType />
+      </s:element>
+      <s:element name="ProbarWSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ProbarWSResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetCupo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UrlCallBack" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scu_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Sce_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scm_Id" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="clave_sueldo" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="prioridad" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="periodo_desc" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetCupoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WsGetCupoResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsAltaConsumoDirecto">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UrlCallBack" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scu_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Sce_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scm_Id" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Clave_Sueldo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Nro_Documento" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Prioridad" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Ses_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Cuotas" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Importe" type="s:decimal" />
+            <s:element minOccurs="1" maxOccurs="1" name="Primer_Venc" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Categoria_Socio" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Clave_Servicio" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Comentario" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsAltaConsumoDirectoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WsAltaConsumoDirectoResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsBajaConsumo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UrlCallBack" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scu_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Sce_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scm_Id" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Clave_Sueldo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Nro_Documento" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Prioridad" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Clave_Servicio" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Baja_Afiliado" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Comentario" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsBajaConsumoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WsBajaConsumoResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetRespuestaXMLSolicitud">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UrlCallBack" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="clave_sueldo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetRespuestaXMLSolicitudResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WsGetRespuestaXMLSolicitudResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetCupoScreen">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UrlCallBack" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scu_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Sce_Id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="Scm_Id" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="clave_sueldo" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="prioridad" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WsGetCupoScreenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WsGetCupoScreenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ProbarWSSoapIn">
+    <wsdl:part name="parameters" element="tns:ProbarWS" />
+  </wsdl:message>
+  <wsdl:message name="ProbarWSSoapOut">
+    <wsdl:part name="parameters" element="tns:ProbarWSResponse" />
+  </wsdl:message>
+  <wsdl:message name="WsGetCupoSoapIn">
+    <wsdl:part name="parameters" element="tns:WsGetCupo" />
+  </wsdl:message>
+  <wsdl:message name="WsGetCupoSoapOut">
+    <wsdl:part name="parameters" element="tns:WsGetCupoResponse" />
+  </wsdl:message>
+  <wsdl:message name="WsAltaConsumoDirectoSoapIn">
+    <wsdl:part name="parameters" element="tns:WsAltaConsumoDirecto" />
+  </wsdl:message>
+  <wsdl:message name="WsAltaConsumoDirectoSoapOut">
+    <wsdl:part name="parameters" element="tns:WsAltaConsumoDirectoResponse" />
+  </wsdl:message>
+  <wsdl:message name="WsBajaConsumoSoapIn">
+    <wsdl:part name="parameters" element="tns:WsBajaConsumo" />
+  </wsdl:message>
+  <wsdl:message name="WsBajaConsumoSoapOut">
+    <wsdl:part name="parameters" element="tns:WsBajaConsumoResponse" />
+  </wsdl:message>
+  <wsdl:message name="WsGetRespuestaXMLSolicitudSoapIn">
+    <wsdl:part name="parameters" element="tns:WsGetRespuestaXMLSolicitud" />
+  </wsdl:message>
+  <wsdl:message name="WsGetRespuestaXMLSolicitudSoapOut">
+    <wsdl:part name="parameters" element="tns:WsGetRespuestaXMLSolicitudResponse" />
+  </wsdl:message>
+  <wsdl:message name="WsGetCupoScreenSoapIn">
+    <wsdl:part name="parameters" element="tns:WsGetCupoScreen" />
+  </wsdl:message>
+  <wsdl:message name="WsGetCupoScreenSoapOut">
+    <wsdl:part name="parameters" element="tns:WsGetCupoScreenResponse" />
+  </wsdl:message>
+  <wsdl:portType name="WsACUADSoap">
+    <wsdl:operation name="ProbarWS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Metodo para probar Web Service</wsdl:documentation>
+      <wsdl:input message="tns:ProbarWSSoapIn" />
+      <wsdl:output message="tns:ProbarWSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Metodo para Obtener el cupo</wsdl:documentation>
+      <wsdl:input message="tns:WsGetCupoSoapIn" />
+      <wsdl:output message="tns:WsGetCupoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WsAltaConsumoDirecto">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Metodo para Cargar un Consumo Directo</wsdl:documentation>
+      <wsdl:input message="tns:WsAltaConsumoDirectoSoapIn" />
+      <wsdl:output message="tns:WsAltaConsumoDirectoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WsBajaConsumo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Metodo para Bajar las Cuotas Con Saldo de un Consumo</wsdl:documentation>
+      <wsdl:input message="tns:WsBajaConsumoSoapIn" />
+      <wsdl:output message="tns:WsBajaConsumoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WsGetRespuestaXMLSolicitud">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna el xml de respuesta de una solicitud</wsdl:documentation>
+      <wsdl:input message="tns:WsGetRespuestaXMLSolicitudSoapIn" />
+      <wsdl:output message="tns:WsGetRespuestaXMLSolicitudSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupoScreen">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Registra una solicitud de obtención del cupo con screen</wsdl:documentation>
+      <wsdl:input message="tns:WsGetCupoScreenSoapIn" />
+      <wsdl:output message="tns:WsGetCupoScreenSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WsACUADSoap" type="tns:WsACUADSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ProbarWS">
+      <soap:operation soapAction="http://localhost:99/ProbarWS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupo">
+      <soap:operation soapAction="http://localhost:99/WsGetCupo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsAltaConsumoDirecto">
+      <soap:operation soapAction="http://localhost:99/WsAltaConsumoDirecto" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsBajaConsumo">
+      <soap:operation soapAction="http://localhost:99/WsBajaConsumo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetRespuestaXMLSolicitud">
+      <soap:operation soapAction="http://localhost:99/WsGetRespuestaXMLSolicitud" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupoScreen">
+      <soap:operation soapAction="http://localhost:99/WsGetCupoScreen" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WsACUADSoap12" type="tns:WsACUADSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ProbarWS">
+      <soap12:operation soapAction="http://localhost:99/ProbarWS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupo">
+      <soap12:operation soapAction="http://localhost:99/WsGetCupo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsAltaConsumoDirecto">
+      <soap12:operation soapAction="http://localhost:99/WsAltaConsumoDirecto" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsBajaConsumo">
+      <soap12:operation soapAction="http://localhost:99/WsBajaConsumo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetRespuestaXMLSolicitud">
+      <soap12:operation soapAction="http://localhost:99/WsGetRespuestaXMLSolicitud" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WsGetCupoScreen">
+      <soap12:operation soapAction="http://localhost:99/WsGetCupoScreen" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WsACUAD">
+    <wsdl:port name="WsACUADSoap" binding="tns:WsACUADSoap">
+      <soap:address location="http://172.16.25.10:8080/WsACUAD.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WsACUADSoap12" binding="tns:WsACUADSoap12">
+      <soap12:address location="http://172.16.25.10:8080/WsACUAD.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

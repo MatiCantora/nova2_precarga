@@ -1,0 +1,583 @@
+﻿function VerCreditos() {
+    var filtros = {}
+    //filtros['modo'] = modo
+    //filtros['nro_vendedor'] = consulta.nro_vendedor
+    //filtros['nro_docu'] = consulta.cliente.nro_docu
+    filtros['BodyWidth'] = BodyWidth
+
+    if (consulta.nro_vendedor == 0) {
+        nvFW.alert('Debe seleccionar un vendedor para realizar la consulta.')
+        return
+    }
+    precarga.show_modal_window({
+        url: 'creditos/credito_listar_grupos.aspx?nro_vendedor=' + consulta.nro_vendedor,
+        title: '<b>Mis créditos</b>',
+        userData: { filtros: filtros }
+    });
+}
+
+
+function btnStatus(progress) {
+    if (progress) {
+        document.getElementById('btn1').onclick = null
+        document.getElementById('btn1').style.cursor = 'progress'
+        document.getElementById('img1').style.cursor = 'progress'
+        document.getElementById('btn2').onclick = null
+        document.getElementById('btn2').style.cursor = 'progress'
+        document.getElementById('img2').style.cursor = 'progress'
+        document.getElementById('btn3').onclick = null
+        document.getElementById('btn3').style.cursor = 'progress'
+        document.getElementById('img3').style.cursor = 'progress'
+    }
+    else {
+        document.getElementById('btn1').onclick = function () { GuardarSolicitud('P') }
+        document.getElementById('btn1').style.cursor = 'pointer'
+        document.getElementById('img1').style.cursor = 'pointer'
+        document.getElementById('btn2').onclick = function () {
+            GuardarSolicitud('H')
+        }
+        document.getElementById('btn2').style.cursor = 'pointer'
+        document.getElementById('img2').style.cursor = 'pointer'
+        document.getElementById('btn3').onclick = function () { consulta.limpiar() }
+        document.getElementById('btn3').style.cursor = 'pointer'
+        document.getElementById('img3').style.cursor = 'pointer'
+    }
+}
+
+
+function GuardarSolicitud(estado) {
+
+    let nro_mutual = campos_defs.get_value('mutual');
+    let nro_banco = campos_defs.get_value('banco');
+    /*if(inaes_black_list(nro_banco)){
+        alert("Persona bloqueada para alta en voii. Seleccione otro Banco")
+        return
+    }*/
+    let nro_analisis = campos_defs.get_value("cbAnalisis") // $('cbAnalisis').value
+    if ((nro_mutual == '') || (nro_banco == '') || (nro_analisis == '')) {
+        nvFW.alert('Debe seleccionar un banco/mutual/análisis para guardar el crédito')
+        return
+    }
+
+    btnStatus(true)
+    nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga', 'Guardando crédito...')
+    var modo = 'S'
+
+    let nro_plan_sel = 0;
+    if ($('selplan').checked) {
+
+        let mensaje_plan = !consulta.plan.nro_plan ? 'Debe seleccionar un plan.' : '';
+
+        consulta.validarPlan();
+
+        nro_plan_sel = consulta.plan.nro_plan;
+
+        if (!nro_plan_sel) {
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga');
+            btnStatus(false);
+            if (mensaje_plan != '') alert(mensaje_plan);
+            return;
+        }
+
+    } else nro_plan_sel = -1
+
+    let inconsistencias = 0;
+
+    let cant_cancelaciones = Object.keys(consulta.cancelacion.cancelaciones).length;
+    let rechaza_motor = consulta.resultado.evalua_motor == 1 && (consulta.resultado.dictamen.toUpperCase() == "RECHAZADO" || consulta.resultado.dictamen.toUpperCase() == "RECHAZAR")
+    let genera_consumo_cuad = consulta.resultado.usa_cuad_robot == '1' && !rechaza_motor;
+
+    //gjmo -> porque no usa el valor del motor?
+    let evalua_motor = 0;
+
+    //Cancelaciones
+    let objXMLcancelaciones = generarXMLCancelaciones(genera_consumo_cuad);
+    genera_consumo_cuad = objXMLcancelaciones.genera_consumo_cuad;
+
+    //Parametros motor
+    let objParametrosMotor = generarXMLMotor(inconsistencias, cant_cancelaciones, estado, evalua_motor, genera_consumo_cuad);
+    let xmlmotorparametros = objParametrosMotor.xmlmotorparametros;
+    inconcistencias = objParametrosMotor.inconsistencias;
+    evalua_motor = objParametrosMotor.evalua_motor;
+    estado = objParametrosMotor.estado;
+
+    let mensaje_usuario = consulta.resultado.mensaje_usuario;
+
+    var nro_credito = 0
+    nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga')
+
+    var parametrosCr = {};
+    parametrosCr['modo'] = modo
+    parametrosCr['estado'] = estado
+    parametrosCr['nro_credito'] = nro_credito
+    //parametrosCr['persona_existe'] = persona_existe
+    //gjmo -> ver
+    parametrosCr['noti_prov'] = noti_prov
+    parametrosCr['nro_archivo_noti_prov'] = nro_archivo_noti_prov
+
+    parametrosCr['xmlcancelaciones'] = objXMLcancelaciones.xmlcancelaciones;
+    parametrosCr['xmlpersona'] = generarXMLPersona();
+    parametrosCr['xmltrabajo'] = generarXMLTrabajo();
+    parametrosCr['xmlcredito'] = generarXMLCredito(estado, nro_plan_sel);
+    parametrosCr['xmlanalisis'] = generarXMLAnalisis();
+    parametrosCr['xmlparametros'] = generarXMLPlanParametros(nro_plan_sel);
+    parametrosCr['NosisXML'] = generarXMLNosis();
+    parametrosCr['xmlmotorparametros'] = xmlmotorparametros;
+    parametrosCr['evalua_motor'] = evalua_motor;
+    parametrosCr['mensaje_usuario'] = mensaje_usuario;
+
+    //si el estado a cargar el credito carga en proceso, controlo los creditos para la misma persona en el mismo estado
+    let aCreditosPersona = Array();
+    //gjmo -> condicional que da vuelta el estado en generarXMLMotor
+    if (estado == "6") {
+        var rs = new tRS();
+        rs.open({ filtroXML: nvFW.pageContents.creditos_persona, filtroWhere: "<criterio><select><filtro><cuit type='igual'>'" + consulta.cliente.cuit + "'</cuit><estado type='igual'>'6'</estado></filtro></select></criterio>" })
+        while (!rs.eof()) {
+            aCreditosPersona.push(rs.getdata('nro_credito'))
+            rs.movenext()
+        }
+    }
+
+    if (inconsistencias > 0) {
+        nvFW.alert('El credito no se puede guardar, porque contiene datos inconsistentes.<br>Por favor, notifiquelo')
+        console.log(xmlmotorparametros)
+        return;
+    }
+
+    if (estado == "P") {
+        savecredito(parametrosCr)
+    } else {
+
+        //advertencia previa si va por motor, de que puede que genere un consumo
+        if (genera_consumo_cuad) {
+            var info = '¿Desea continuar?.\nPuede que generé un consumo sobre la persona'
+            if (aCreditosPersona.length > 0) {
+                info = 'Atención. La persona que intenta cargar un consumo ya tiene una carga en proceso. ¿Desea continuar de todas formas?'
+            }
+
+            Dialog.confirm(info, {
+                width: 350,
+                className: "alphacube",
+                okLabel: "Si",
+                cancelLabel: "No",
+                onOk: function (win) {
+                    savecredito(parametrosCr)
+                    win.close()
+                },
+                onCancel: function (win) {
+                    btnStatus(false)
+                    win.close()
+                }
+            }); //Dialog                               
+        } else {
+            savecredito(parametrosCr)
+        }//motor.datos['evalua_motor']
+
+    }
+
+}//guardar solicitud
+
+
+function savecredito(datos) {
+
+    var intervalID = null;
+    nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga');
+    msg_waitingsavecredito()
+    intervalID = setInterval(msg_waitingsavecredito, 5000);
+    nvFW.error_ajax_request('motor/alta_credito.aspx', {
+        parameters: { modo: datos['modo'], estado: datos['estado'], nro_credito: datos['nro_credito'], /*persona_existe: datos['persona_existe'],*/ noti_prov: datos['noti_prov'], nro_archivo_noti_prov: datos['nro_archivo_noti_prov'], xmlpersona: datos['xmlpersona'], xmltrabajo: datos['xmltrabajo'], xmlcredito: datos['xmlcredito'], xmlanalisis: datos['xmlanalisis'], xmlcancelaciones: datos['xmlcancelaciones'], xmlparametros: datos['xmlparametros'], NosisXML: datos['NosisXML'], evalua_motor: datos['evalua_motor'], xmlmotorparametros: datos['xmlmotorparametros'], mensaje_usuario: datos['mensaje_usuario'] },
+        bloq_contenedor_on: false,
+        onSuccess: function (err, transport) {
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga');
+            clearInterval(intervalID)
+            if (err.numError == 0) {
+                if (err.mensaje != "") { //si tiene un mensaje, lo muestro
+                    Dialog.alert(err.mensaje, { className: "alphacube", width: 400, height: 200, okLabel: "continuar", ok: function (thiswin) { /*consulta.limpiar();*/ dibujar_credito(err.params.nro_credito);/*MostrarCredito(err.params.nro_credito, true);*/ thiswin.close() } });
+                } else {
+                    //consulta.limpiar();
+                    //MostrarCredito(err.params.nro_credito, true);
+                    dibujar_credito(err.params.nro_credito);
+                }
+            }
+            else
+                nvFW.alert('Error al guardar el crédito.<br>' + err.numError + ' : ' + err.mensaje)
+        }, onFailure: function (err) {
+            nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga');
+            clearInterval(intervalID)
+            Dialog.alert("No se pudo determinar la carga de credito. Antes de volver a intentar, revise el listado de creditos si no está cargado.", { className: "alphacube", width: 400, height: 200, okLabel: "continuar", ok: function (thiswin) { /*consulta.limpiar();*/ dibujar_credito(err.params.nro_credito);/*MostrarCredito(err.params.nro_credito, true);*/ thiswin.close() } });
+        }
+    });//error_ajax_request
+}//savecredito
+
+
+function generarXMLAnalisis() {
+    /* XML Analisis */
+    let xmlanalisis = ""
+    let Etiqueta
+    xmlanalisis = "<Analisis nro_analisis='" + analisis.nro_analisis + "'>"
+    for (var i in analisis.Etiquetas) {
+        Etiqueta = analisis.Etiquetas[i];
+        xmlanalisis += "<Etiqueta nro_etiqueta='" + Etiqueta["nro_etiqueta"] + "' orden='" + Etiqueta['orden'] + "' tipo_dato='" + Etiqueta['tipo_dato'] + "'>"
+        xmlanalisis += "<valor>"
+        switch (Etiqueta['tipo_dato']) {
+            case 'B':
+                xmlanalisis += $('nuevo_monto' + i).checked == true ? '1' : '0'
+                break
+            default:
+                xmlanalisis += $('nuevo_monto' + i).value
+        }
+        xmlanalisis += "</valor>"
+        xmlanalisis += "</Etiqueta>"
+    }
+    xmlanalisis += "</Analisis>"
+
+    return xmlanalisis;
+}
+
+
+function generarXMLCancelaciones(genera_consumo_cuad) {
+
+    /* XML Cancelaciones */
+    let xmlcancelaciones = ""
+    xmlcancelaciones = "<?xml version='1.0' encoding='iso-8859-1'?><cancelaciones>"
+    let Creditos = consulta.cancelacion.cancelaciones;
+    for (var x in Creditos) {
+        var nro_credito_calc = (Creditos[x]['nro_calc_tipo'] == 4) ? Creditos[x]['nro_credito_seguro'] : Creditos[x]['nro_credito']
+        xmlcancelaciones += "<cancelacion importe_pago='" + Creditos[x]['saldo'] + "' nro_entidad_destino='" + Creditos[x]['saldo_nro_entidad'] + "' cancela_cuota='" + Creditos[x]['importe_cuota'] + "' cancela_vence='" + Creditos[x]['cancela_vence'] + "' cancela_nro_credito='" + nro_credito_calc + "' cancela_cuota_paga='" + Creditos[x]['cancela_cuota_paga'] + "' nro_pago_concepto='" + Creditos[x]['nro_pago_concepto'] + "' />"
+        //si tiene una cancelacion disinto de pago de mora interna, no genera consumo
+        if (Creditos[x]['nro_pago_concepto'] != "20") {
+            genera_consumo_cuad = false
+        }
+    }
+    xmlcancelaciones += "</cancelaciones>"
+
+    return {
+        xmlcancelaciones: xmlcancelaciones,
+        genera_consumo_cuad: genera_consumo_cuad
+    }
+}
+
+
+function generarXMLTrabajo() {
+    /* XML Trabajo */
+    return "<?xml version='1.0' encoding='iso-8859-1'?><trabajo nro_sistema='" + consulta.cliente.trabajo.nro_sistema + "' nro_lote='" + consulta.cliente.trabajo.nro_lote + "' clave_sueldo='" + consulta.cliente.trabajo.clave_sueldo + "' nro_grupo='" + consulta.cliente.trabajo.nro_grupo + "'></trabajo>"
+
+}
+
+
+function generarXMLCredito(estado, nro_plan_sel) {
+    /* XML Credito */
+    return "<?xml version='1.0' encoding='iso-8859-1'?><credito estado='" + estado + "' nro_vendedor='" + consulta.nro_vendedor + "' nro_plan='" + nro_plan_sel + "' nro_banco='" + consulta.oferta.nro_banco + "' nro_mutual='" + consulta.oferta.nro_mutual + "' nro_analisis='" + analisis.nro_analisis + "' nro_tipo_cobro='" + consulta.resultado.nro_tipo_cobro + "' ></credito>"
+}
+
+
+function generarXMLPlanParametros(nro_plan_sel) {
+
+    /* XML Parametros */
+    let xmlparametros = ""
+    xmlparametros = "<?xml version='1.0' encoding='iso-8859-1'?><parametros>"
+    let rs = new tRS();
+    rs.open({ filtroXML: nvFW.pageContents["planes_parametros"], params: "<criterio><params nro_plan='" + nro_plan_sel + "' /></criterio>" })
+    while (!rs.eof()) {
+        xmlparametros += "<parametro nombre='" + rs.getdata('parametro') + "' valor='" + rs.getdata('valor_defecto') + "' />"
+        rs.movenext()
+    }
+
+    if (consulta.resultado.evalua_motor == 1) {
+        xmlparametros += "<parametro nombre='id_transf_log_motor' valor='" + consulta.resultado.id_tranf_log + "' />"
+        xmlparametros += "<parametro nombre='dictamen_motor' valor='" + consulta.resultado.dictamen + "' />"
+    }
+    xmlparametros += "</parametros>"
+
+    return xmlparametros;
+
+}
+
+
+function generarXMLPersona() {
+
+    /* XML Persona  */
+    var xmlpersona = ""
+    xmlpersona = "<?xml version='1.0' encoding='iso-8859-1'?>"
+    xmlpersona += "<persona nro_docu='" + consulta.cliente.nro_docu + "' tipo_docu='" + consulta.cliente.tipo_docu + "' sexo='" + consulta.cliente.sexo + "' cuit='" + consulta.cliente.cuit + "' fe_naci='" + consulta.cliente.fe_naci + "' razon_social='" + consulta.cliente.razon_social.trim() + "' "
+    //gjmo -> ver como obtener los valores
+    xmlpersona += "domicilio='" + consulta.cliente.domicilio + "' CP='" + consulta.cliente.CP + "' localidad='" + consulta.cliente.localidad + "' provincia='" + consulta.cliente.provincia + "' cod_prov='" + consulta.cliente.cod_prov_persona + "'></persona>"
+
+    return xmlpersona;
+
+}
+
+
+function generarXMLNosis() {
+    return '';
+}
+
+
+function generarXMLMotor(inconsistencias, cant_cancelaciones, estado, evalua_motor, genera_consumo_cuad) {
+
+    /* XML Motor */
+    let xmlmotorparametros = "<?xml version='1.0' encoding='iso-8859-1'?><motor>"
+    xmlmotorparametros += "<parametro nombre='clave_sueldo' valor='" + consulta.resultado.clave_sueldo + "' />"
+    xmlmotorparametros += "<parametro nombre='id_transf_log' valor='" + consulta.resultado.id_tranf_log + "' />"
+    xmlmotorparametros += "<parametro nombre='nro_motor_decision' valor='" + consulta.resultado.nro_motor_decision + "' />"
+    xmlmotorparametros += "<parametro nombre='nosis_id_consulta' valor='" + consulta.resultado.nosis_id_consulta + "' />"
+    xmlmotorparametros += "<parametro nombre='scu_id' valor='" + consulta.resultado.Scu_Id + "' />" //si es mayor a cero, indica que va a un motor de cuad si o si
+
+    //si tiene estado posterior, no tiene cancelaciones y el estado de la combinaciones banco/mutual/analisis es aprobada, va a estado "esperando respuesta" (por parte del motor de cuad para dar de alta el consumo y luego pasar al estado presupuesto)
+    if (genera_consumo_cuad && estado == "H") {
+        //estado=(motor.datos.nro_motor_decision=="1538")?"6":estado; //si el motor de deciscion es cuad, lo paso a esperando respuesta, porque es el estado q pone en pendiente el credito hasta q cuad responda
+        //gjmo -> no deberia estar hardcodeado
+        estado = (consulta.resultado.usa_cuad_robot == '1') ? "6" : estado
+        evalua_motor = 1;
+
+        xmlmotorparametros += "<parametro nombre='socio_nuevo' valor='" + consulta.resultado.socio_nuevo + "' />"
+        xmlmotorparametros += "<parametro nombre='sce_id' valor='" + consulta.resultado.Sce_Id + "' />"
+        xmlmotorparametros += "<parametro nombre='scm_id' valor='" + consulta.resultado.Scm_Id + "' />"
+
+        let estado_posterior = getEstadoPosterior();
+        xmlmotorparametros += "<parametro nombre='estado' valor='" + estado_posterior + "' />"
+        if (estado_posterior == "") {
+            inconsistencias += 1
+        }
+    } else {
+        if (consulta.resultado.evalua_motor == 1 && (estado != "H" || cant_cancelaciones > 0)) {
+            xmlmotorparametros += "<parametro nombre='estado' valor='" + estado + "' />"
+        }
+        //si evalua motor, va a precarga, pero tiene cancelaciones
+        /*if (motor.datos['evalua_motor'] == 1 && cancelaciones > 0) {
+            xmlmotorparametros += "<parametro nombre='estado' valor='" + estado + "' />"
+        }*/
+    }
+
+    xmlmotorparametros += "<parametro nombre='cancelaciones' valor='" + cant_cancelaciones + "' />"
+    xmlmotorparametros += "</motor>"
+
+    return {
+        xmlmotorparametros: xmlmotorparametros,
+        inconsistencias: inconsistencias,
+        evalua_motor: evalua_motor,
+        estado: estado
+    }
+}
+
+
+function getEstadoPosterior() {
+
+    let estado = ""
+    if (!!consulta.resultado.ofertas && consulta.resultado.ofertas.length > 0)
+        estado = consulta.oferta.estado
+    return estado
+
+}
+
+
+let win_estado
+function MostrarCredito(nro_credito, cambiar_estado) {
+    let filtros = {}
+    let url = 'creditos/' + (!cambiar_estado ? 'credito_mostrar.aspx?codesrvsw=true' : 'Credito_cambiar_estado.aspx?codesrvsw=true');
+    filtros['nro_credito'] = nro_credito;
+
+    precarga.show_modal_window({
+        url: url,
+        title: '<b>Crédito: ' + nro_credito + ' </b>',
+        userData: { filtros: filtros },
+        onClose: Cambiar_estado_return
+    });
+    //win_estado = createWindow2({
+    //    url: 'creditos/' + url,
+    //    title: '<b>Crédito: ' + nro_credito + ' </b>',
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    onClose: Cambiar_estado_return
+    //});
+
+    //win_estado.options.userData = { filtros: filtros }
+    //win_estado.showCenter(true)
+
+}
+
+
+function Cambiar_estado_return() {
+    var retorno = win_estado.options.userData
+    if (!retorno.res) return
+    if (retorno.res.actualizar) {
+        //si el estado al cual se cambio, es tyc. Muestro ventana para enviar el link
+        if (retorno.res.estado == "1") {
+            var param = {}
+            param['nro_credito'] = retorno.res.nro_credito
+
+            precarga.show_modal_window({
+                url: 'precarga_envio_tyc.aspx?crparam=' + retorno.res.nro_credito,
+                title: '<b>Enviar Terminos y condiciones</b>',
+                userData: { param: param }
+            });
+
+            //var win_enviotyc = window.top.createWindow2({
+            //    url: 'precarga_envio_tyc.aspx?crparam=' + retorno.res.nro_credito,
+            //    title: '<b>Enviar Terminos y condiciones</b>',
+            //    centerHFromElement: window.top.$("contenedor"),
+            //    parentWidthElement: window.top.$("contenedor"),
+            //    parentWidthPercent: 0.9,
+            //    parentHeightElement: window.top.$("contenedor"),
+            //    parentHeightPercent: 0.9,
+            //    maxHeight: 200,
+            //    minimizable: false,
+            //    maximizable: false,
+            //    draggable: true,
+            //    resizable: true,
+            //    onClose: function () { }
+            //});
+            //win_enviotyc.options.userData = { param: param }
+            //win_enviotyc.showCenter(true)
+
+        }
+    }
+}
+
+
+var idxmsgsavecr = 0;
+var mensajessave = Array("Aguarde un instante...", "Obteniendo Información...", "Actualizando datos...", "Cargando datos del préstamo...", "Aguarde un instante...", "Generando análisis crediticio...", "Generando informes digitales...", "Actualizando datos...")
+var msg_waitingsavecredito = function () {
+    console.log(mensajessave[idxmsgsavecr]);
+    nvFW.bloqueo_msg('blq_precarga', mensajessave[idxmsgsavecr])
+    if (mensajessave.length - 1 == idxmsgsavecr) {
+        idxmsgsavecr = 0;
+    } else {
+        idxmsgsavecr++;
+    }
+}
+
+
+var vBtnCreditoItems = {}
+function dibujar_credito(nro_credito) {
+
+    let strHTML = '';
+    strHTML += '<div id="divContentCrd" class="box-content">';
+
+    strHTML += '<div id="dicDatosSocioCrd">' + $('divDatosSocio').innerHTML + '</div>';
+    strHTML += '<div style="display: flex; justify-content: space-around; width: 50%; padding: 1em;">';
+    strHTML += '<div style="color: black; font-size: 1.3em;">Crédito: ' + nro_credito + '</div>';
+    strHTML += '<div>Ver datos del plan ></div>';
+    strHTML += '</div>';
+
+    strHTML += '<div class="box-product2">';
+    strHTML += '<div>Completar datos del socio</div><div style="min-width: 25%; text-align: center;" id="divBtnDatosSocio"></div>';
+    strHTML += '</div>';
+    strHTML += '<div class="box-product2">';
+    strHTML += '<div>Documentación</div><div style="min-width: 25%; text-align: center;" id="divBtnDocumentacion"></div>';
+    strHTML += '</div>';
+
+    strHTML += '</div>';
+    strHTML += '<div class="btn-footer"><div id="divBtnLimpiarCrd"></div></div>';
+
+    $('divCreditoAlta').innerHTML = strHTML;
+
+    $('dicDatosSocioCrd').style.cssText = $('divDatosSocio').style.cssText;
+
+    vBtnCreditoItems = {}
+    vBtnCreditoItems[0] = {}
+    vBtnCreditoItems[0]["nombre"] = "BtnDatosSocio";
+    vBtnCreditoItems[0]["etiqueta"] = "Cargar datos";
+    vBtnCreditoItems[0]["imagen"] = "";
+    vBtnCreditoItems[0]["onclick"] = "return editar_datos_socio(" + nro_credito + ")";
+    vBtnCreditoItems[0]["estilo"] = "M";
+
+    vBtnCreditoItems[1] = {}
+    vBtnCreditoItems[1]["nombre"] = "BtnDocumentacion";
+    vBtnCreditoItems[1]["etiqueta"] = "Ver";
+    vBtnCreditoItems[1]["imagen"] = "";
+    vBtnCreditoItems[1]["onclick"] = "return gestionar_archivos(" + nro_credito + ")";
+    vBtnCreditoItems[1]["estilo"] = "M";
+
+    vBtnCreditoItems[2] = {}
+    vBtnCreditoItems[2]["nombre"] = "BtnLimpiarCrd";
+    vBtnCreditoItems[2]["etiqueta"] = "Limpiar";
+    vBtnCreditoItems[2]["imagen"] = "";
+    vBtnCreditoItems[2]["onclick"] = "return consulta.limpiar()";
+    vBtnCreditoItems[2]["estilo"] = "I";
+
+    var vListCreditoBtns = new tListButton(vBtnCreditoItems, 'vListCreditoBtns');
+    vListCreditoBtns.MostrarListButton();
+
+    goToNextStep();
+
+    //mover a onresize;
+    //if (!!$('divContentCrd'))
+    //    $('divContentCrd').setStyle({
+    //        height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnLimpiarCrd").getHeight() + 'px'
+    //    });
+
+}
+
+
+
+function editar_datos_socio(nro_credito) {
+
+    //if ((permisos_precarga & 8192) == 0) {
+    if (!nvFW.tienePermiso("permisos_precarga", 14)) {
+        alert('No posee permiso para realizar esta acción.');
+        return;
+    }
+
+    var param = {}
+    param['nro_credito'] = nro_credito
+
+    precarga.show_modal_window({
+        url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
+        title: '<b>Solicitud - ' + nro_credito + '</b>',
+        userData: { param: param }
+    });
+
+    //let win_datos = window.top.createWindow2({
+    //    url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
+    //    title: '<b>Solicitud - ' + nro_credito + '</b>',
+    //    centerHFromElement: window.top.$("contenedor"),
+    //    parentWidthElement: window.top.$("contenedor"),
+    //    parentWidthPercent: 0.9,
+    //    parentHeightElement: window.top.$("contenedor"),
+    //    parentHeightPercent: 0.9,
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    destroyOnClose: true
+    //    //onClose: datos_return
+    //});
+    
+    //win_datos.options.userData = { param: param }
+    //win_datos.showCenter(true)
+}
+
+
+function gestionar_archivos(nro_credito) {
+    var param = {}
+    param['nro_credito'] = nro_credito
+
+    precarga.show_modal_window({
+        url: 'Credito_archivos.aspx?codesrvsw=true',
+        title: '<b>Archivos - ' + nro_credito + '</b>',
+        userData: { param: param }
+    });
+    //let win_files = window.top.createWindow2({
+    //    url: 'Credito_archivos.aspx?codesrvsw=true',
+    //    title: '<b>Archivos - ' + nro_credito + '</b>',
+    //    centerHFromElement: window.top.$("contenedor"),
+    //    parentWidthElement: window.top.$("contenedor"),
+    //    parentWidthPercent: 0.9,
+    //    parentHeightElement: window.top.$("contenedor"),
+    //    parentHeightPercent: 0.9,
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    destroyOnClose: true
+    //    //onClose: MostrarArchivos_return
+    //});
+    //win_files.options.userData = { param: param }
+    //win_files.showCenter(true)
+}

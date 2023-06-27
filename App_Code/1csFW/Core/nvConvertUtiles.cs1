@@ -1,0 +1,2454 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.VisualBasic;
+
+
+namespace nvFW
+{
+    public class nvConvertUtiles
+    {
+        public static Encoding currentEncoding = System.Text.Encoding.GetEncoding("ISO-8859-1");
+        // Private Shared _JScript_engine As Microsoft.JScript.Vsa.VsaEngine
+        private static int _unique_id_increment = 0;
+
+
+        public static byte[] StringToBytes(string cadena)
+        {
+            return currentEncoding.GetBytes(cadena);
+        }
+
+        public static string BytesToString(byte[] bytes)
+        {
+            if (bytes == null)
+                return "";
+            return currentEncoding.GetString(bytes);
+        }
+
+
+        /// <summary>
+        ///         ''' Devuelve un objeto fecha desde una cadena
+        ///         ''' </summary>
+        ///         ''' <param name="objFecha">Fecha en formato cadena de caracteres</param>
+        ///         ''' <param name="modo">
+        ///         '''    modo '1' = "dd/MM/yyyy"
+        ///         '''    modo '2' = "MM/dd/yyyy"
+        ///         '''    modo '3' = "yyyy-MM-dd"
+        ///         ''' </param>
+        ///         ''' <returns>Valor fecha</returns>
+        ///         ''' <remarks></remarks>
+        public static string FechaToSTR(DateTime objFecha, int modo = 1)
+        {
+            switch (modo)
+            {
+                case 1:
+                    {
+                        return objFecha.ToString("dd/MM/yyyy");
+                    }
+
+                case 2:
+                    {
+                        return objFecha.ToString("MM/dd/yyyy");
+                    }
+
+                case 3:
+                    {
+                        return objFecha.ToString("yyyy-MM-dd");
+                    }
+            }
+
+            return "";
+        }
+
+
+        /// <summary>
+        ///         ''' Devuelve un objeto fecha desde una cadena
+        ///         ''' </summary>
+        ///         ''' <param name="strFecha">Fecha en formato cadena de caracteres</param>
+        ///         ''' <param name="modo">
+        ///         '''    modo 'XSL' = 'mm-dd-yyyyThh:mm:ss'
+        ///         '''    modo 'UTC' = ''
+        ///         '''    modo 'SCRIPT' = 'dd/mm/yyyy'
+        ///         ''' </param>
+        ///         ''' <returns>Valor fecha</returns>
+        ///         ''' <remarks></remarks>
+        public static DateTime parseFecha(string strFecha, string modo = "XLS")
+        {
+            string a;
+            switch (modo.ToUpper())
+            {
+                case "XSL":
+                    {
+                        a = strFecha.Replace("-", "/").Replace("T", " ") + ".";
+                        a = a.Substring(0, a.IndexOf("."));
+                        break;
+                    }
+
+                case "UTC":
+                    {
+                        return DateTime.Parse(strFecha);
+                    }
+
+                case "SCRIPT":
+                    {
+                        // Dim cadFecha As String = strFecha
+                        // Dim dia = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                        // cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                        // Dim mes = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                        // cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                        // Dim anio = cadFecha
+                        // a = mes & "/" & dia & "/" & anio
+                        System.Globalization.CultureInfo cultureinfo2 = new System.Globalization.CultureInfo("en-US");
+                        return DateTime.Parse(strFecha, cultureinfo2);
+                    }
+
+                case "ES-AR":
+                    {
+                        // Dim cadFecha As String = strFecha
+                        // Dim dia = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                        // cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                        // Dim mes = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                        // cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                        // Dim anio = cadFecha
+                        // a = mes & "/" & dia & "/" & anio
+                        System.Globalization.CultureInfo cultureinfo2 = new System.Globalization.CultureInfo("es-AR");
+                        return DateTime.Parse(strFecha, cultureinfo2);
+                    }
+
+                default:
+                    {
+                        string cadFecha = strFecha;
+                        var dia = cadFecha.Substring(0, cadFecha.IndexOf("/"));
+                        cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1);
+                        var mes = cadFecha.Substring(0, cadFecha.IndexOf("/"));
+                        cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1);
+                        var anio = cadFecha;
+                        a = mes + "/" + dia + "/" + anio;
+                        break;
+                    }
+            }
+            System.Globalization.CultureInfo cultureinfo = new System.Globalization.CultureInfo("en-US");
+            DateTime fe = DateTime.Parse(a, cultureinfo);
+            return fe;
+        }
+
+        /// <summary>
+        ///         ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ///         ''' </summary>
+        ///         ''' <param name="cadena"></param>
+        ///         ''' <returns></returns>
+        ///         ''' <remarks></remarks>
+        public static object StringToObject(string cadena, string type, bool errorReturnNothing = false, string culture = "en-US")
+        {
+            if (cadena == null | Information.IsDBNull(cadena))
+                return null;
+            try
+            {
+                switch (type.ToLower())
+                {
+                    case "i8":
+                    case "int":
+                        {
+                            int val = cadena;
+                            return val;
+                        }
+
+                    case "i2":
+                        {
+                            Int16 val = cadena;
+                            return val;
+                        }
+
+                    case "ui1":
+                        {
+                            byte val = cadena;
+                            return val;
+                        }
+
+                    case "bin.hex":
+                        {
+                            byte[] bytes;
+                            bytes = nvConvertUtiles.BinhexToBytes(cadena); // Convert.FromBase64String(cadena)
+                            return bytes;
+                        }
+
+                    case "float":
+                        {
+                            double val = cadena;
+                            return val;
+                        }
+
+                    case "r4":
+                        {
+                            float val = cadena;
+                            return val;
+                        }
+
+                    case "number":
+                    case "money":
+                        {
+                            decimal val = decimal.Parse(cadena, new System.Globalization.CultureInfo("en-US"));
+                            return val;
+                        }
+
+                    case "decimal":
+                        {
+                            decimal val = cadena;
+                            return val;
+                        }
+
+                    case "boolean":
+                    case "bit":
+                        {
+                            bool val = cadena.ToLower() == "true" | cadena == "1";
+                            return val;
+                        }
+
+                    case "datetime":
+                        {
+                            System.Globalization.CultureInfo pv = new System.Globalization.CultureInfo(culture);
+
+                            if (culture == "es-AR")
+                            {
+                                System.Globalization.DateTimeFormatInfo x = new System.Globalization.DateTimeFormatInfo();
+
+                                x.FullDateTimePattern = "dd/MM/yyyy HH:mm:ss.fff";
+                                x.ShortDatePattern = "dd/MM/yyyy";
+                                x.AbbreviatedMonthNames = new string[] { "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic", "" };
+
+                                pv.DateTimeFormat = x;
+                            }
+
+                            DateTime res = System.Convert.ToDateTime(cadena, pv);
+                            return res;
+                        }
+
+                    case "string":
+                    case "uuid":
+                    case "varchar":
+                    case "file":
+                        {
+                            return cadena;
+                        }
+
+                    default:
+                        {
+                            return cadena;
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (errorReturnNothing)
+                    return null;
+                else
+                    throw ex;
+            }
+        }
+
+        /// <summary>
+        ///         ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ///         ''' </summary>
+        ///         ''' <param name="cadena"></param>
+        ///         ''' <returns></returns>
+        ///         ''' <remarks></remarks>
+        public static object StringToAdoParamObject(string cadena, string type)
+        {
+            if (cadena == null)
+                return null;
+            switch (type.ToLower())
+            {
+                case "datetime":
+                    {
+                        System.Globalization.CultureInfo pv = new System.Globalization.CultureInfo("en-US");
+                        DateTime res = System.Convert.ToDateTime(cadena, pv);
+                        cadena = res.ToString("yyyy-dd-MM HH:mm:ss.fff"); // Cuidado, por alguna razon SQL Server interpreta el yyyy-dd-MM???
+                        return cadena;
+                    }
+
+                default:
+                    {
+                        return StringToObject(cadena, type);
+                    }
+            }
+        }
+
+        /// <summary>
+        ///         ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ///         ''' </summary>
+        ///         ''' <param name="cadena"></param>
+        ///         ''' <returns></returns>
+        ///         ''' <remarks></remarks>
+        public static object StringToObject(string cadena, ADODB.DataTypeEnum type)
+        {
+            string strType = ADOTypeToXMLType(type);
+            return StringToObject(cadena, strType);
+        }
+
+        /// <summary>
+        ///         ''' Convierte el valor de la variable objeto en una cadena de tipo script de javascript
+        ///         ''' </summary>
+        ///         ''' <param name="objeto"></param>
+        ///         ''' <returns></returns>
+        ///         ''' <remarks></remarks>
+        public static string objectToScript(object objeto, nvJS_format format = nvJS_format.js_classic, string date_format = "", string string_quote = "")
+        {
+            if (objeto == null)
+                return "null";
+
+            if (Information.IsDBNull(objeto))
+                return "null";
+
+            string squote = "";
+            string dateFormat = "";
+
+            switch (format)
+            {
+                case nvJS_format.js_classic:
+                    {
+                        squote = "'";
+                        dateFormat = "MM/dd/yyyy HH:mm:ss"; // 5/2/2020 6:40:31 PM
+                        break;
+                    }
+
+                case nvJS_format.js_json:
+                    {
+                        squote = "\"";
+                        dateFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+                        break;
+                    }
+            }
+
+            if (date_format != "")
+                dateFormat = date_format;
+            if (string_quote != "")
+                squote = string_quote;
+
+            string res = "";
+            string strType;
+
+            if ((objeto.GetType().IsEnum))
+                strType = Enum.GetUnderlyingType(objeto.GetType()).ToString();
+            else
+                strType = objeto.GetType().ToString();
+
+            switch (strType.ToString().ToLower())
+            {
+                case "system.int16":
+                case "system.int32":
+                case "system.int64":
+                case "system.single":
+                case "system.double":
+                case "system.decimal":
+                case "system.byte":
+                    {
+                        res = System.Convert.ToDouble(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+                        break;
+                    }
+
+                case "system.string":
+                    {
+                        // //Corregir caracter de escape "\"
+                        objeto = objeto.ToString().Replace(@"\", @"\\");
+                        // //Corregir comillas simples o dobles
+                        objeto = objeto.ToString().Replace(squote, @"\" + squote);
+                        // //Corregir saltos de lineas
+                        objeto = objeto.ToString().Replace(Constants.vbCrLf, @"\n");
+                        objeto = objeto.ToString().Replace(Constants.vbCr, @"\r");
+                        objeto = objeto.ToString().Replace(Constants.vbLf, @"\n");
+
+                        res = squote + objeto.ToString() + squote;
+                        break;
+                    }
+
+                case "system.boolean":
+                    {
+                        res = Interaction.IIf(objeto, "true", "false");
+                        break;
+                    }
+
+                case "system.datetime":
+                    {
+                        DateTime d = objeto;
+                        switch (format)
+                        {
+                            case nvJS_format.js_classic:
+                                {
+                                    res = "new Date(Date.parse(\"" + d.ToString(new System.Globalization.CultureInfo("en-US")) + "\"))";
+                                    break;
+                                }
+
+                            case nvJS_format.js_json:
+                                {
+                                    res = squote + d.ToString(dateFormat) + squote;
+                                    break;
+                                }
+                        }
+
+                        break;
+                    }
+
+                case "nvfw.trsparam":
+                    {
+                        trsParam obj = objeto;
+                        res = obj.toJSON();
+                        break;
+                    }
+
+                case "system.byte[]":
+                    {
+                        res = squote + System.Convert.ToBase64String(objeto) + squote;
+                        break;
+                    }
+
+                default:
+                    {
+                        res = squote + "Error. Tipo desconocido" + squote;
+                        break;
+                    }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        ///         ''' Convierte el valor de la variable String en un valor sin comas ni saltos de linea para utilizar en los nvLogs
+        ///         ''' </summary>
+        ///         ''' <param name="str"></param>
+        ///         ''' <returns></returns>
+        ///         ''' <remarks></remarks>
+        public static string StringTonvLogParam(string str)
+        {
+            if (str != "")
+            {
+                str = str.Replace(",", "{;}");
+                str = str.Replace(Constants.vbCrLf, " ");
+                str = str.Replace(Constants.vbCr, " ");
+                str = str.Replace(Constants.vbLf, " ");
+            }
+            return str;
+        }
+        public static string objectToSQLScript(string valor, string DataTypeString, object @default = null)
+        {
+            DataTypes DataType;
+            object res = @default;
+            try
+            {
+                DataType = Enum.Parse(DataType.GetType(), DataTypeString);
+                res = StringToDataType(valor, DataType, @default);
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return objectToSQLScript(res);
+        }
+
+        public static string objectToSQLScript(string valor, DataTypes DataType, object @default = null)
+        {
+            object res = StringToDataType(valor, DataType, @default);
+            return objectToSQLScript(res);
+        }
+
+        public static string objectToSQLScript(object objeto)
+        {
+            if (objeto == null)
+                return "null";
+
+            if (Information.IsDBNull(objeto))
+                return "null";
+
+            string res = "";
+            string strType;
+
+            if ((objeto.GetType().IsEnum))
+                strType = Enum.GetUnderlyingType(objeto.GetType()).ToString();
+            else
+                strType = objeto.GetType().ToString();
+
+            switch (strType.ToString().ToLower())
+            {
+                case "system.int16":
+                case "system.int32":
+                case "system.int64":
+                case "system.single":
+                case "system.double":
+                case "system.decimal":
+                case "system.byte":
+                    {
+                        res = System.Convert.ToDouble(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+                        break;
+                    }
+
+                case "system.string":
+                    {
+                        // //Corregir caracter de escape "\"
+                        objeto = objeto.ToString().Replace("'", "''");
+                        res = "'" + objeto.ToString() + "'";
+                        break;
+                    }
+
+                case "system.boolean":
+                    {
+                        res = Interaction.IIf(objeto, "1", "0");
+                        break;
+                    }
+
+                case "system.datetime":
+                    {
+                        DateTime d = objeto;
+                        res = "convert(datetime, '" + d.ToString("MM/dd/yyyy  HH:mm:ss.fff") + "', 101)"; // new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                        break;
+                    }
+
+                default:
+                    {
+                        res = "'Error. Tipo desconocido'";
+                        break;
+                    }
+            }
+
+            return res;
+        }
+
+        public static string objectToDTSparam(object objeto)
+        {
+            if (objeto == null)
+                return "";
+
+            if (Information.IsDBNull(objeto))
+                return "";
+
+            string res = "";
+            string strType;
+
+            if ((objeto.GetType().IsEnum))
+                strType = Enum.GetUnderlyingType(objeto.GetType()).ToString();
+            else
+                strType = objeto.GetType().ToString();
+
+            switch (strType.ToString().ToLower())
+            {
+                case "system.int16":
+                case "system.int32":
+                case "system.int64":
+                case "system.single":
+                case "system.double":
+                case "system.decimal":
+                case "system.byte":
+                    {
+                        res = "\"" + System.Convert.ToDouble(objeto).ToString(System.Globalization.CultureInfo.CurrentCulture) + "\""; // System.Globalization.CultureInfo.CreateSpecificCulture("en-US")
+                        break;
+                    }
+
+                case "system.string":
+                    {
+                        System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("\"");
+                        res = "\"" + reg.Replace(objeto.ToString(), "\"\"") + "\"";
+                        break;
+                    }
+
+                case "system.boolean":
+                    {
+                        res = "\"" + Interaction.IIf(objeto, "1", "0") + "\"";
+                        break;
+                    }
+
+                case "system.datetime":
+                    {
+                        DateTime d = objeto;
+                        res = "\"" + d.ToString(System.Globalization.CultureInfo.CurrentCulture) + "\"";
+                        break;
+                    }
+
+                default:
+                    {
+                        res = "Error. Tipo desconocido";
+                        break;
+                    }
+            }
+
+            return res;
+        }
+        public static string objectToScriptString(object objeto, string culture = "en-US")
+        {
+            if (objeto == null)
+                return "";
+
+            if (Information.IsDBNull(objeto))
+                return "";
+
+            string res = "";
+            string strType;
+
+            if ((objeto.GetType().IsEnum))
+                strType = Enum.GetUnderlyingType(objeto.GetType()).ToString();
+            else
+                strType = objeto.GetType().ToString();
+
+            switch (strType.ToString().ToLower())
+            {
+                case "system.int16":
+                case "system.int32":
+                case "system.int64":
+                case "system.single":
+                case "system.double":
+                case "system.decimal":
+                case "system.byte":
+                    {
+                        res = "'" + System.Convert.ToDouble(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) + "'";
+                        break;
+                    }
+
+                case "system.string":
+                    {
+                        // //Corregir caracter de escape "\"
+                        objeto = objeto.ToString().Replace(@"\", @"\\");
+                        // //Corregir comillas simples
+                        objeto = objeto.ToString().Replace("'", @"\'");
+                        // //Corregir saltos de lineas
+                        objeto = objeto.ToString().Replace(Constants.vbCrLf, @"\n");
+                        objeto = objeto.ToString().Replace(Constants.vbCr, @"\r");
+                        objeto = objeto.ToString().Replace(Constants.vbLf, @"\n");
+
+                        res = "'" + objeto.ToString() + "'";
+                        break;
+                    }
+
+                case "system.boolean":
+                    {
+                        res = "'" + Interaction.IIf(objeto, "true", "false") + "'";
+                        break;
+                    }
+
+                case "system.datetime":
+                    {
+                        DateTime d = objeto;
+                        switch (culture)
+                        {
+                            case "en-US":
+                                {
+                                    res = "'" + d.ToString("MM/dd/yyyy") + "'"; // "new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                                    break;
+                                }
+
+                            case "es-AR":
+                                {
+                                    res = "'" + d.ToString("dd/MM/yyyy") + "'"; // "new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                                    break;
+                                }
+                        }
+
+                        break;
+                    }
+
+                default:
+                    {
+                        res = "'Error. Tipo desconocido'";
+                        break;
+                    }
+            }
+
+            return res;
+        }
+
+        public static string ParamTypeToSQLType(string tipo)
+        {
+            string res = "";
+
+            switch (Strings.Trim(tipo).ToLower())
+            {
+                case "int":
+                    {
+                        res = "bigint";
+                        break;
+                    }
+
+                case "varchar":
+                case "file":
+                    {
+                        res = "varchar(max)";
+                        break;
+                    }
+
+                case "datetime":
+                    {
+                        res = "datetime";
+                        break;
+                    }
+
+                case "file":
+                    {
+                        res = "varchar";
+                        break;
+                    }
+
+                case "money":
+                    {
+                        res = "money";
+                        break;
+                    }
+
+                case "bit":
+                    {
+                        res = "bit";
+                        break;
+                    }
+
+                default:
+                    {
+                        res = "varchar(max)";
+                        break;
+                    }
+            }
+
+            return res;
+        }
+
+        public static ADODB.DataTypeEnum XMLTypeToAdoType(string type)
+        {
+            // Cuando se pasa una fecha como parametro, el hijo de puta corta los decimales
+            // Para evitar eso pasamos las fechas como cadenas
+            // Cuando se quiere saber el tipo solamente se debe utilizar "XMLTypeToAdoType"
+            // Cuando se quiere saber el tipo para utilizar como parámetro se dele utilizar "XMLTypeToAdoTParamType"
+
+            // Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            // bigint:     i8() : adBigInt(bigint)
+            // smallint:   i2() : adSmallInt(smallint)
+            // tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            // int:        Int() : adInteger(Int)
+            // timestamp:  bin.hex() : adBinary(timestamp)
+            // float:      float() : adDouble(float)
+            // real:       r4() : adSingle(real)
+            // numeric:    number() : adNumeric(numeric)
+            // decimal : number :: adNumeric (decimal)
+            // smallmoney: number() : adCurrency(smallmoney)
+            // money:      number() : adCurrency(money)
+            // bit : boolean :: adBoolean (bit)
+            // date : string :: adVarWChar (date)
+            // datetimeoffset : string :: adVarWChar (datetimeoffset)
+            // datetime2 : string :: adVarWChar (datetime2)
+            // smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            // datetime:   DateTime() : adDBTimeStamp(DateTime)
+            // time : string :: adVarWChar (time)
+            // binary:     bin.hex() : adBinary(binary)
+            // varbinary:  bin.hex() : adVarBinary(varbinary)
+            // image:      bin.hex() : adLongVarBinary(Image)
+            // varchar : string :: adVarChar (varchar)
+            // char : string :: adChar (char)
+            // nvarchar : string :: adVarWChar (nvarchar)
+            switch (type)
+            {
+                case "i8":
+                    {
+                        return ADODB.DataTypeEnum.adBigInt;
+                    }
+
+                case "i2":
+                    {
+                        return ADODB.DataTypeEnum.adSmallInt;
+                    }
+
+                case "ui1":
+                    {
+                        return ADODB.DataTypeEnum.adTinyInt;
+                    }
+
+                case "int":
+                    {
+                        return ADODB.DataTypeEnum.adInteger;
+                    }
+
+                case "bin.hex":
+                    {
+                        return ADODB.DataTypeEnum.adVarBinary;
+                    }
+
+                case "float":
+                    {
+                        return ADODB.DataTypeEnum.adDouble;
+                    }
+
+                case "r4":
+                    {
+                        return ADODB.DataTypeEnum.adSingle;
+                    }
+
+                case "number":
+                    {
+                        return ADODB.DataTypeEnum.adNumeric;
+                    }
+
+                case "decimal":
+                    {
+                        return ADODB.DataTypeEnum.adDecimal;
+                    }
+
+                case "boolean":
+                    {
+                        return ADODB.DataTypeEnum.adBoolean;
+                    }
+
+                case "dateTime":
+                    {
+                        return ADODB.DataTypeEnum.adDBTimeStamp;
+                    }
+
+                case "string":
+                case "uuid":
+                    {
+                        return ADODB.DataTypeEnum.adVarChar;
+                    }
+
+                default:
+                    {
+                        return ADODB.DataTypeEnum.adIUnknown;
+                    }
+            }
+        }
+        public static ADODB.DataTypeEnum XMLTypeToAdoParamType(string type)
+        {
+            // Cuando se pasa una fecha como parametro, el hijo de puta corta los decimales
+            // Para evitar eso pasamos las fechas como cadenas
+            // Cuando se quiere saber el tipo solamente se debe utilizar "XMLTypeToAdoType"
+            // Cuando se quiere saber el tipo para utilizar como parámetro se dele utilizar "XMLTypeToAdoTParamType"
+
+            // Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            // bigint:     i8() : adBigInt(bigint)
+            // smallint:   i2() : adSmallInt(smallint)
+            // tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            // int:        Int() : adInteger(Int)
+            // timestamp:  bin.hex() : adBinary(timestamp)
+            // float:      float() : adDouble(float)
+            // real:       r4() : adSingle(real)
+            // numeric:    number() : adNumeric(numeric)
+            // decimal : number :: adNumeric (decimal)
+            // smallmoney: number() : adCurrency(smallmoney)
+            // money:      number() : adCurrency(money)
+            // bit : boolean :: adBoolean (bit)
+            // date : string :: adVarWChar (date)
+            // datetimeoffset : string :: adVarWChar (datetimeoffset)
+            // datetime2 : string :: adVarWChar (datetime2)
+            // smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            // datetime:   DateTime() : adDBTimeStamp(DateTime)
+            // time : string :: adVarWChar (time)
+            // binary:     bin.hex() : adBinary(binary)
+            // varbinary:  bin.hex() : adVarBinary(varbinary)
+            // image:      bin.hex() : adLongVarBinary(Image)
+            // varchar : string :: adVarChar (varchar)
+            // char : string :: adChar (char)
+            // nvarchar : string :: adVarWChar (nvarchar)
+            switch (type)
+            {
+                case "i8":
+                    {
+                        return ADODB.DataTypeEnum.adBigInt;
+                    }
+
+                case "i2":
+                    {
+                        return ADODB.DataTypeEnum.adSmallInt;
+                    }
+
+                case "ui1":
+                    {
+                        return ADODB.DataTypeEnum.adTinyInt;
+                    }
+
+                case "int":
+                    {
+                        return ADODB.DataTypeEnum.adInteger;
+                    }
+
+                case "bin.hex":
+                    {
+                        return ADODB.DataTypeEnum.adVarBinary;
+                    }
+
+                case "float":
+                    {
+                        return ADODB.DataTypeEnum.adDouble;
+                    }
+
+                case "r4":
+                    {
+                        return ADODB.DataTypeEnum.adSingle;
+                    }
+
+                case "number":
+                    {
+                        return ADODB.DataTypeEnum.adNumeric;
+                    }
+
+                case "decimal":
+                    {
+                        return ADODB.DataTypeEnum.adDecimal;
+                    }
+
+                case "boolean":
+                    {
+                        return ADODB.DataTypeEnum.adBoolean;
+                    }
+
+                case "dateTime":
+                    {
+                        // Return ADODB.DataTypeEnum.adDBTimeStamp
+                        return ADODB.DataTypeEnum.adVarChar;
+                    }
+
+                case "string":
+                case "uuid":
+                    {
+                        return ADODB.DataTypeEnum.adVarChar;
+                    }
+
+                default:
+                    {
+                        return ADODB.DataTypeEnum.adIUnknown;
+                    }
+            }
+        }
+
+        // Public Shared Function ADOTypeToScript(ByVal type As ADODB.DataTypeEnum) As String
+        // Return "'" & ADOTypeToXMLType(type) & "'"
+        // End Function
+        public static string ADOTypeToXMLType(ADODB.DataTypeEnum type)
+        {
+            // Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            // bigint:     i8() : adBigInt(bigint)
+            // smallint:   i2() : adSmallInt(smallint)
+            // tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            // int:        Int() : adInteger(Int)
+            // timestamp:  bin.hex() : adBinary(timestamp)
+            // float:      float() : adDouble(float)
+            // real:       r4() : adSingle(real)
+            // numeric:    number() : adNumeric(numeric)
+            // decimal : number :: adNumeric (decimal)
+            // smallmoney: number() : adCurrency(smallmoney)
+            // money:      number() : adCurrency(money)
+            // bit : boolean :: adBoolean (bit)
+            // date : string :: adVarWChar (date)
+            // datetimeoffset : string :: adVarWChar (datetimeoffset)
+            // datetime2 : string :: adVarWChar (datetime2)
+            // smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            // datetime:   DateTime() : adDBTimeStamp(DateTime)
+            // time : string :: adVarWChar (time)
+            // binary:     bin.hex() : adBinary(binary)
+            // varbinary:  bin.hex() : adVarBinary(varbinary)
+            // image:      bin.hex() : adLongVarBinary(Image)
+            // varchar : string :: adVarChar (varchar)
+            // char : string :: adChar (char)
+            // nvarchar : string :: adVarWChar (nvarchar)
+
+            switch (type)
+            {
+                case object _ when ADODB.DataTypeEnum.adBigInt:
+                case object _ when ADODB.DataTypeEnum.adUnsignedBigInt:
+                    {
+                        return "i8";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adSmallInt:
+                case object _ when ADODB.DataTypeEnum.adUnsignedSmallInt:
+                    {
+                        return "i2";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adTinyInt:
+                case object _ when ADODB.DataTypeEnum.adUnsignedTinyInt:
+                    {
+                        return "ui1";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adInteger:
+                    {
+                        return "int";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adBinary:
+                case object _ when ADODB.DataTypeEnum.adVarBinary:
+                case object _ when ADODB.DataTypeEnum.adLongVarBinary:
+                    {
+                        return "bin.hex";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adDouble:
+                    {
+                        return "float";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adSingle:
+                    {
+                        return "r4";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adNumeric:
+                case object _ when ADODB.DataTypeEnum.adCurrency:
+                    {
+                        return "number";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adDecimal:
+                    {
+                        return "decimal";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adBoolean:
+                    {
+                        return "boolean";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adDBTimeStamp:
+                    {
+                        return "dateTime";
+                    }
+
+                case object _ when ADODB.DataTypeEnum.adChar:
+                case object _ when ADODB.DataTypeEnum.adLongVarChar:
+                case object _ when ADODB.DataTypeEnum.adLongVarWChar:
+                case object _ when ADODB.DataTypeEnum.adVarChar:
+                case object _ when ADODB.DataTypeEnum.adVarWChar:
+                case object _ when ADODB.DataTypeEnum.adWChar:
+                    {
+                        return "string";
+                    }
+
+                default:
+                    {
+                        return "desconocido";
+                    }
+            }
+        }
+
+        public static double DateDiffMilliseconds(DateTime ini, DateTime fin)
+        {
+            TimeSpan ts = fin.Subtract(ini);
+            return ts.TotalMilliseconds;
+        }
+
+        public static string RamdomString(int length, string especialchars = "")
+        {
+            VBMath.Randomize();
+            string str = "";
+            string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" + especialchars;
+            int pos;
+            while (str.Length < length)
+            {
+                pos = VBMath.Rnd() * (chars.Length - 1);
+                str += chars.Substring(pos, 1);
+            }
+            return str;
+        }
+
+        public static string RamdomInteger(int length)
+        {
+            VBMath.Randomize();
+            string str = "";
+            string chars = "0123456789";
+            int pos;
+            while (str.Length < length)
+            {
+                pos = VBMath.Rnd() * (chars.Length - 1);
+                str += chars.Substring(pos, 1);
+            }
+            return str;
+        }
+
+
+        /// <summary>
+        ///         ''' Obtiene un ID unico basado en la fecha actual (YYYYMMDD hhmmss) más un valor random configurable
+        ///         ''' </summary>
+        ///         ''' <param name="length_rnd">El valor mínimo devulto es de 18 dígitos. Este parámetro configura el largo adicional variable sobre los 12 digitos base. El valor por defecto de length_rnd es 6, por lo tanto el largo total es de 18 caracteres.</param>
+        ///         ''' <returns></returns>
+        public static string getUniqueId(int length_rnd = 6)
+        {
+            DateTime fecha = DateTime.Now();
+            byte[] extra = new[] { BitConverter.GetBytes(fecha.Year)(0), fecha.Month, fecha.Day, fecha.Hour, fecha.Minute, fecha.Second, BitConverter.GetBytes(_unique_id_increment)(0), BitConverter.GetBytes(_unique_id_increment)(1) };
+            string strExtra = System.Convert.ToBase64String(extra);
+            string newId = nvConvertUtiles.RamdomString(length_rnd) + strExtra;
+            _unique_id_increment += 1;
+            if (_unique_id_increment > 32000)
+                _unique_id_increment = 0;
+
+            return newId;
+        }
+
+
+        public static byte[] BinhexToBytes2(string strBinhex)
+        {
+            if (strBinhex == null)
+                return null;
+            if (strBinhex == "")
+            {
+                byte[] res = new byte[1];
+                return res;
+            }
+            string strXML = "<data>" + strBinhex + "</data>";
+            System.Xml.XmlTextReader r = new System.Xml.XmlTextReader(new System.IO.StringReader(strXML));
+            r.MoveToContent();
+            int buffLenght = 1024;
+            byte[] buf = new byte[buffLenght - 1 + 1];
+            int bytesRead;
+            System.IO.MemoryStream ms2 = new System.IO.MemoryStream();
+            do
+            {
+                bytesRead = r.ReadBinHex(buf, 0, buf.Length);
+                ms2.Write(buf, 0, bytesRead);
+            }
+            while ((r.Name == "data"));
+            r.Close();
+            byte[] bytes = new byte[ms2.Length - 1 + 1];
+            ms2.Position = 0;
+            ms2.Read(bytes, 0, ms2.Length);
+            ms2.Close();
+            return bytes;
+        }
+
+        public static byte[] BinhexToBytes(string strBinhex)
+        {
+            byte[] res;
+            string strReg = "[^1234567890ABCDEF]*";
+            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex(strReg, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            strBinhex = reg.Replace(strBinhex, "");
+            string hex;
+            res = new byte[strBinhex.Length / (double)2 - 1 + 1];
+            int position = 0;
+            byte _byte;
+            while (strBinhex.Length > 0)
+            {
+                hex = strBinhex.Substring(0, 2);
+                strBinhex = strBinhex.Substring(2);
+                _byte = byte.Parse(hex, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture);
+                res[position] = _byte;
+                position += 1;
+            }
+            return res;
+        }
+
+        public static string BytesToBinhex2(byte[] bytes)
+        {
+            if (bytes == null)
+                return null;
+            if (bytes.Length == 0)
+                return "";
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+            System.Xml.XmlWriterSettings XmlWriterSettings = new System.Xml.XmlWriterSettings();
+            XmlWriterSettings.Encoding = currentEncoding;
+            System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(ms, XmlWriterSettings);
+            writer.WriteStartDocument();
+            writer.WriteStartElement("data");
+            writer.WriteBinHex(bytes, 0, bytes.Length);
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Close();
+            ms.Position = 0;
+            byte[] xmlBytes = new byte[ms.Length + 1];
+            ms.Read(xmlBytes, 0, ms.Length);
+            string strXML = currentEncoding.GetString(xmlBytes);
+            System.Xml.XmlDocument oXML = new System.Xml.XmlDocument();
+            oXML.LoadXml(strXML);
+            return oXML.DocumentElement.ChildNodes[0].InnerText;
+        }
+
+        public static string BytesToBinhex(byte[] bytes)
+        {
+            if (bytes == null)
+                return null;
+            if (bytes.Length == 0)
+                return "";
+
+            string res = BitConverter.ToString(bytes);
+            res = res.Replace("-", "");
+            return res;
+        }
+
+        public static object JSScriptToObject(string script, object def = null)
+        {
+            object res = def;
+            try
+            {
+                // Dim j As New JScriptEval
+                // Return j.Evaluate(script)
+                // If _JScript_engine Is Nothing Then
+                // _JScript_engine = Microsoft.JScript.Vsa.VsaEngine.CreateEngine()
+                // End If
+
+                // res = Microsoft.JScript.Eval.JScriptEvaluate(script, _JScript_engine)
+
+                return nvEvaluator.jsEvaluator.Eval(script);
+            }
+            catch (Exception ex)
+            {
+                return def;
+            }
+        }
+
+        public static object ObjectToDataType(object valor, DataTypes type, object @default = null)
+        {
+            if (valor == null)
+                return @default;
+
+            if (type == nvConvertUtiles.DataTypes.unknown)
+                return valor;
+
+            object res = @default;
+
+            switch (type)
+            {
+                case DataTypes.boolean:
+                    {
+                        res = valor.ToLower == "true" ? true : valor.ToLower == "false" ? false : @default;
+                        break;
+                    }
+
+                case DataTypes.date:
+                    {
+                        try
+                        {
+                            if (isNUllorEmpty(valor))
+                                res = null;
+                            else
+                                res = DateTime.Parse(valor);
+                        }
+                        catch (Exception ex)
+                        {
+                            res = @default;
+                        }
+
+                        break;
+                    }
+
+                case DataTypes.datetime:
+                    {
+                        try
+                        {
+                            if (isNUllorEmpty(valor))
+                                res = null;
+                            else
+                                res = DateTime.Parse(valor);
+                        }
+                        catch (Exception ex)
+                        {
+                            res = @default;
+                        }
+
+                        break;
+                    }
+
+                case DataTypes.@decimal | DataTypes.money:
+                    {
+                        try
+                        {
+                            res = System.Convert.ToDouble(valor, System.Globalization.CultureInfo.InvariantCulture); // CDbl(valor)
+                        }
+                        catch (Exception ex)
+                        {
+                            res = @default;
+                        }
+
+                        break;
+                    }
+
+                case DataTypes.@int:
+                    {
+                        try
+                        {
+                            res = (long)valor;
+                        }
+                        catch (Exception ex)
+                        {
+                            res = @default;
+                        }
+
+                        break;
+                    }
+
+                case DataTypes.varchar:
+                case DataTypes.file:
+                    {
+                        res = valor;
+                        break;
+                    }
+            }
+
+            return res;
+        }
+        public static object StringToDataType(string valor, DataTypes type, object @default = null)
+        {
+            return ObjectToDataType(valor, type, @default);
+        }
+
+        public static Dictionary<string, object> JSONToDictionary(string strJSON, bool IgnoreCaseName = true)
+        {
+            // Dezerializar el JSON a un object
+            System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            Dictionary<string, object> dic = serializer.Deserialize<Dictionary<string, object>>(strJSON);
+
+            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex(@"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z"); // "2009-02-15T00:00:00.000Z"
+            for (var index = 0; index <= dic.Keys.Count - 1; index++)
+            {
+                string key = dic.Keys(index);
+                if (!dic[key] == null && dic[key].GetType().ToString().ToLower() == "system.string" && reg.IsMatch(dic[key]))
+                {
+                    DateTime fecha = DateTime.Parse(dic[key], null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    dic[key] = fecha;
+                }
+            }
+
+            if (!IgnoreCaseName)
+                return dic;
+            else
+                return new Dictionary<string, object>(dic, StringComparer.CurrentCultureIgnoreCase);
+        }
+
+        public static string trsParamToSQLScript(trsParam[] paramsArray)
+        {
+            string SQLParams = "";
+
+            for (var i = Information.LBound(paramsArray); i <= Information.UBound(paramsArray); i++)
+            {
+                trsParam @params = paramsArray[i];
+                SQLParams += "--Parámetros bloque \"" + @params.name + "\"" + Constants.vbCrLf;
+                foreach (var param in @params.Keys)
+                    SQLParams += "SET @" + param + " = " + nvConvertUtiles.objectToSQLScript(@params(param)) + Constants.vbCrLf;
+            }
+
+            return SQLParams;
+        }
+
+        public static string trsParamToSQLScript(trsParam @params)
+        {
+            return trsParamToSQLScript(
+            {
+                @params
+            });
+        }
+
+
+        /// <summary>
+        ///         ''' Valida que el tipo de datos del objeto se corresponda con el DataType de ADO
+        ///         ''' </summary>
+        ///         ''' <param name="obj"></param>
+        ///         ''' <param name="Datatype"></param>
+        ///         ''' <returns></returns>
+        public static bool ValidateObjectAdoType(object obj, ADODB.DataTypeEnum Datatype)
+        {
+            if (obj == null)
+                return true;
+
+            if (Information.IsDBNull(obj))
+                return true;
+
+            string res = "";
+            string strType;
+
+            if ((obj.GetType().IsEnum))
+                strType = Enum.GetUnderlyingType(obj.GetType()).ToString().ToLower();
+            else
+                strType = obj.GetType().ToString().ToLower();
+
+            ADODB.DataTypeEnum[] enteros = new[] { ADODB.DataTypeEnum.adBigInt, ADODB.DataTypeEnum.adInteger, ADODB.DataTypeEnum.adSmallInt, ADODB.DataTypeEnum.adTinyInt, ADODB.DataTypeEnum.adUnsignedBigInt, ADODB.DataTypeEnum.adUnsignedInt, ADODB.DataTypeEnum.adUnsignedSmallInt, ADODB.DataTypeEnum.adUnsignedTinyInt };
+            if (enteros.Contains(Datatype) & !
+            {
+                "system.int16",
+                "system.int32",
+                "system.int64",
+                "system.byte"
+            }.Contains(strType))
+                return false;
+
+            ADODB.DataTypeEnum[] decimales = new[] { ADODB.DataTypeEnum.adCurrency, ADODB.DataTypeEnum.adDecimal, ADODB.DataTypeEnum.adDouble, ADODB.DataTypeEnum.adNumeric, ADODB.DataTypeEnum.adSingle };
+            if (decimales.Contains(Datatype) & !
+            {
+                "system.int16",
+                "system.int32",
+                "system.int64",
+                "system.byte",
+                "system.single",
+                "system.double",
+                "system.decimal"
+            }.Contains(strType))
+                return false;
+
+            ADODB.DataTypeEnum[] cadenas = new[] { ADODB.DataTypeEnum.adChar, ADODB.DataTypeEnum.adLongVarChar, ADODB.DataTypeEnum.adLongVarWChar, ADODB.DataTypeEnum.adVarChar, ADODB.DataTypeEnum.adVarWChar, ADODB.DataTypeEnum.adWChar };
+            if (cadenas.Contains(Datatype) & !
+            {
+                "system.string"
+            }.Contains(strType))
+                return false;
+
+            ADODB.DataTypeEnum[] fechas = new[] { ADODB.DataTypeEnum.adDate, ADODB.DataTypeEnum.adDBDate, ADODB.DataTypeEnum.adDBTime, ADODB.DataTypeEnum.adDBTimeStamp };
+            if (fechas.Contains(Datatype) & !
+            {
+                "system.datetime"
+            }.Contains(strType))
+                return false;
+
+            ADODB.DataTypeEnum[] boleanos = new[] { ADODB.DataTypeEnum.adBoolean };
+            if (boleanos.Contains(Datatype) & !
+            {
+                "system.boolean"
+            }.Contains(strType))
+                return false;
+
+            return true;
+        }
+
+        public enum DataTypes
+        {
+            unknown = -1,
+            boolean = 1,
+            varchar = 2,
+            @int = 3,
+            money = 4,
+            @decimal = 4,
+            date = 5,
+            datetime = 6,
+            file = 7
+        }
+
+        public enum nvJS_format
+        {
+            js_classic = 1,
+            js_json = 2
+        }
+    }
+}
+
+
+/*
+Imports nvFW.nvUtiles
+Imports nvFW.nvDBUtiles
+
+Namespace nvFW
+
+    Public Class nvConvertUtiles
+
+        Public Shared currentEncoding As Encoding = System.Text.Encoding.GetEncoding("ISO-8859-1")
+        'Private Shared _JScript_engine As Microsoft.JScript.Vsa.VsaEngine
+        Private Shared _unique_id_increment As Integer = 0
+
+
+        Public Shared Function StringToBytes(cadena As String) As Byte()
+            Return currentEncoding.GetBytes(cadena)
+        End Function
+
+        Public Shared Function BytesToString(bytes As Byte()) As String
+            If bytes Is Nothing Then Return ""
+            Return currentEncoding.GetString(bytes)
+        End Function
+
+
+        ''' <summary>
+        ''' Devuelve un objeto fecha desde una cadena
+        ''' </summary>
+        ''' <param name="objFecha">Fecha en formato cadena de caracteres</param>
+        ''' <param name="modo">
+        '''    modo '1' = "dd/MM/yyyy"
+        '''    modo '2' = "MM/dd/yyyy"
+        '''    modo '3' = "yyyy-MM-dd"
+        ''' </param>
+        ''' <returns>Valor fecha</returns>
+        ''' <remarks></remarks>
+        Public Shared Function FechaToSTR(objFecha As Date, Optional modo As Integer = 1) As String
+            Select Case modo
+                Case 1
+                    Return objFecha.ToString("dd/MM/yyyy")
+                Case 2
+                    Return objFecha.ToString("MM/dd/yyyy")
+                Case 3
+                    Return objFecha.ToString("yyyy-MM-dd")
+            End Select
+
+            Return ""
+        End Function
+
+
+        ''' <summary>
+        ''' Devuelve un objeto fecha desde una cadena
+        ''' </summary>
+        ''' <param name="strFecha">Fecha en formato cadena de caracteres</param>
+        ''' <param name="modo">
+        '''    modo 'XSL' = 'mm-dd-yyyyThh:mm:ss'
+        '''    modo 'UTC' = ''
+        '''    modo 'SCRIPT' = 'dd/mm/yyyy'
+        ''' </param>
+        ''' <returns>Valor fecha</returns>
+        ''' <remarks></remarks>
+        Public Shared Function parseFecha(ByVal strFecha As String, Optional ByVal modo As String = "XLS") As DateTime
+            Dim a As String
+            Select Case modo.ToUpper
+                Case "XSL"
+                    a = strFecha.Replace("-", "/").Replace("T", " ") & "."
+                    a = a.Substring(0, a.IndexOf("."))
+
+                Case "UTC"
+                    Return DateTime.Parse(strFecha)
+
+                Case "SCRIPT"
+                    'Dim cadFecha As String = strFecha
+                    'Dim dia = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    'cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    'Dim mes = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    'cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    'Dim anio = cadFecha
+                    'a = mes & "/" & dia & "/" & anio
+                    Dim cultureinfo2 As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-US")
+                    Return DateTime.Parse(strFecha, cultureinfo2)
+                Case "ES-AR"
+                    'Dim cadFecha As String = strFecha
+                    'Dim dia = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    'cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    'Dim mes = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    'cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    'Dim anio = cadFecha
+                    'a = mes & "/" & dia & "/" & anio
+                    Dim cultureinfo2 As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("es-AR")
+                    Return DateTime.Parse(strFecha, cultureinfo2)
+                Case Else
+                    Dim cadFecha As String = strFecha
+                    Dim dia = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    Dim mes = cadFecha.Substring(0, cadFecha.IndexOf("/"))
+                    cadFecha = cadFecha.Substring(cadFecha.IndexOf("/") + 1)
+                    Dim anio = cadFecha
+                    a = mes & "/" & dia & "/" & anio
+            End Select
+            Dim cultureinfo As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-US")
+            Dim fe As DateTime = DateTime.Parse(a, cultureinfo)
+            Return fe
+        End Function
+
+        ''' <summary>
+        ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ''' </summary>
+        ''' <param name="cadena"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Shared Function StringToObject(ByVal cadena As String, type As String, Optional errorReturnNothing As Boolean = False, Optional culture As String = "en-US") As Object
+
+            If cadena Is Nothing Or IsDBNull(cadena) Then
+                Return Nothing
+            End If
+            Try
+                Select Case type.ToLower
+                    Case "i8", "int"
+                        Dim val As Integer = cadena
+                        Return val
+                    Case "i2"
+                        Dim val As Int16 = cadena
+                        Return val
+                    Case "ui1"
+                        Dim val As Byte = cadena
+                        Return val
+                    Case "bin.hex"
+                        Dim bytes() As Byte
+                        bytes = nvConvertUtiles.BinhexToBytes(cadena) ' Convert.FromBase64String(cadena)
+                        Return bytes
+                    Case "float"
+                        Dim val As Double = cadena
+                        Return val
+                    Case "r4"
+                        Dim val As Single = cadena
+                        Return val
+                    Case "number", "money"
+                        Dim val As Decimal = Decimal.Parse(cadena, New System.Globalization.CultureInfo("en-US"))
+                        Return val
+                    Case "decimal"
+                        Dim val As Decimal = cadena
+                        Return val
+                    Case "boolean", "bit"
+                        Dim val As Boolean = cadena.ToLower = "true" Or cadena = "1"
+                        Return val
+                    Case "datetime"
+                        Dim pv As New System.Globalization.CultureInfo(culture)
+
+                        If culture = "es-AR" Then
+                            Dim x As New System.Globalization.DateTimeFormatInfo()
+
+                            x.FullDateTimePattern = "dd/MM/yyyy HH:mm:ss.fff"
+                            x.ShortDatePattern = "dd/MM/yyyy"
+                            x.AbbreviatedMonthNames = New String() {"ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic", ""}
+
+                            pv.DateTimeFormat = x
+                        End If
+
+                        Dim res As DateTime = System.Convert.ToDateTime(cadena, pv)
+                        Return res
+                    Case "string", "uuid", "varchar", "file"
+                        Return cadena
+                    Case Else
+                        Return cadena
+                End Select
+            Catch ex As Exception
+                If errorReturnNothing Then
+                    Return Nothing
+                Else
+                    Throw ex
+                End If
+            End Try
+
+        End Function
+
+        ''' <summary>
+        ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ''' </summary>
+        ''' <param name="cadena"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Shared Function StringToAdoParamObject(ByVal cadena As String, type As String) As Object
+            If cadena Is Nothing Then
+                Return Nothing
+            End If
+            Select Case type.ToLower()
+
+                Case "datetime"
+                    Dim pv As New System.Globalization.CultureInfo("en-US")
+                    Dim res As DateTime = System.Convert.ToDateTime(cadena, pv)
+                    cadena = res.ToString("yyyy-dd-MM HH:mm:ss.fff") 'Cuidado, por alguna razon SQL Server interpreta el yyyy-dd-MM???
+                    Return cadena
+
+                Case Else
+                    Return StringToObject(cadena, type)
+            End Select
+
+        End Function
+
+        ''' <summary>
+        ''' Convierte el valor de la variable cadena a un objeto de .Net
+        ''' </summary>
+        ''' <param name="cadena"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Shared Function StringToObject(ByVal cadena As String, type As ADODB.DataTypeEnum) As Object
+            Dim strType As String = ADOTypeToXMLType(type)
+            Return StringToObject(cadena, strType)
+        End Function
+
+        ''' <summary>
+        ''' Convierte el valor de la variable objeto en una cadena de tipo script de javascript
+        ''' </summary>
+        ''' <param name="objeto"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Shared Function objectToScript(ByVal objeto As Object, Optional ByVal format As nvJS_format = nvJS_format.js_classic, Optional ByVal date_format As String = "", Optional ByVal string_quote As String = "") As String
+
+            If objeto Is Nothing Then Return "null"
+
+            If IsDBNull(objeto) Then Return "null"
+
+            Dim squote As String = ""
+            Dim dateFormat As String = ""
+
+            Select Case format
+                Case nvJS_format.js_classic
+                    squote = "'"
+                    dateFormat = "MM/dd/yyyy HH:mm:ss" '5/2/2020 6:40:31 PM
+                Case nvJS_format.js_json
+                    squote = """"
+                    dateFormat = "yyyy-MM-ddTHH:mm:ss.fffZ"
+            End Select
+
+            If date_format <> "" Then dateFormat = date_format
+            If string_quote <> "" Then squote = string_quote
+
+            Dim res As String = ""
+            Dim strType As String
+
+            If (objeto.GetType().IsEnum) Then
+                strType = [Enum].GetUnderlyingType(objeto.GetType()).ToString()
+            Else
+                strType = objeto.GetType().ToString()
+            End If
+
+            Select Case strType.ToString.ToLower
+                Case "system.int16", "system.int32", "system.int64", "system.single", "system.double", "system.decimal", "system.byte"
+                    res = CDbl(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+
+                Case "system.string"
+                    '//Corregir caracter de escape "\"
+                    objeto = objeto.ToString().Replace("\", "\\")
+                    '//Corregir comillas simples o dobles
+                    objeto = objeto.ToString().Replace(squote, "\" & squote)
+                    ' //Corregir saltos de lineas
+                    objeto = objeto.ToString().Replace(vbCrLf, "\n")
+                    objeto = objeto.ToString().Replace(vbCr, "\r")
+                    objeto = objeto.ToString().Replace(vbLf, "\n")
+
+                    res = squote & objeto.ToString() & squote
+                Case "system.boolean"
+                    res = IIf(objeto, "true", "false")
+
+                Case "system.datetime"
+                    Dim d As DateTime = objeto
+                    Select Case format
+                        Case nvJS_format.js_classic
+                            res = "new Date(Date.parse(""" + d.ToString(New System.Globalization.CultureInfo("en-US")) + """))"
+                        Case nvJS_format.js_json
+                            res = squote & d.ToString(dateFormat) & squote
+                    End Select
+                    'res = squote & d.ToString(dateFormat) & squote
+                    'res = "new Date(Date.parse(""" + d.ToString(New System.Globalization.CultureInfo("en-US")) + """))"
+                Case "nvfw.trsparam"
+                    Dim obj As trsParam = objeto
+                    res = obj.toJSON()
+                Case "system.byte[]"
+                    res = squote & System.Convert.ToBase64String(objeto) & squote
+                    'Case "system.xml.XmlDocument"
+                    '    res = "(new tXML()).loadXML(" & nvConvertUtiles.objectToScriptString(objeto.outerXML) & ")"
+                Case Else
+                    res = squote & "Error. Tipo desconocido" & squote
+            End Select
+
+            Return res
+
+        End Function
+
+        ''' <summary>
+        ''' Convierte el valor de la variable String en un valor sin comas ni saltos de linea para utilizar en los nvLogs
+        ''' </summary>
+        ''' <param name="str"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Shared Function StringTonvLogParam(str As String) As String
+            If str <> "" Then
+                str = str.Replace(",", "{;}")
+                str = str.Replace(vbCrLf, " ")
+                str = str.Replace(vbCr, " ")
+                str = str.Replace(vbLf, " ")
+            End If
+            Return str
+        End Function
+        Public Shared Function objectToSQLScript(ByVal valor As String, DataTypeString As String, Optional [default] As Object = Nothing) As String
+            Dim DataType As DataTypes
+            Dim res As Object = [default]
+            Try
+                DataType = [Enum].Parse(DataType.GetType(), DataTypeString)
+                res = StringToDataType(valor, DataType, [default])
+            Catch ex As Exception
+            End Try
+
+            Return objectToSQLScript(res)
+        End Function
+
+        Public Shared Function objectToSQLScript(ByVal valor As String, DataType As DataTypes, Optional [default] As Object = Nothing) As String
+            Dim res As Object = StringToDataType(valor, DataType, [default])
+            Return objectToSQLScript(res)
+        End Function
+
+        Public Shared Function objectToSQLScript(ByVal objeto As Object) As String
+
+            If objeto Is Nothing Then Return "null"
+
+            If IsDBNull(objeto) Then Return "null"
+
+            Dim res As String = ""
+            Dim strType As String
+
+            If (objeto.GetType().IsEnum) Then
+                strType = [Enum].GetUnderlyingType(objeto.GetType()).ToString()
+            Else
+                strType = objeto.GetType().ToString()
+            End If
+
+            Select Case strType.ToString.ToLower
+                Case "system.int16", "system.int32", "system.int64", "system.single", "system.double", "system.decimal", "system.byte"
+                    res = CDbl(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+
+                Case "system.string"
+                    '//Corregir caracter de escape "\"
+                    objeto = objeto.ToString().Replace("'", "''")
+                    res = "'" & objeto.ToString() & "'"
+                Case "system.boolean"
+                    res = IIf(objeto, "1", "0")
+
+                Case "system.datetime"
+                    Dim d As DateTime = objeto
+                    res = "convert(datetime, '" & d.ToString("MM/dd/yyyy  HH:mm:ss.fff") & "', 101)" ' new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                Case Else
+                    res = "'Error. Tipo desconocido'"
+            End Select
+
+            Return res
+
+        End Function
+
+        Public Shared Function objectToDTSparam(ByVal objeto As Object) As String
+
+            If objeto Is Nothing Then Return ""
+
+            If IsDBNull(objeto) Then Return ""
+
+            Dim res As String = ""
+            Dim strType As String
+
+            If (objeto.GetType().IsEnum) Then
+                strType = [Enum].GetUnderlyingType(objeto.GetType()).ToString()
+            Else
+                strType = objeto.GetType().ToString()
+            End If
+
+            Select Case strType.ToString.ToLower
+                Case "system.int16", "system.int32", "system.int64", "system.single", "system.double", "system.decimal", "system.byte"
+                    res = """" & CDbl(objeto).ToString(System.Globalization.CultureInfo.CurrentCulture) & """" 'System.Globalization.CultureInfo.CreateSpecificCulture("en-US")
+
+                Case "system.string"
+                    Dim reg As New System.Text.RegularExpressions.Regex("""")
+                    res = """" & reg.Replace(objeto.ToString(), """""") & """"
+
+                Case "system.boolean"
+                    res = """" & IIf(objeto, "1", "0") & """"
+
+                Case "system.datetime"
+                    Dim d As DateTime = objeto
+                    res = """" & d.ToString(System.Globalization.CultureInfo.CurrentCulture) & """"
+                Case Else
+                    res = "Error. Tipo desconocido"
+            End Select
+
+            Return res
+
+        End Function
+        Public Shared Function objectToScriptString(ByVal objeto As Object, Optional culture As String = "en-US") As String
+
+            If objeto Is Nothing Then Return ""
+
+            If IsDBNull(objeto) Then Return ""
+
+            Dim res As String = ""
+            Dim strType As String
+
+            If (objeto.GetType().IsEnum) Then
+                strType = [Enum].GetUnderlyingType(objeto.GetType()).ToString()
+            Else
+                strType = objeto.GetType().ToString()
+            End If
+
+            Select Case strType.ToString.ToLower
+                Case "system.int16", "system.int32", "system.int64", "system.single", "system.double", "system.decimal", "system.byte"
+                    res = "'" & CDbl(objeto).ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) & "'"
+
+                Case "system.string"
+                    '//Corregir caracter de escape "\"
+                    objeto = objeto.ToString().Replace("\", "\\")
+                    '//Corregir comillas simples
+                    objeto = objeto.ToString().Replace("'", "\'")
+                    ' //Corregir saltos de lineas
+                    objeto = objeto.ToString().Replace(vbCrLf, "\n")
+                    objeto = objeto.ToString().Replace(vbCr, "\r")
+                    objeto = objeto.ToString().Replace(vbLf, "\n")
+
+                    res = "'" & objeto.ToString() & "'"
+                Case "system.boolean"
+                    res = "'" & IIf(objeto, "true", "false") & "'"
+
+                Case "system.datetime"
+                    Dim d As DateTime = objeto
+                    Select Case culture
+                        Case "en-US"
+                            res = "'" & d.ToString("MM/dd/yyyy") & "'" '"new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                        Case "es-AR"
+                            res = "'" & d.ToString("dd/MM/yyyy") & "'" '"new Date(Date.parse('" + d.ToString(New System.Globalization.CultureInfo("en-US")) + "'))"
+                    End Select
+
+                Case Else
+                    res = "'Error. Tipo desconocido'"
+            End Select
+
+            Return res
+
+        End Function
+
+        Public Shared Function ParamTypeToSQLType(tipo As String) As String
+            Dim res As String = ""
+
+            Select Case Trim(tipo).ToLower
+                Case "int"
+                    res = "bigint"
+                Case "varchar", "file"
+                    res = "varchar(max)"
+                Case "datetime"
+                    res = "datetime"
+                Case "file"
+                    res = "varchar"
+                Case "money"
+                    res = "money"
+                Case "bit"
+                    res = "bit"
+                Case Else
+                    res = "varchar(max)"
+            End Select
+
+            Return res
+
+        End Function
+
+        Public Shared Function XMLTypeToAdoType(ByVal type As String) As ADODB.DataTypeEnum
+            'Cuando se pasa una fecha como parametro, el hijo de puta corta los decimales
+            'Para evitar eso pasamos las fechas como cadenas
+            'Cuando se quiere saber el tipo solamente se debe utilizar "XMLTypeToAdoType"
+            'Cuando se quiere saber el tipo para utilizar como parámetro se dele utilizar "XMLTypeToAdoTParamType"
+
+            'Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            'bigint:     i8() : adBigInt(bigint)
+            'smallint:   i2() : adSmallInt(smallint)
+            'tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            'int:        Int() : adInteger(Int)
+            'timestamp:  bin.hex() : adBinary(timestamp)
+            'float:      float() : adDouble(float)
+            'real:       r4() : adSingle(real)
+            'numeric:    number() : adNumeric(numeric)
+            'decimal : number :: adNumeric (decimal)
+            'smallmoney: number() : adCurrency(smallmoney)
+            'money:      number() : adCurrency(money)
+            'bit : boolean :: adBoolean (bit)
+            'date : string :: adVarWChar (date)
+            'datetimeoffset : string :: adVarWChar (datetimeoffset)
+            'datetime2 : string :: adVarWChar (datetime2)
+            'smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            'datetime:   DateTime() : adDBTimeStamp(DateTime)
+            'time : string :: adVarWChar (time)
+            'binary:     bin.hex() : adBinary(binary)
+            'varbinary:  bin.hex() : adVarBinary(varbinary)
+            'image:      bin.hex() : adLongVarBinary(Image)
+            'varchar : string :: adVarChar (varchar)
+            'char : string :: adChar (char)
+            'nvarchar : string :: adVarWChar (nvarchar)
+            Select Case type
+                Case "i8"
+                    Return ADODB.DataTypeEnum.adBigInt
+                Case "i2"
+                    Return ADODB.DataTypeEnum.adSmallInt
+                Case "ui1"
+                    Return ADODB.DataTypeEnum.adTinyInt
+                Case "int"
+                    Return ADODB.DataTypeEnum.adInteger
+                Case "bin.hex"
+                    Return ADODB.DataTypeEnum.adVarBinary
+                Case "float"
+                    Return ADODB.DataTypeEnum.adDouble
+                Case "r4"
+                    Return ADODB.DataTypeEnum.adSingle
+                Case "number"
+                    Return ADODB.DataTypeEnum.adNumeric
+                Case "decimal"
+                    Return ADODB.DataTypeEnum.adDecimal
+                Case "boolean"
+                    Return ADODB.DataTypeEnum.adBoolean
+                Case "dateTime"
+                    Return ADODB.DataTypeEnum.adDBTimeStamp
+                    'Return ADODB.DataTypeEnum.adVarChar
+                Case "string", "uuid"
+                    Return ADODB.DataTypeEnum.adVarChar
+                Case Else
+                    Return ADODB.DataTypeEnum.adIUnknown
+            End Select
+
+        End Function
+        Public Shared Function XMLTypeToAdoParamType(ByVal type As String) As ADODB.DataTypeEnum
+            'Cuando se pasa una fecha como parametro, el hijo de puta corta los decimales
+            'Para evitar eso pasamos las fechas como cadenas
+            'Cuando se quiere saber el tipo solamente se debe utilizar "XMLTypeToAdoType"
+            'Cuando se quiere saber el tipo para utilizar como parámetro se dele utilizar "XMLTypeToAdoTParamType"
+
+            'Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            'bigint:     i8() : adBigInt(bigint)
+            'smallint:   i2() : adSmallInt(smallint)
+            'tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            'int:        Int() : adInteger(Int)
+            'timestamp:  bin.hex() : adBinary(timestamp)
+            'float:      float() : adDouble(float)
+            'real:       r4() : adSingle(real)
+            'numeric:    number() : adNumeric(numeric)
+            'decimal : number :: adNumeric (decimal)
+            'smallmoney: number() : adCurrency(smallmoney)
+            'money:      number() : adCurrency(money)
+            'bit : boolean :: adBoolean (bit)
+            'date : string :: adVarWChar (date)
+            'datetimeoffset : string :: adVarWChar (datetimeoffset)
+            'datetime2 : string :: adVarWChar (datetime2)
+            'smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            'datetime:   DateTime() : adDBTimeStamp(DateTime)
+            'time : string :: adVarWChar (time)
+            'binary:     bin.hex() : adBinary(binary)
+            'varbinary:  bin.hex() : adVarBinary(varbinary)
+            'image:      bin.hex() : adLongVarBinary(Image)
+            'varchar : string :: adVarChar (varchar)
+            'char : string :: adChar (char)
+            'nvarchar : string :: adVarWChar (nvarchar)
+            Select Case type
+                Case "i8"
+                    Return ADODB.DataTypeEnum.adBigInt
+                Case "i2"
+                    Return ADODB.DataTypeEnum.adSmallInt
+                Case "ui1"
+                    Return ADODB.DataTypeEnum.adTinyInt
+                Case "int"
+                    Return ADODB.DataTypeEnum.adInteger
+                Case "bin.hex"
+                    Return ADODB.DataTypeEnum.adVarBinary
+                Case "float"
+                    Return ADODB.DataTypeEnum.adDouble
+                Case "r4"
+                    Return ADODB.DataTypeEnum.adSingle
+                Case "number"
+                    Return ADODB.DataTypeEnum.adNumeric
+                Case "decimal"
+                    Return ADODB.DataTypeEnum.adDecimal
+                Case "boolean"
+                    Return ADODB.DataTypeEnum.adBoolean
+                Case "dateTime"
+                    'Return ADODB.DataTypeEnum.adDBTimeStamp
+                    Return ADODB.DataTypeEnum.adVarChar
+                Case "string", "uuid"
+                    Return ADODB.DataTypeEnum.adVarChar
+                Case Else
+                    Return ADODB.DataTypeEnum.adIUnknown
+            End Select
+
+        End Function
+
+        'Public Shared Function ADOTypeToScript(ByVal type As ADODB.DataTypeEnum) As String
+        '    Return "'" & ADOTypeToXMLType(type) & "'"
+        'End Function
+        Public Shared Function ADOTypeToXMLType(ByVal type As ADODB.DataTypeEnum) As String
+            'Tipo de dato SQL: tipo Dato XML : Tipo Dato ADO
+            'bigint:     i8() : adBigInt(bigint)
+            'smallint:   i2() : adSmallInt(smallint)
+            'tinyint:    ui1() : adUnsignedTinyInt(tinyint)
+            'int:        Int() : adInteger(Int)
+            'timestamp:  bin.hex() : adBinary(timestamp)
+            'float:      float() : adDouble(float)
+            'real:       r4() : adSingle(real)
+            'numeric:    number() : adNumeric(numeric)
+            'decimal : number :: adNumeric (decimal)
+            'smallmoney: number() : adCurrency(smallmoney)
+            'money:      number() : adCurrency(money)
+            'bit : boolean :: adBoolean (bit)
+            'date : string :: adVarWChar (date)
+            'datetimeoffset : string :: adVarWChar (datetimeoffset)
+            'datetime2 : string :: adVarWChar (datetime2)
+            'smalldatetime: DateTime() : adDBTimeStamp(smalldatetime)
+            'datetime:   DateTime() : adDBTimeStamp(DateTime)
+            'time : string :: adVarWChar (time)
+            'binary:     bin.hex() : adBinary(binary)
+            'varbinary:  bin.hex() : adVarBinary(varbinary)
+            'image:      bin.hex() : adLongVarBinary(Image)
+            'varchar : string :: adVarChar (varchar)
+            'char : string :: adChar (char)
+            'nvarchar : string :: adVarWChar (nvarchar)
+
+            Select Case type
+                Case ADODB.DataTypeEnum.adBigInt, ADODB.DataTypeEnum.adUnsignedBigInt
+                    Return "i8"
+                Case ADODB.DataTypeEnum.adSmallInt, ADODB.DataTypeEnum.adUnsignedSmallInt
+                    Return "i2"
+                Case ADODB.DataTypeEnum.adTinyInt, ADODB.DataTypeEnum.adUnsignedTinyInt
+                    Return "ui1"
+                Case ADODB.DataTypeEnum.adInteger
+                    Return "int"
+                Case ADODB.DataTypeEnum.adBinary, ADODB.DataTypeEnum.adVarBinary, ADODB.DataTypeEnum.adLongVarBinary
+                    Return "bin.hex"
+                Case ADODB.DataTypeEnum.adDouble
+                    Return "float"
+                Case ADODB.DataTypeEnum.adSingle
+                    Return "r4"
+                Case ADODB.DataTypeEnum.adNumeric, ADODB.DataTypeEnum.adCurrency
+                    Return "number"
+                Case ADODB.DataTypeEnum.adDecimal
+                    Return "decimal"
+                Case ADODB.DataTypeEnum.adBoolean
+                    Return "boolean"
+                Case ADODB.DataTypeEnum.adDBTimeStamp
+                    Return "dateTime"
+
+                Case ADODB.DataTypeEnum.adChar, ADODB.DataTypeEnum.adLongVarChar, ADODB.DataTypeEnum.adLongVarWChar, ADODB.DataTypeEnum.adVarChar, ADODB.DataTypeEnum.adVarWChar, ADODB.DataTypeEnum.adWChar
+                    Return "string"
+                Case Else
+                    Return "desconocido"
+            End Select
+
+        End Function
+
+        Public Shared Function DateDiffMilliseconds(ByVal ini As Date, ByVal fin As Date) As Double
+            Dim ts As TimeSpan = fin.Subtract(ini)
+            Return ts.TotalMilliseconds
+        End Function
+
+        Public Shared Function RamdomString(length As Integer, Optional ByVal especialchars As String = "") As String
+            Randomize()
+            Dim str As String = ""
+            Dim chars As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" & especialchars
+            Dim pos As Integer
+            While str.Length < length
+                pos = Rnd() * (chars.Length - 1)
+                str += chars.Substring(pos, 1)
+            End While
+            Return str
+        End Function
+
+        Public Shared Function RamdomInteger(length As Integer) As String
+            Randomize()
+            Dim str As String = ""
+            Dim chars As String = "0123456789"
+            Dim pos As Integer
+            While str.Length < length
+                pos = Rnd() * (chars.Length - 1)
+                str += chars.Substring(pos, 1)
+            End While
+            Return str
+        End Function
+
+
+        ''' <summary>
+        ''' Obtiene un ID unico basado en la fecha actual (YYYYMMDD hhmmss) más un valor random configurable
+        ''' </summary>
+        ''' <param name="length_rnd">El valor mínimo devulto es de 18 dígitos. Este parámetro configura el largo adicional variable sobre los 12 digitos base. El valor por defecto de length_rnd es 6, por lo tanto el largo total es de 18 caracteres.</param>
+        ''' <returns></returns>
+        Public Shared Function getUniqueId(Optional ByVal length_rnd As Integer = 6) As String
+            Dim fecha As DateTime = Now()
+            Dim extra As Byte() = {BitConverter.GetBytes(fecha.Year)(0), fecha.Month, fecha.Day, fecha.Hour, fecha.Minute, fecha.Second, BitConverter.GetBytes(_unique_id_increment)(0), BitConverter.GetBytes(_unique_id_increment)(1)}
+            Dim strExtra As String = System.Convert.ToBase64String(extra)
+            Dim newId As String = nvConvertUtiles.RamdomString(length_rnd) & strExtra
+            _unique_id_increment += 1
+            If _unique_id_increment > 32000 Then _unique_id_increment = 0
+
+            Return newId
+        End Function
+
+
+        Public Shared Function BinhexToBytes2(strBinhex As String) As Byte()
+            If strBinhex Is Nothing Then Return Nothing
+            If strBinhex = "" Then
+                Dim res(0) As Byte
+                Return res
+            End If
+            Dim strXML As String = "<data>" & strBinhex & "</data>"
+            Dim r As System.Xml.XmlTextReader = New System.Xml.XmlTextReader(New System.IO.StringReader(strXML))
+            r.MoveToContent()
+            Dim buffLenght As Integer = 1024
+            Dim buf(buffLenght - 1) As Byte
+            Dim bytesRead As Integer
+            Dim ms2 As New System.IO.MemoryStream
+            Do
+                bytesRead = r.ReadBinHex(buf, 0, buf.Length)
+                ms2.Write(buf, 0, bytesRead)
+            Loop While (r.Name = "data")
+            r.Close()
+            Dim bytes(ms2.Length - 1) As Byte
+            ms2.Position = 0
+            ms2.Read(bytes, 0, ms2.Length)
+            ms2.Close()
+            Return bytes
+        End Function
+
+        Public Shared Function BinhexToBytes(strBinhex As String) As Byte()
+            Dim res() As Byte
+            Dim strReg As String = "[^1234567890ABCDEF]*"
+            Dim reg As New Text.RegularExpressions.Regex(strReg, System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+            strBinhex = reg.Replace(strBinhex, "")
+            Dim hex As String
+            ReDim res(strBinhex.Length / 2 - 1)
+            Dim position As Integer = 0
+            Dim _byte As Byte
+            While strBinhex.Length > 0
+                hex = strBinhex.Substring(0, 2)
+                strBinhex = strBinhex.Substring(2)
+                _byte = Byte.Parse(hex, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture)
+                res(position) = _byte
+                position += 1
+            End While
+            Return res
+        End Function
+
+        Public Shared Function BytesToBinhex2(bytes As Byte()) As String
+            If bytes Is Nothing Then Return Nothing
+            If bytes.Length = 0 Then Return ""
+            Dim ms As New System.IO.MemoryStream
+            Dim XmlWriterSettings As New System.Xml.XmlWriterSettings()
+            XmlWriterSettings.Encoding = currentEncoding
+            Dim writer As System.Xml.XmlWriter = System.Xml.XmlWriter.Create(ms, XmlWriterSettings)
+            writer.WriteStartDocument()
+            writer.WriteStartElement("data")
+            writer.WriteBinHex(bytes, 0, bytes.Length)
+            writer.WriteEndElement()
+            writer.WriteEndDocument()
+            writer.Close()
+            ms.Position = 0
+            Dim xmlBytes(ms.Length) As Byte
+            ms.Read(xmlBytes, 0, ms.Length)
+            Dim strXML As String = currentEncoding.GetString(xmlBytes)
+            Dim oXML As New System.Xml.XmlDocument
+            oXML.LoadXml(strXML)
+            Return oXML.DocumentElement.ChildNodes(0).InnerText
+        End Function
+
+        Public Shared Function BytesToBinhex(bytes As Byte()) As String
+            If bytes Is Nothing Then Return Nothing
+            If bytes.Length = 0 Then Return ""
+
+            Dim res As String = BitConverter.ToString(bytes)
+            res = res.Replace("-", "")
+            Return res
+        End Function
+
+        Public Shared Function JSScriptToObject(script As String, Optional def As Object = Nothing) As Object
+            Dim res As Object = def
+            Try
+                'Dim j As New JScriptEval
+                'Return j.Evaluate(script)
+                'If _JScript_engine Is Nothing Then
+                ' _JScript_engine = Microsoft.JScript.Vsa.VsaEngine.CreateEngine()
+                'End If
+
+                'res = Microsoft.JScript.Eval.JScriptEvaluate(script, _JScript_engine)
+
+                Return nvEvaluator.jsEvaluator.Eval(script)
+
+            Catch ex As Exception
+                Return def
+            End Try
+
+
+        End Function
+
+        Public Shared Function ObjectToDataType(valor As Object, type As DataTypes, Optional [default] As Object = Nothing) As Object
+            If valor Is Nothing Then Return [default]
+
+            If type = nvConvertUtiles.DataTypes.unknown Then Return valor
+
+            Dim res As Object = [default]
+
+            Select Case type
+                Case DataTypes.boolean
+                    res = If(valor.ToLower = "true", True, If(valor.ToLower = "false", False, [default]))
+
+                Case DataTypes.date
+                    Try
+                        If isNUllorEmpty(valor) Then
+                            res = Nothing
+                        Else
+                            res = Date.Parse(valor)
+                        End If
+                    Catch ex As Exception
+                        res = [default]
+                    End Try
+
+                Case DataTypes.datetime
+                    Try
+                        If isNUllorEmpty(valor) Then
+                            res = Nothing
+                        Else
+                            res = DateTime.Parse(valor)
+                        End If
+                    Catch ex As Exception
+                        res = [default]
+                    End Try
+
+                Case DataTypes.decimal Or DataTypes.money
+                    Try
+                        res = System.Convert.ToDouble(valor, System.Globalization.CultureInfo.InvariantCulture) 'CDbl(valor)
+                    Catch ex As Exception
+                        res = [default]
+                    End Try
+
+                Case DataTypes.int
+                    Try
+                        res = CLng(valor)
+                    Catch ex As Exception
+                        res = [default]
+                    End Try
+
+                Case DataTypes.varchar, DataTypes.file
+                    res = valor
+
+            End Select
+
+            Return res
+        End Function
+        Public Shared Function StringToDataType(valor As String, type As DataTypes, Optional [default] As Object = Nothing) As Object
+            Return ObjectToDataType(valor, type, [default])
+        End Function
+
+        Public Shared Function JSONToDictionary(strJSON As String, Optional IgnoreCaseName As Boolean = True) As Dictionary(Of String, Object)
+            ' Dezerializar el JSON a un object
+            Dim serializer As New System.Web.Script.Serialization.JavaScriptSerializer
+            Dim dic As Dictionary(Of String, Object) = serializer.Deserialize(Of Dictionary(Of String, Object))(strJSON)
+
+            Dim reg As New System.Text.RegularExpressions.Regex("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z") '"2009-02-15T00:00:00.000Z"
+            For index = 0 To dic.Keys.Count - 1
+                Dim key As String = dic.Keys(index)
+                If Not dic(key) Is Nothing AndAlso dic(key).GetType().ToString().ToLower() = "system.string" AndAlso reg.IsMatch(dic(key)) Then
+                    Dim fecha As DateTime = DateTime.Parse(dic(key), Nothing, System.Globalization.DateTimeStyles.RoundtripKind)
+                    dic(key) = fecha
+                End If
+            Next
+
+            If Not IgnoreCaseName Then
+                Return dic
+            Else
+                Return New Dictionary(Of String, Object)(dic, StringComparer.CurrentCultureIgnoreCase)
+            End If
+
+        End Function
+
+        Public Shared Function trsParamToSQLScript(paramsArray() As trsParam) As String
+            Dim SQLParams As String = ""
+
+            For i = LBound(paramsArray) To UBound(paramsArray)
+                Dim params As trsParam = paramsArray(i)
+                SQLParams &= "--Parámetros bloque """ & params.name & """" & vbCrLf
+                For Each param In params.Keys
+                    SQLParams &= "SET @" & param & " = " & nvConvertUtiles.objectToSQLScript(params(param)) & vbCrLf
+                Next
+            Next
+
+            Return SQLParams
+
+        End Function
+
+        Public Shared Function trsParamToSQLScript(params As trsParam) As String
+            Return trsParamToSQLScript({params})
+        End Function
+
+
+        ''' <summary>
+        ''' Valida que el tipo de datos del objeto se corresponda con el DataType de ADO
+        ''' </summary>
+        ''' <param name="obj"></param>
+        ''' <param name="Datatype"></param>
+        ''' <returns></returns>
+        Public Shared Function ValidateObjectAdoType(obj As Object, Datatype As ADODB.DataTypeEnum) As Boolean
+            If obj Is Nothing Then Return True
+
+            If IsDBNull(obj) Then Return True
+
+            Dim res As String = ""
+            Dim strType As String
+
+            If (obj.GetType().IsEnum) Then
+                strType = [Enum].GetUnderlyingType(obj.GetType()).ToString().ToLower
+            Else
+                strType = obj.GetType().ToString().ToLower
+            End If
+
+            Dim enteros() As ADODB.DataTypeEnum = {ADODB.DataTypeEnum.adBigInt, ADODB.DataTypeEnum.adInteger, ADODB.DataTypeEnum.adSmallInt, ADODB.DataTypeEnum.adTinyInt, ADODB.DataTypeEnum.adUnsignedBigInt, ADODB.DataTypeEnum.adUnsignedInt, ADODB.DataTypeEnum.adUnsignedSmallInt, ADODB.DataTypeEnum.adUnsignedTinyInt}
+            If enteros.Contains(Datatype) And Not {"system.int16", "system.int32", "system.int64", "system.byte"}.Contains(strType) Then
+                Return False
+            End If
+
+            Dim decimales() As ADODB.DataTypeEnum = {ADODB.DataTypeEnum.adCurrency, ADODB.DataTypeEnum.adDecimal, ADODB.DataTypeEnum.adDouble, ADODB.DataTypeEnum.adNumeric, ADODB.DataTypeEnum.adSingle}
+            If decimales.Contains(Datatype) And Not {"system.int16", "system.int32", "system.int64", "system.byte", "system.single", "system.double", "system.decimal"}.Contains(strType) Then
+                Return False
+            End If
+
+            Dim cadenas() As ADODB.DataTypeEnum = {ADODB.DataTypeEnum.adChar, ADODB.DataTypeEnum.adLongVarChar, ADODB.DataTypeEnum.adLongVarWChar, ADODB.DataTypeEnum.adVarChar, ADODB.DataTypeEnum.adVarWChar, ADODB.DataTypeEnum.adWChar}
+            If cadenas.Contains(Datatype) And Not {"system.string"}.Contains(strType) Then
+                Return False
+            End If
+
+            Dim fechas() As ADODB.DataTypeEnum = {ADODB.DataTypeEnum.adDate, ADODB.DataTypeEnum.adDBDate, ADODB.DataTypeEnum.adDBTime, ADODB.DataTypeEnum.adDBTimeStamp}
+            If fechas.Contains(Datatype) And Not {"system.datetime"}.Contains(strType) Then
+                Return False
+            End If
+
+            Dim boleanos() As ADODB.DataTypeEnum = {ADODB.DataTypeEnum.adBoolean}
+            If boleanos.Contains(Datatype) And Not {"system.boolean"}.Contains(strType) Then
+                Return False
+            End If
+
+            Return True
+
+        End Function
+
+        Public Enum DataTypes
+            [unknown] = -1
+            [boolean] = 1
+            [varchar] = 2
+            [int] = 3
+            [money] = 4
+            [decimal] = 4
+            [date] = 5
+            [datetime] = 6
+            [file] = 7
+        End Enum
+
+        Public Enum nvJS_format
+            [js_classic] = 1
+            [js_json] = 2
+        End Enum
+
+    End Class
+
+
+    'Public Class jscript
+
+    '    Private Shared _evaluator As Object
+    '    Private Shared _evaluatorType As Type
+
+    '    Private Shared ReadOnly _jscriptSource As String = _
+    '    "package Evaluator " & vbCrLf & _
+    '    "         {" & vbCrLf & _
+    '    "     class Evaluator " & vbCrLf & _
+    '    "            {" & vbCrLf & _
+    '    "               public function Eval(expr : String) : Object " & vbCrLf & _
+    '    "               { " & vbCrLf & _
+    '    "                  return eval(expr); " & vbCrLf & _
+    '    "               }" & vbCrLf & _
+    '    "            }" & vbCrLf & _
+    '    "         }"
+
+    '    Shared Sub New()
+    '        If _evaluator Is Nothing Then
+    '            Dim compiler As ICodeCompiler
+    '            compiler = (New JScriptCodeProvider()).CreateCompiler()
+    '            Dim parameters As New CompilerParameters
+    '            parameters.GenerateInMemory = True
+    '            Dim results As CompilerResults = compiler.CompileAssemblyFromSource(parameters, _jscriptSource)
+    '            Dim assembly As Reflection.Assembly = results.CompiledAssembly
+    '            _evaluatorType = assembly.GetType("Evaluator.Evaluator")
+    '            _evaluator = Activator.CreateInstance(_evaluatorType)
+    '        End If
+    '        'Return _evaluator
+    '    End Sub
+
+    '    Public Shared Function Eval(statement As String) As Object
+    '        'Return _evaluatorType.InvokeMember(
+    '        '         "Eval",
+    '        '         System.Reflection.BindingFlags.InvokeMethod,
+    '        '         Nothing,
+    '        '         _evaluator,
+    '        '         New Object() {statement}
+    '        '      )
+    '        Return _evaluator.Eval(statement)
+    '    End Function
+
+    '    Public Shared Function EvalToString(statement As String) As String
+    '        Dim o = Eval(statement)
+    '        Return o.ToString()
+    '    End Function
+
+    '    Public Shared Function EvalToInteger(statement As String) As Integer
+    '        Dim s = EvalToString(statement)
+    '        Return Integer.Parse(s)
+    '    End Function
+
+    '    Public Shared Function EvalToDouble(statement As String) As Double
+    '        Dim s = EvalToString(statement)
+    '        Return Double.Parse(s)
+    '    End Function
+
+
+    'End Class
+
+
+End Namespace
+*/

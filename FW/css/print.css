@@ -1,0 +1,95 @@
+BODY
+{
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    FONT-SIZE: xx-small;
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    PADDING-TOP: 0px
+}
+.tb1
+{
+    BORDER-RIGHT: thin;
+    BORDER-TOP: thin;
+    FONT-SIZE: xx-small;
+    MARGIN: 0px;
+    BORDER-LEFT: thin;
+    WIDTH: 100%;
+    PADDING-TOP: 0px;
+    BORDER-BOTTOM: thin
+}
+.tbLabel
+{
+    FONT-SIZE: x-small
+}
+.tbLabel TD
+{
+    BORDER-RIGHT: thin;
+    BORDER-TOP: thin;
+    FONT-WEIGHT: bolder;
+    BORDER-LEFT: thin;
+    BORDER-BOTTOM: thin;
+    TEXT-ALIGN: center
+}
+.tbLabel0 TD
+{
+    BORDER-RIGHT: thin;
+    BORDER-TOP: thin;
+    FONT-WEIGHT: bolder;
+    BORDER-LEFT: thin;
+    COLOR: white;
+    BORDER-BOTTOM: thin;
+    BACKGROUND-COLOR: dimgray;
+    TEXT-ALIGN: center
+}
+.tb1 TD
+{
+    BORDER-RIGHT: medium none;
+    BORDER-TOP: medium none;
+    BORDER-LEFT: medium none;
+    BORDER-BOTTOM: medium none
+}
+.frame1
+{
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    PADDING-TOP: 0px;
+    BACKGROUND-COLOR: silver
+}
+H4
+{
+    FONT-WEIGHT: bolder;
+    PADDING-BOTTOM: 0px;
+    MARGIN-LEFT: 0px;
+    TEXT-ALIGN: center;
+    TEXT-DECORATION: underline
+}
+#nro_docu
+{
+    WIDTH: 80px
+}
+#numero
+{
+    WIDTH: 40px
+}
+#piso
+{
+    WIDTH: 40px
+}
+#depto
+{
+    WIDTH: 40px
+}
+.tbLabel0
+{
+    FONT-SIZE: x-small
+}
+.Tit1
+{
+    FONT-WEIGHT: bolder;
+    FONT-SIZE: x-small;
+    COLOR: black;
+    BACKGROUND-COLOR: silver
+}

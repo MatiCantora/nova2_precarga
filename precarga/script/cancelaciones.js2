@@ -1,0 +1,530 @@
+﻿
+//CARGA DE CSS
+let cssId = 'cssCancelaciones';
+if (!document.getElementById(cssId)) {
+    let head = document.getElementsByTagName('head')[0];
+    let link = document.createElement('link');
+    link.id = cssId;
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = '/precarga/css/cancelaciones.css';
+    link.media = 'all';
+    head.appendChild(link);
+}
+
+
+//Objeto con valores de cancelaciones
+let objCancelaciones = {};
+objCancelaciones.Creditos = [];
+objCancelaciones.creditosBase = {};
+objCancelaciones.creditosBase.cancelaciones = {};
+objCancelaciones.creditosBase.mora = {};
+objCancelaciones.totalCancelaciones = 0;
+objCancelaciones.LiberaCuota = 0;
+
+//gjmo -> ver si son necesarias
+objCancelaciones.cancelacionesSeleccionadas = {};
+objCancelaciones.Cancelaciones = {};
+
+
+objCancelaciones.limpiar = function () {
+
+    consulta.cancelacion = {}
+    //consulta.cancelacion.creditos = [];
+    consulta.cancelacion.cancelaciones = {};
+    consulta.cancelacion.importe_cancelar = 0;
+    consulta.cancelacion.totalCancelaciones = 0;
+    consulta.cancelacion.LiberaCuota = 0;
+
+    objCancelaciones.Creditos = [];
+    objCancelaciones.creditosBase = {};
+    objCancelaciones.creditosBase.cancelaciones = {};
+    objCancelaciones.creditosBase.mora = {};
+    objCancelaciones.totalCancelaciones = 0;
+    objCancelaciones.LiberaCuota = 0;
+    objCancelaciones.cancelacionesSeleccionadas = {};
+
+    //ver si se usan
+    objCancelaciones.Cancelaciones = {};
+
+    $('tbCredVigente').innerHTML = ''
+    $('tbCredVigente3').innerHTML = ''
+    $('tbCredVigente_tipo3').innerHTML = ''
+    $('tbCredVigente3_tipo3').innerHTML = ''
+}
+
+
+//Cargar cancelaciones
+objCancelaciones.actualizar = function (nro_docu, tipo_docu, sexo, tipo) {
+
+    //nro_docu = 10699373;
+    this.limpiar();
+
+    $('divSocio').show();
+    nvFW.bloqueo_activar($('divSocioRight'), 'blq_precarga_cs', 'Obteniendo información de saldos...')
+
+    let objThis = this
+    var rsC = new tRS();
+    rsC.async = true
+    rsC.onError = function (rsCS) {
+        rserror_handler("Error al consultar cancelaciones. Intente nuevamente.", 'blq_precarga_cs', 'divSocioRight')
+    }
+
+    rsC.onComplete = function (rsC) {
+
+        let i = 0;
+
+        while (!rsC.eof()) {
+
+            let Credito = {};
+
+            Credito['orden_aparicion'] = i
+            Credito['nro_credito'] = rsC.getdata('nro_credito')
+            Credito['banco'] = rsC.getdata('banco')
+            Credito['nro_banco'] = rsC.getdata('nro_banco')
+            Credito['mutual'] = rsC.getdata('mutual')
+            Credito['nro_mutual'] = rsC.getdata('nro_mutual')
+            Credito['importe_cuota'] = (rsC.getdata('nro_calc_tipo') == 4) ? parseFloat(rsC.getdata('importe_cuota_seg')).toFixed(2) : parseFloat(rsC.getdata('importe_cuota')).toFixed(2)
+
+            Credito['saldo'] = parseFloat(rsC.getdata('saldo_importe')).toFixed(2)
+            Credito['saldo_importe'] = parseFloat(rsC.getdata('saldo_importe')).toFixed(2)
+            Credito['saldo_nro_entidad'] = rsC.getdata('saldo_entidad')
+            Credito['cancela_vence'] = FechaToSTR(new Date(parseFecha(rsC.getdata('saldo_vencimiento'))))
+            Credito['cancela_cuota_paga'] = rsC.getdata('cuotas_pagadas')
+            Credito['nro_credito_seguro'] = rsC.getdata('nro_credito_seguro')
+            Credito['nro_calc_tipo'] = rsC.getdata('nro_calc_tipo')
+            Credito['cancela'] = false
+            //----------
+            Credito['nro_pago_concepto'] = rsC.getdata('nro_credito_origen')
+            Credito['tipo_cobro'] = rsC.getdata('tipo_cobro')
+            Credito['nro_tipo_cobro'] = rsC.getdata('nro_tipo_cobro')
+            Credito['porcentaje'] = parseInt(rsC.getdata('porcentaje'))
+
+            Credito['nro_sistema'] = parseInt(rsC.getdata('nro_sistema'))
+            Credito['nro_lote'] = parseInt(rsC.getdata('nro_lote'))
+            Credito['tipo_lote'] = rsC.getdata('tipo_lote')
+            Credito['clave_sueldo'] = parseInt(rsC.getdata('clave_sueldo'))
+            Credito['nro_credito_origen'] = rsC.getdata('nro_credito_origen')
+            Credito['level'] = 0
+            Credito['relacionados'] = []
+
+            objThis.Creditos.push(Credito)
+
+            if (Credito.nro_calc_tipo == '3')
+                objThis.creditosBase.mora[Credito['nro_credito']] = Credito
+            else objThis.creditosBase.cancelaciones[Credito['nro_credito']] = Credito
+
+            i++;
+            rsC.movenext()
+        }
+
+        //--------------------
+
+        if (rsC.recordcount > 0) {
+            objThis.relacionar();
+            objThis.Creditos.sort((a, b) => b.porcentaje - a.porcentaje);
+            objThis.mostrar();
+            mostrarCancelaciones(tipo);
+
+            if (tipo != 1)
+                checkAllCancelaciones(tipo);
+        }
+
+        nvFW.bloqueo_desactivar($('divSocioRight'), 'blq_precarga_cs')
+    }
+
+    let filtro_calc_tipos = consulta.resultado.tiene_mora == '1' ? '1,3,4' : '1,4';
+    rsC.open({ filtroXML: nvFW.pageContents["saldos"], params: "<criterio><params nro_docu='" + nro_docu + "' tipo_docu='" + tipo_docu + "' sexo='" + sexo + "' nro_calc_tipos='" + filtro_calc_tipos + "' /></criterio>" })
+    //SeleccionarPlanesMostrar()
+}
+
+
+//Dibujar cancelaciones y mora
+objCancelaciones.mostrar = function () {
+
+    var strHTMLC_cancelacion = "<table id='tbCred' class='tb1 highlightEven highlightTROver tableFixHead' cellspacing='1' cellpadding='1' style='vertical-align:top;'><thead><tr><th class='Tit1' style='width:10%'>Credito</th><th class='Tit1' width:30%>Banco</th><th class='Tit1' width:30%>Mutual</th><th class='Tit1' style='width:12%;text-align:right'>Cuota</th><th class='Tit1' style='width:13%;text-align:right'>Saldo</th><th class='Tit1' style='width:5%;text-align:center'>C</th></tr></thead><tbody>"
+    var strHTMLC_mora = "<table id='tbCred' class='tb1 highlightEven highlightTROver tableFixHead' cellspacing='1' cellpadding='1' style='vertical-align:top;'><thead><tr><th class='Tit1' style='width:10%'>Credito</th><th class='Tit1' width:30%>Banco</th><th class='Tit1' width:30%>Mutual</th><th class='Tit1' style='width:12%;text-align:right'>Cobro</th><th class='Tit1' style='width:13%;text-align:right'>Deuda</th><th class='Tit1' style='width:5%;text-align:center'><input type='checkbox' id='chkCred_all_mora' onchange='checkAllCancelaciones(3)' style='border:0' checked /></th></tr></thead><tbody>"
+
+    for (let j = 0; j < this.Creditos.length; j++) {
+
+        let creditoActual = this.Creditos[j];
+        this.Creditos[j].orden_aparicion = j;
+        let indice = this.Creditos[j].orden_aparicion;
+        switch (creditoActual['nro_calc_tipo']) {
+            case '1':
+            case '4':
+                //if (creditoActual['nro_tipo_cobro'] == nro_tipo_cobro)
+                strHTMLC_cancelacion += "<tr id='trCr_" + indice + "' style='cursor:pointer;' onclick='objCancelaciones.btnCancela_onClick(" + indice + ")'><td nowrap='true'>" + creditoActual.nro_credito + "</td><td>" + creditoActual.banco + "</td><td nowrap='true'>" + creditoActual.mutual + "</td><td style='text-align:right' nowrap='true'>$ " + creditoActual['importe_cuota'] + "</td><td style='text-align:right' nowrap='true'>$ " + creditoActual['saldo_importe'] + "</td><td nowrap='true' style='text-align:center'><input type='checkbox' id='chkCred_" + indice + "' style='border:0' /></td></tr>"
+                break;
+            case '3':
+                strHTMLC_mora += "<tr id='trCr_" + indice + "' style='cursor:pointer;' onclick='objCancelaciones.btnCancela_onClick(" + indice + ")'><td nowrap='true'>" + creditoActual.nro_credito + "</td><td>" + creditoActual.banco + "</td><td nowrap='true'>" + creditoActual.mutual + "</td><td style='text-align:left' nowrap='true'> " + creditoActual['tipo_cobro'] + "</td><td style='text-align:right' nowrap='true'>$ " + creditoActual['saldo_importe'] + "</td><td nowrap='true' style='text-align:center'><input type='checkbox' id='chkCred_" + indice + "' style='border:0' /></td></tr>"
+                break
+        }
+    }
+
+    //--------------------
+
+    strHTMLC_cancelacion += "</tbody></table>"
+    strHTMLC_mora += "</tbody></table>"
+
+    $('tbCredVigente').insert({ bottom: strHTMLC_cancelacion })
+    $('tbCredVigente_tipo3').insert({ bottom: strHTMLC_mora })
+
+
+}
+
+
+//######################################
+//#####---CANCELACIONES Y MORA-----#####
+//######################################
+
+
+//Cambiar vista entre cancelaciones y mora
+function mostrarCancelaciones(tipo) {
+
+    switch (tipo) {
+        case 1:
+            //if (motor.datos.tiene_mora != '1' && $('tbCredVigente').innerHTML == '')
+            //if ($('tbCredVigente').innerHTML == '')
+            //    objCancelaciones.actualizar(consulta.clienta.nro_docu, consulta.clienta.tipo_docu, consulta.clienta.sexo, 1)
+            //else {
+            $('tbCredVigente').show()
+            $('tbCredVigente_tipo3').hide()
+            $('titulo_cancelacion_tipo_1').classList.add('cancelaciones-efecto');
+            $('titulo_cancelacion_tipo_3').classList.remove('cancelaciones-efecto');
+            //}
+            break;
+        case 3:
+            $('tbCredVigente').hide()
+            $('tbCredVigente_tipo3').show()
+            $('titulo_cancelacion_tipo_3').classList.add('cancelaciones-efecto');
+            $('titulo_cancelacion_tipo_1').classList.remove('cancelaciones-efecto');
+            break;
+        default:
+            alert("Hubo un error al mostrar el tipo de cancelacion.");
+            break;
+    }
+}
+
+
+//Chequear todas las cancelaciones/mora
+function checkAllCancelaciones(nro_calc_tipo) {
+
+    let objCreditos = {};
+    let checked = false;
+
+    switch (nro_calc_tipo) {
+        case 1:
+            checked = false;
+            objCreditos = objCancelaciones.creditosBase.cancelaciones;
+            checkAllCancelaciones(4)
+            break;
+        case 3:
+            checked = $('chkCred_all_mora').checked;
+            objCreditos = objCancelaciones.creditosBase.mora;
+            break;
+        case 4:
+            checked = false;
+            objCreditos = objCancelaciones.creditosBase.cancelaciones;
+            break;
+    }
+
+    nvFW.bloqueo_activar($('divSocioRight'), 'blq_cs_check_all' + nro_calc_tipo, 'Calculando analisis...')
+    setTimeout(function () {
+        Object.keys(objCreditos).forEach(function (key, index) {
+            let indice = objCreditos[key].orden_aparicion
+            if (!!$('chkCred_' + indice) && $('chkCred_' + indice).checked != checked)
+                objCancelaciones.btnCancela_onClick(indice, true)
+        });
+        nvFW.bloqueo_desactivar($('divSocioRight'), 'blq_cs_check_all' + nro_calc_tipo)
+    }, 500)
+
+}
+
+
+objCancelaciones.validar_onclick_cancelacion = function (cancelacion) {
+
+    let mensaje = '';
+    let permitir = cancelacion.nro_mutual == consulta.oferta.nro_mutual
+    if (!permitir)
+        mensaje = 'Este crédito no correponde a la MUTUAL consultada. Para más información, por favor dirijase a Mesa de Ayuda.';
+    else {
+        //permitir = cancelacion.nro_tipo_cobro == consulta.nro_tipo_cobro;
+
+        //if (!permitir)
+        //    mensaje = 'Este crédito no correponde al COBRO consultado. Para más información, por favor dirijase a Mesa de Ayuda.';
+        //else {
+        switch (consulta.cliente.trabajo.scu_id + '|' + consulta.cliente.trabajo.sce_id) {
+            case '2|7':
+                permitir = permitir && consulta.cliente.trabajo.tipo_lote == cancelacion.tipo_lote
+                break;
+            case '2|8':
+                permitir = permitir && consulta.cliente.trabajo.tipo_lote == cancelacion.tipo_lote;
+                permitir = permitir && consulta.cliente.trabajo.nro_lote == cancelacion.nro_lote;
+                break;
+            case '8|10':
+            case '8|12':
+            case '8|14':
+            case '8|15':
+                permitir = permitir && consulta.cliente.trabajo.tipo_lote == cancelacion.tipo_lote;
+                permitir = permitir && consulta.cliente.trabajo.nro_sistema == cancelacion.nro_sistema;
+                break;
+            case '8|11':
+                permitir = permitir && consulta.cliente.trabajo.nro_sistema == cancelacion.nro_sistema;
+                permitir = permitir && consulta.cliente.trabajo.nro_lote == cancelacion.nro_lote;
+                permitir = permitir && consulta.cliente.trabajo.clave_sueldo == cancelacion.clave_sueldo;
+                break;
+        }
+        if (!permitir)
+            mensaje = 'Este crédito no corresponde al BENEFICIO consultado. Para más información, por favor dirijase a Mesa de Ayuda.';
+    }
+    //}
+    return { permitir: permitir, mensaje: mensaje };
+}
+
+
+//gjmo -> simplificar
+//Chequear cancelacion/mora
+objCancelaciones.btnCancela_onClick = function (i, destildar) {
+
+    //------------------------
+    let Creditos = this.Creditos;
+    let itemSeleccionado = this.Creditos[i];
+    let numCreditoSeleccionado = itemSeleccionado.nro_credito;
+    let cancelacionesSeleccionadas = this.cancelacionesSeleccionadas;
+    let Cancelaciones = this.Cancelaciones;
+
+    //validar cancelaciones
+    if (!destildar && itemSeleccionado.nro_calc_tipo != '3') {
+        let cancelacionValida = this.validar_onclick_cancelacion(itemSeleccionado)
+        if (!cancelacionValida.permitir) {
+            $('chkCred_' + i).checked = false;
+            alert(cancelacionValida.mensaje)
+            return;
+        }
+    }
+
+    //si la cancelacion/mora no esta seleccionada
+    if (!cancelacionesSeleccionadas[numCreditoSeleccionado]) {
+        cancelacionesSeleccionadas[numCreditoSeleccionado] = itemSeleccionado.nro_calc_tipo;
+
+        //deshabilitar nro_calc_tipo opuesto
+        this.disabledCalcTipoRelacionado(itemSeleccionado.nro_calc_tipo, numCreditoSeleccionado, true)
+
+    } else {
+
+        //comprobar si se esta clickeando nro_calc_tipo opuesto y disparar alert
+        if (cancelacionesSeleccionadas[numCreditoSeleccionado] != itemSeleccionado.nro_calc_tipo) {
+            $('chkCred_' + i).checked = false;
+
+            let errorMsg = (cancelacionesSeleccionadas[numCreditoSeleccionado] == 1) ? "Cancelaciones" : "Pago mora interna";
+
+            alert("El credito ya fue seleccionado en: " + errorMsg + ".");
+            return;
+        }
+        else {
+
+            //habilitar nro_calc_tipo opuesto
+            this.disabledCalcTipoRelacionado(itemSeleccionado.nro_calc_tipo, numCreditoSeleccionado, false)
+
+            // remover el credito con ese tipo de cancelacion del objeto
+            delete cancelacionesSeleccionadas[numCreditoSeleccionado];
+        }
+    }
+
+    //------------------------
+
+    //controlar check en base a clase del tr
+    var tr = $('trCr_' + i)
+    if (tr.className == 'Tit3') {
+        tr.removeClassName('Tit3')
+        $('chkCred_' + i).checked = false
+        this.postergacionRemove(Creditos[i]['nro_credito'], Creditos[i]['nro_calc_tipo']);
+    }
+    else {
+        tr.addClassName('Tit3')
+        $('chkCred_' + i).checked = true
+        this.postergacionAdd(Creditos[i]['nro_credito'], Creditos[i]['nro_calc_tipo']);
+    }
+
+    //Si tiene seguro forzar la selección
+    //deberia llamar a funcion btnCancela_onClick
+    for (var j in Creditos) {
+        if (j != i) {
+            if ((Creditos[j]['nro_credito_seguro'] != 0) && (Creditos[i]['nro_credito_seguro'] == Creditos[j]['nro_credito_seguro'])) {
+                var trS = $('trCr_' + j)
+                if ($('chkCred_' + i).checked == true) {
+                    trS.addClassName('Tit3')
+                    $('chkCred_' + j).checked = true
+                    Creditos[j]['cancela'] = true
+                }
+                else {
+                    trS.removeClassName('Tit3')
+                    $('chkCred_' + j).checked = false
+                    Creditos[j]['cancela'] = false
+                }
+            }
+        }
+    }
+
+    //gjmo -> los for se pueden unificar
+    //administrar importe en mano
+    //el for no es necesario, si agrega suma, si remueve resta
+    this.totalCancelaciones = 0;
+    this.LiberaCuota = 0
+
+    consulta.cancelacion.cancelaciones = {};
+    for (var x in Creditos) {
+        if (x == i)
+            if ($('chkCred_' + i).checked == true)
+                Creditos[x]['cancela'] = true
+            else
+                Creditos[x]['cancela'] = false
+        if (Creditos[x]['cancela'] == true) {
+            this.totalCancelaciones = parseFloat(parseFloat(this.totalCancelaciones) + parseFloat(Creditos[x]['saldo'])).toFixed(2)
+            //si no es pago de mora interna, libera cuota
+            if (Creditos[x]['nro_calc_tipo'] != 3)
+                this.LiberaCuota = parseFloat(parseFloat(this.LiberaCuota) + parseFloat(Creditos[x]['importe_cuota'])).toFixed(2)
+            //cargar objeto cancelaciones
+            consulta.cancelacion.cancelaciones[x] = Creditos[x];
+        }
+    }
+
+    consulta.cancelacion.LiberaCuota = this.LiberaCuota;
+    consulta.cancelacion.totalCancelaciones = this.totalCancelaciones;
+
+    analisis.set_etiqueta(17, this.LiberaCuota);
+    analisis.set_etiqueta('importe_a_liberar', this.LiberaCuota);
+    analisis.set_etiqueta('saldo_a_cancelar', this.totalCancelaciones);
+
+    analisis.actualizar();
+
+
+
+
+    /*
+    importe_max_cuota = parseFloat(parseFloat(cupo_disponible) + parseFloat(LiberaCuota)).toFixed(2)
+    importe_mano = 0
+    importe_mano = importe_neto - gastoscomerc - objCancelaciones.totalCancelaciones
+    $('strEnMano').innerHTML = ''
+    $('strEnMano').insert({ bottom: '$ ' + parseFloat(importe_mano).toFixed(2) })
+    */
+
+
+
+
+
+    //gjmo -> es igual a cancelacionesSeleccionadas?
+    //es necesario?
+    //Cancelaciones = {}
+    //calcula saldo a cancelar
+    //var j = 0
+    //for (var x in Creditos) {
+    //    if (Creditos[x]['cancela'] == true) {
+    //        j++
+    //        Cancelaciones[j] = {}
+    //        Cancelaciones[j]['cancela_cuota'] = Creditos[x]['importe_cuota']
+    //        Cancelaciones[j]['cancela_cupo'] = 0
+    //        Cancelaciones[j]['importe_pago'] = Creditos[x]['saldo']
+    //    }
+    //}
+    //saldo_a_cancelar = parseFloat(objCancelaciones.totalCancelaciones)
+    //$('saldo_a_cancelar').innerHTML = ''
+    //$('saldo_a_cancelar').insert({ bottom: parseFloat(objCancelaciones.totalCancelaciones).toFixed(2) })
+    //analisis_actualizar(false)
+    //if (nro_grupo == 0)
+    //    Validar_datos()
+}
+
+
+//Desabilitar mora/cancelacion con mismo numero de credito y distinto calc tipo
+objCancelaciones.disabledCalcTipoRelacionado = function (nro_calc_tipo, nro_credito, disabled) {
+
+    let creditoRelacionado = {};
+
+    if (nro_calc_tipo == 3) {
+        creditoRelacionado = this.creditosBase.cancelaciones;
+    } else {
+        creditoRelacionado = this.creditosBase.mora;
+    }
+
+    if (!!creditoRelacionado[nro_credito])
+        $('chkCred_' + creditoRelacionado[nro_credito].orden_aparicion).disabled = disabled;
+
+}
+
+
+//######################################
+//#######----Postergaciones------#######
+//######################################
+
+
+//Cargar relaciones entre creditos
+objCancelaciones.relacionar = function () {
+
+    var sumaLevel = function (objCreditos, nro_credito) {
+        //obtener raiz de postergaciones
+        if (!objCreditos[nro_credito].raiz)
+            objCreditos[nro_credito].raiz = nro_credito;
+
+        //si existe credito origen y el credito no fue evaluado (level = 0)
+        if (objCreditos[nro_credito].nro_credito_origen != 0 && objCreditos[nro_credito].level == 0 && !!objCreditos[objCreditos[nro_credito].nro_credito_origen]) {
+            //llamado recursivo para obtener nivel y raiz
+            resultado = sumaLevel(objCreditos, objCreditos[nro_credito].nro_credito_origen);
+            objCreditos[nro_credito].level = resultado.level + 1;
+            objCreditos[nro_credito].raiz = resultado.raiz;
+            //guardar relaciones con postergaciones en la raiz
+            objCreditos[resultado.raiz].relacionados.push(nro_credito);
+        }
+        return { level: objCreditos[nro_credito].level, raiz: objCreditos[nro_credito].raiz };
+    }
+
+    //Cargar niveles
+    var cargarRelaciones = function (objCreditos) {
+        Object.keys(objCreditos).forEach(function (key, index) {
+            sumaLevel(objCreditos, key)
+        });
+
+        //Cargar relaciones de la raiz con sus nodos
+        Object.keys(objCreditos).forEach(function (key, index) {
+            if (objCreditos[key].raiz != key) {
+                let raiz = objCreditos[key].raiz;
+                objCreditos[key].relacionados = [objCreditos[key].raiz, ...objCreditos[raiz].relacionados];
+                objCreditos[key].relacionados.splice(objCreditos[key].relacionados.indexOf(key), 1);
+            }
+        });
+    }
+
+    cargarRelaciones(objCancelaciones.creditosBase.cancelaciones);
+    cargarRelaciones(objCancelaciones.creditosBase.mora);
+
+}
+
+
+//Chequear creditos relacionados
+objCancelaciones.postergacionAdd = function (nro_credito, nro_calc_tipo) {
+
+    this.administrarPostergacion(nro_credito, nro_calc_tipo, true);
+
+}
+
+
+//Deschequear creditos relacionados
+objCancelaciones.postergacionRemove = function (nro_credito, nro_calc_tipo) {
+
+    this.administrarPostergacion(nro_credito, nro_calc_tipo, false);
+}
+
+
+objCancelaciones.administrarPostergacion = function (nro_credito, nro_calc_tipo, checked) {
+
+    let creditoPostergacion = nro_calc_tipo == 3 ? this.creditosBase.mora : this.creditosBase.cancelaciones
+    let rel = creditoPostergacion[nro_credito].relacionados;
+
+    for (var r = 0; r < rel.length; r++) {
+        //si existen relaciones con check en distinto estado
+        if (!$('chkCred_' + creditoPostergacion[rel[r]].orden_aparicion).checked == checked)
+            this.btnCancela_onClick(creditoPostergacion[rel[r]].orden_aparicion)
+    }
+
+}

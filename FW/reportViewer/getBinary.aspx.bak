@@ -1,0 +1,85 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%@ Import Namespace="nvFW" %>
+<%
+    /***************************************************/
+    // Recuperar parametros
+    /***************************************************/
+    //JMO: No me gusta esta pagina, no se puede pasar un SQL como parámetro
+    //RESOLVER DE OTRA FORMA
+    System.Diagnostics.Debugger.Break();
+
+    tnvExportarParam paramExport = new tnvExportarParam();
+    //Parametros de destino
+    paramExport.ContentType = nvUtiles.obtenerValor("ContentType", nvUtiles.obtenerValor("ContectType", ""));        //Identifica ese valor en el flujo de salida
+    paramExport.target = nvUtiles.obtenerValor("destinos", "");
+    if (paramExport.target == "") paramExport.target = nvUtiles.obtenerValor("target", ""); //Itenfifica donde será envíado el flujo de salida
+
+    String salida_tipo = nvUtiles.obtenerValor("salida_tipo", "adjunto");
+    if (salida_tipo.ToLower() == "adjunto")
+        paramExport.salida_tipo = nvenumSalidaTipo.adjunto;         //Identifica si en la llamada será devuelto el resultado o un informe de resultado
+    else
+        paramExport.salida_tipo = nvenumSalidaTipo.estado;
+
+    //Parametros de datos
+    string select = nvUtiles.obtenerValor("select");
+
+
+    /*****************************************************/
+    // Variable de error
+    /*****************************************************/
+    tError objError = new tError();
+    objError.salida_tipo = salida_tipo;
+    objError.debug_src = "getBinary.aspx";
+
+    /*********************************************************************/
+    //Recuperar datos
+    //var strSQL = XMLtoSQL(filtroXML, filtroWhere)
+    //Procesa el filtroXML y vevuelve un recordset con los datos resultado.
+    //Si no devuelve el recordset da error
+    //Luego controla el resultado, si existe el campo forxml_data, carga el 
+    //XML con esos datos, sino carga el resultado del recordset
+    /*********************************************************************/
+    byte[] BinaryData = null;
+    try
+    {
+        ADODB.Recordset rs = nvDBUtiles.DBOpenRecordset(select);
+
+        BinaryData = (byte[])rs.Fields[0].Value;
+
+
+        nvDBUtiles.DBCloseRecordset(ref rs);
+
+        //ContentType = 'text/html' 
+        //Response.CharSet = "ISO-8859-1"
+        // ext = '.html'
+
+    }
+    catch (System.Exception e)
+    {
+        objError.parse_error_script(ref e);
+        objError.titulo = "Error al recuperar la información";
+        //objError.error_script(e)
+        //objError.mostrar_error();
+    }
+
+
+    /***********************************************************/
+    // Analizar salida en función de salida_tipo y target
+    /***********************************************************/
+    string path_temp = ""; //= Request.ServerVariables("APPL_PHYSICAL_PATH").Item + "reportViewer\\tmp\\" + archivo_tmp
+    string TextData = "";
+    trsParam rsParam = new trsParam();
+    if (objError.numError == 0)
+        objError = reportViewer.exportarDestino(paramExport, ref BinaryData, ref TextData, ref path_temp, ref rsParam);
+
+    if (paramExport.salida_tipo == nvenumSalidaTipo.estado)
+        objError.response();
+    else
+        if (objError.numError != 0 && paramExport.salida_tipo == nvenumSalidaTipo.adjunto)
+        {
+            objError.salida_tipo = "adjunto";
+            objError.mostrar_error();
+        }
+    
+%>

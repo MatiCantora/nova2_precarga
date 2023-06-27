@@ -1,0 +1,75 @@
+.O TD
+{
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    PADDING-TOP: 0px
+}
+.O
+{
+    FONT-SIZE: 11px;
+    WIDTH: 100%;
+    CURSOR: default;
+    FONT-FAMILY: Tahoma
+}
+.tab_nosel
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_nosel.jpg)
+}
+.tab_sel
+{
+    FONT-WEIGHT: bolder;
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_sel.jpg)
+}
+.tab_sel_izq
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_sel_izq.jpg);
+    WIDTH: 5px
+}
+.tab_sel_der
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_sel_der.jpg);
+    WIDTH: 5px
+}
+.tab_nosel_izq
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_nosel_izq.jpg);
+    WIDTH: 5px
+}
+.tab_nosel_der
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_nosel_der.jpg);
+    WIDTH: 5px
+}
+.tab_celdaimg
+{
+    WIDTH: 15px
+}
+.O TR
+{
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_relleno.jpg);
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    PADDING-TOP: 0px;
+    HEIGHT: 24px
+}
+.tab_nosel_onOver
+{
+    BACKGROUND-IMAGE: url(../image/tabSvr/bg_tab_nosel_onOver.jpg);
+    CURSOR: hand
+}
+.panel_oculto
+{
+    DISPLAY: none
+}
+.panel_visible
+{
+    MARGIN-TOP: 5px
+}
+.tab_inicio
+{
+    WIDTH: 10px
+}

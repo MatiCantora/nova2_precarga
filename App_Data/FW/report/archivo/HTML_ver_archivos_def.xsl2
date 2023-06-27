@@ -1,0 +1,1088 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882"
+				xmlns:rs='urn:schemas-microsoft-com:rowset' 
+				xmlns:z='#RowsetSchema'
+				xmlns:msxsl="urn:schemas-microsoft-com:xslt" 
+	      xmlns:foo="http://www.broadbase.com/foo" extension-element-prefixes="msxsl" exclude-result-prefixes="foo"
+        xmlns:user="urn:vb-scripts">
+  
+  <xsl:include href="..\..\..\fw\report\xsl_includes\vb_nvPageXSL.xsl"></xsl:include>
+	<xsl:include href="..\..\..\fw\report\xsl_includes\js_formato.xsl"  />
+
+
+  <msxsl:script language="vb" implements-prefix="user">
+    <msxsl:assembly name="System.Web"/>
+    <msxsl:using namespace="System.Web"/>
+    <![CDATA[
+
+      Dim filtro_ver_cuotas_xsl
+      Public function getfiltrosXML() as String
+        
+          Page.contents("filtro_archivos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='archivos'><campos>*</campos><filtro></filtro></select></criterio>")
+          Page.contents("filtro_archivos_grupos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verArchivos_grupos'><campos>distinct nro_archivo_def_grupo, archivo_def_grupo</campos><filtro></filtro></select></criterio>")
+          Page.contents("filtro_verArchivos_idtipo") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verArchivos_idtipo'><campos>*,dbo.rm_tiene_permiso('permisos_archivos', permiso) as permiso_tiene</campos><filtro></filtro><orden>orden</orden></select></criterio>")
+          Page.contents("filtro_credito") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='credito'><campos>nro_banco</campos><filtro></filtro></select></criterio>")
+          Page.contents("filtro_verArchivos_parametros") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verArchivos_parametros'><campos>*</campos><orden></orden><grupo></grupo><filtro></filtro></select></criterio>")
+          Page.contents("filtro_verArchivos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='VerArchivos'><campos>*</campos><filtro></filtro></select></criterio>")
+
+          return ""
+          
+      End Function
+		
+		  Dim a as String = getfiltrosXML()   
+		]]>
+  </msxsl:script>
+
+	<msxsl:script language="javascript" implements-prefix="foo">
+		<![CDATA[
+		
+		
+		]]>
+	</msxsl:script>
+  
+  <xsl:output method="html" version="1.0" encoding="Latin-1" omit-xml-declaration="yes"/>
+	<xsl:template match="/">
+		<html>
+			<head>
+				<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+				
+				<title>Generado con tienda-html.xsl</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+        <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+        <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+        <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+        <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+				<script type="text/javascript" src="/fw/script/NOSIS.js"></script>
+        <xsl:value-of disable-output-escaping="yes" select="user:head_init()"/>
+          
+        <script language="javascript" >
+				
+        <xsl:comment>
+        var nro_def_archivo_actual = '<xsl:value-of select="xml/parametros/nro_def_archivo_actual"/>'
+        
+        <xsl:variable name="id_tipo" select="xml/parametros/id_tipo"/>
+        <xsl:variable name="nro_archivo_id_tipo" select="xml/parametros/nro_archivo_id_tipo"/>
+
+        var id_tipo = ''
+        var nro_archivo_id_tipo = ''
+        var pvid_tipo = ''
+        var pvnro_archivo_id_tipo = ''
+        <xsl:if test="$id_tipo">
+				id_tipo = '<xsl:value-of select="$id_tipo"/>'
+				pvid_tipo = '<xsl:value-of select="$id_tipo"/>'
+				</xsl:if>
+        <xsl:if test="$id_tipo">
+          nro_archivo_id_tipo = '<xsl:value-of select="$nro_archivo_id_tipo"/>'
+          pvnro_archivo_id_tipo = '<xsl:value-of select="$nro_archivo_id_tipo"/>'
+        </xsl:if>
+				
+        <xsl:variable name="nro_docu" select="xml/rs:data/z:row/@nro_docu"/>
+				var nro_docu = ''
+				<xsl:if test="$id_tipo">
+				nro_docu = '<xsl:value-of select="$nro_docu"/>'
+				</xsl:if>
+			    <xsl:variable name="nro_vendedor" select="xml/rs:data/z:row/@nro_vendedor"/>
+				var nro_vendedor = ''
+				<xsl:if test="$nro_vendedor">
+					nro_vendedor = '<xsl:value-of select="$nro_vendedor"/>'
+				</xsl:if>
+				var nro_archivo
+				<xsl:variable name="nro_archivo" select="xml/rs:data/z:row/@nro_archivo"/>
+				<xsl:if test="$nro_archivo">
+					nro_archivo = '<xsl:value-of select="$nro_archivo"/>'
+				</xsl:if>
+				var permiso_nosis = '<xsl:value-of select="xml/rs:data/z:row/@permiso_nosis"/>'
+				<xsl:variable name="cuit" select="xml/rs:data/z:row/@cuit"/>
+        var cuit = ''
+        <xsl:if test="$cuit">
+        cuit = '<xsl:value-of select="$cuit"/>'
+        </xsl:if>
+				<![CDATA[
+						var estado;
+						var estados = "ACDEFIJLQSTUW";
+
+						var alert = function(msg) {
+						    Dialog.alert(msg, {
+						        className: "alphacube",
+						        width: 300,
+						        height: 100,
+						        okLabel: "cerrar"
+						    });
+						}
+
+						var archivos = new Array();
+
+						function seleccionar(nro_tipo_pago) {
+						    window.parent.editarPago(nro_tipo_pago)
+						}
+
+						function ChequearTodos(chkbox) {
+						    for (i = 0; ele = document.all.frm1.elements[i]; i++) {
+						        if (ele.type == 'checkbox')
+						            ele.checked = chkbox.checked
+						    }
+						}
+
+						function ABMDocumentos(nro_def_archivo,nro_def_detalle,filein, readonly, nro_archivo, tipo, permisos_tiene) {
+
+						    if (!_permiso_editar_archivos) {
+						        if (!_solo_pagare) {
+						            alert("No posee permisos para realizar esta acción")
+						            return;
+						        }
+						        //si a pesar de no tener permisos de edicion, no tiene permisos particulares para este archivo
+						    }
+
+						    if (permisos_tiene == 'False') {
+						        alert("No posee permisos para realizar esta acción")
+						        return;
+						    }
+
+						    var sp = 0;
+						    if ((_solo_pagare || permisos_tiene == 'True') && !_permiso_editar_archivos) sp = 1;
+
+						    var url = '\\fw\\archivo\\abmdocumentos.aspx?id_tipo='+ id_tipo +'&nro_archivo_id_tipo=' + nro_archivo_id_tipo + '&nro_def_archivo='+ nro_def_archivo +'&nro_def_detalle='+ nro_def_detalle +'&sp=' + sp;
+
+						    var Parametros = {};
+
+						    Parametros["id_tipo"] = id_tipo
+                Parametros["nro_archivo_id_tipo"] = nro_archivo_id_tipo
+						    Parametros["orden"] = filein
+						    if (readonly == 'False')
+						        Parametros["nro_archivo"] = nro_archivo
+
+						    window.top.documento = window.top.nvFW.createWindow({
+						        className: 'alphacube',
+						        url: url,
+						        title: 'ABM Documento',
+						        minimizable: false,
+						        maximizable: false,
+						        draggable: true,
+						        width: 700,
+						        height: 200,
+						        onShow: function() {
+						        },
+						        onClose: abmdocumentos_return
+						    });
+                
+                window.top.documento.options.userData = {}
+                window.top.documento.options.userData.param = Parametros
+						    window.top.documento.showCenter(true)
+						}
+
+						function abmdocumentos_return(win) {
+ 			        parent.cargarHistorial()
+						}
+
+
+						function verDocumentosWin(id_tipo, nro_archivo_id_tipo,nro_def_detalle) {
+						   
+               var Parametros = new Array();
+						    Parametros["id_tipo"] = id_tipo
+                Parametros["nro_archivo_id_tipo"] = nro_archivo_id_tipo
+						    Parametros["nro_def_detalle"] = nro_def_detalle
+
+						    window.top.documento = window.top.nvFW.createWindow({
+						        className: 'alphacube',
+						        url: '\\fw\\archivo\\verDocumentosWin.aspx',
+						        title: 'Historial Archivo',
+						        minimizable: false,
+						        maximizable: false,
+						        draggable: true,
+						        width: 700,
+						        height: 200,
+						        onShow: function() {
+						            window.top.documento.returnValue = Parametros
+						        },
+						        onClose: verDocumentosWin_return
+						    });
+
+						    window.top.documento.showCenter(true)
+						}
+
+
+						function verDocumentosWin_return(win) {
+						}
+
+						var wineditar
+
+						function editarDocumentosWin(nro_archivo, titulo, nro_registro) {
+						 //   if (!_permiso_editar_archivos) {
+						 //      alert("No posee permisos para modificar archivos")
+						  //      return;
+						  //  }
+						   // if ((window.top.permisos_web & 16) > 0) {
+						        var Parametros = new Array();
+						        Parametros["nro_archivo"] = nro_archivo
+						        Parametros["nro_registro"] = nro_registro
+						        Parametros["titulo"] = titulo + " - " + nro_archivo
+
+						        wineditar = window.top.nvFW.createWindow({
+						            className: 'alphacube',
+						            url: '\\fw\\archivo\\editarDocumentosWin.aspx',
+						            title: 'Archivo',
+						            minimizable: false,
+						            maximizable: false,
+						            draggable: true,
+						            width: 400,
+						            height: 90,
+						            onClose: editarDocumentosWin_return
+						        });
+						        wineditar.options.userData = {
+						            retorno: Parametros
+						        }
+						        wineditar.showCenter(true)
+
+						   // } else
+						  //      alert("No posee permisos para realizar esta operacion. Consulte con el administrador del sistema")
+
+						}
+
+
+						function editarDocumentosWin_return(win) {
+						    //cargar_grupo(-1)
+                parent.cargarHistorial()
+						}
+
+						function verParametros(id_tipo, nro_def_detalle) {
+
+						    var Parametros = new Array();
+						    Parametros["id_tipo"] = id_tipo
+                Parametros["nro_archivo_id_tipo"] = nro_archivo_id_tipo
+						    Parametros["nro_def_detalle"] = nro_def_detalle
+
+						    wineditar = window.top.nvFW.createWindow({
+						        className: 'alphacube',
+						        url: '\\fw\\archivo\\verparametros_archivos.aspx',
+						        title: 'Parámetros',
+						        minimizable: false,
+						        maximizable: false,
+						        draggable: true,
+						        width: 400,
+						        height: 360
+
+						    });
+						    wineditar.options.userData = {
+						        retorno: Parametros
+						    }
+						    wineditar.showCenter(true)
+
+						}
+
+
+						function window_onload() {
+						    parametros_editar_archivo()
+						    window_onResize();
+						}
+
+						function window_onResize() {
+						    try {
+
+
+						        var dif = Prototype.Browser.IE ? 5 : 2
+						        var body_height = $$('body')[0].getHeight()
+						        var tbEncabezado1_height = $('tbEncabezado1').getHeight()
+						        var tbEncabezado2_height = $('tbEncabezado2').getHeight()
+						        var ajuste = body_height > 500 ? 250 : 0
+
+						        $('div_archivos').setStyle({
+						            height: body_height - tbEncabezado1_height - tbEncabezado2_height - dif - ajuste + 'px'
+						        })
+						        // $('div_archivos').getHeight() - $('tbRegistros').getHeight() >= 0 ? tdScroll_hide_show(false) : tdScroll_hide_show(true)
+						    } catch (e) {}
+
+
+						}
+
+
+						function tdScroll_hide_show(show) {
+						    var i = 1
+						    while (i <= campos_head.recordcount) {
+						        if (show && $('tdScroll' + i) != undefined)
+						            $('tdScroll' + i).show()
+
+						        if (!show && $('tdScroll' + i) != undefined)
+						            $('tdScroll' + i).hide()
+
+						        i++
+						    }
+						}
+
+
+
+						function Alta_Comentario(nro_docu, tipo_docu, sexo, nro_registro, nro_com_tipo, com_tipo, nro_com_estado, com_estado, fecha, nro_operador, operador, id_tipo) {
+						    var filtro = ""
+						    var Parametros = new Array();
+						    Parametros["nro_docu"] = nro_docu
+						    Parametros["tipo_docu"] = tipo_docu
+						    Parametros["sexo"] = sexo
+						    Parametros["id_tipo"] = id_tipo
+						    Parametros["nro_registro"] = nro_registro
+						    Parametros["com_tipo"] = com_tipo
+						    Parametros["nro_registro"] = nro_registro
+						    Parametros["nro_com_estado"] = nro_com_estado
+						    Parametros["nro_com_tipo"] = nro_com_tipo
+						    Parametros["com_estado"] = com_estado
+						    Parametros["fecha"] = fecha
+						    Parametros["operador"] = operador
+						    Parametros["nro_operador"] = nro_operador
+						    if (!id_tipo)
+						        Parametros["id_tipo"] = id_tipo
+
+						    window.top.win = window.top.nvFW.createWindow({
+						        className: 'alphacube',
+						        url: '\\fw\\verComRegistro\\ABMRegistro.aspx',
+						        title: '<b>Registro de Comentario</b>',
+						        minimizable: true,
+						        maximizable: false,
+						        draggable: false,
+						        width: 600,
+						        height: 480,
+						        onShow: function() {
+						            window.top.win.options.userData = {};
+						            window.top.win.options.userData.Parametros = Parametros
+						        },
+						        onClose: Alta_Comentario_return
+						    });
+						    window.top.win.showCenter(true)
+						}
+
+
+						function Alta_Comentario_return(win) {
+						    if (win.options.userData.res) 
+						        parent.btnMostrarRegistros_onclick()
+						}
+
+
+						function obtener_archivo(id_tipo, nro_def) {
+						    var strXML = nvFW.pageContents.filtro_archivos
+						    var rs = new tRS();
+						    rs.open(strXML,"","<id_tipo type='igual'>" + id_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + nro_archivo_id_tipo + "</nro_archivo_id_tipo><nro_def_detalle type='igual'>" + nro_def + "</nro_def_detalle>","","")
+						    var path = ""
+						    if (!rs.eof())
+						        path = rs.getdata("path")
+						    return path
+						}
+
+						function obtener_grupos(id_tipo,nro_archivo_id_tipo) {
+            
+						    var strXML = nvFW.pageContents.filtro_archivos_grupos
+						    var rs = new tRS();
+						    //rs.open(strXML,"","<id_tipo type='igual'>" + id_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + nro_archivo_id_tipo + "</nro_archivo_id_tipo>","","")
+						    rs.open(strXML,"","<nro_def_archivo type='igual'>" + nro_def_archivo_actual + "</nro_def_archivo>","","")						    
+                var htmlgrupos = ""
+						    while (!rs.eof()) {
+						        htmlgrupos += '<tr><td><a href="javascript:cargar_grupo(' + rs.getdata("nro_archivo_def_grupo") + ')">' + rs.getdata("archivo_def_grupo") + '</a></td><td><a href="javascript:imprimir_grupo(' + rs.getdata("nro_archivo_def_grupo") + ')"><img border="0" src="../../fw/image/icons/descargar.png" title="Descargar Grupo"></a></td></tr>';
+						        rs.movenext()
+						    }
+						    htmlgrupos += '<tr><td><a href="javascript:cargar_grupo(-1)">TODOS</a></td><td><a href="javascript:imprimir_grupo(0)"><img border="0" src="/fw/image/icons/descargar.png" title="Descargar Grupo"></a></td></tr>'
+						    $('grupos').update(htmlgrupos)
+						    return
+						}
+
+						function cargar_grupo(nro_grupo) {
+               return
+						   
+               var filtro = "<param_grupo type='sql'> dbo.rm_archivo_def_detalle_en_grupo(nro_def_detalle," + nro_grupo + ") = 1 </param_grupo>"
+						    if (nro_grupo == -1)
+						        filtro = ""
+						   
+               nvFW.exportarReporte({
+						        filtroXML: nvFW.pageContents.filtro_verArchivos_idtipo,
+						        path_xsl: "report\\archivo\\HTML_ver_archivos_def.xsl",
+                    filtroWhere: "<OR><id_tipo type='igual'>" & pvid_tipo & "</id_tipo><AND><id_tipo type='isnull'/><nro_def_archivo type='igual'>" & nro_def_archivo_actual & "</nro_def_archivo></AND></OR>" + filtro,// "<id_tipo type='in'>" + pvid_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + pvnro_archivo_id_tipo + "</nro_archivo_id_tipo>" + filtro + "<NOT><archivo_descripcion type='isnull' /></NOT>",
+						        formTarget: 'frame_historial',
+						        mantener_origen: false,
+						        bloq_contenedor: $('frame_historial'),
+						        cls_contenedor: 'frame_historial'
+						    })
+
+						}
+
+						function imprimir_grupo(nro_grupo) {
+                
+                alert("No está disponible")
+                return
+            
+						    var id_transferencia = 684 //542
+
+						    var parametros = '<id_tipo>' + id_tipo + '</id_tipo><nro_archivo_id_tipo type="igual">' + nro_archivo_id_tipo + '</nro_archivo_id_tipo><nro_archivo_def_grupo>' + nro_grupo + '</nro_archivo_def_grupo>'
+
+						    var strXML_parm = '<parametros>' + parametros + '</parametros>'
+
+						    parent.nvFW.transferenciaEjecutar({
+						        id_transferencia: id_transferencia,
+						        xml_param: strXML_parm,
+						        pasada: 0,
+						        formTarget: 'winPrototype',
+						        ej_mostrar: true,
+						        async: false,
+						        winPrototype: {
+						            modal: true,
+						            center: true,
+						            bloquear: false,
+						            url: 'enBlanco.htm',
+						            title: '<b>Generar archivo de grupo</b>',
+						            minimizable: false,
+						            maximizable: true,
+						            draggable: true,
+						            width: 800,
+						            height: 300,
+						            resizable: true,
+						            destroyOnClose: true
+						        }
+						    })
+
+						}
+
+						function btnUIF_onclick(id_tipo) {
+
+						    if (!_permiso_editar_archivos) {
+						        alert("No posee permisos para modificar archivos en este crédito")
+						        return;
+						    }
+
+						    var URL = '/fw/getXML.aspx?accion=uif_html_guardar&criterio=<criterio><id_tipo>' + id_tipo + '</id_tipo><nro_archivo_id_tipo>' + nro_archivo_id_tipo + '</nro_archivo_id_tipo></criterio>'
+						    var oXML = new tXML()
+						    oXML.async = true
+
+						    nvFW.bloqueo_activar($(document.body), 'Ajax_bloqueo')
+						    oXML.load('/fw/getXML.aspx', 'accion=uif_html_guardar&criterio=<criterio><id_tipo>' + id_tipo + '</id_tipo></criterio>', function() {
+						        nvFW.bloqueo_desactivar($(document.body), 'Ajax_bloqueo')
+						        var num_error = oXML.selectSingleNode('xml/resultado/@num_error').nodeValue
+
+						        if (num_error != 0) {
+						            alert("Error al adjuntar el archivo.</br>Intentelo nuevamente.")
+						            return
+						        }
+
+						        var NURL = oXML.selectNodes('xml/resultado')
+						        var URL = XMLText(selectSingleNode('URL', NURL[0]))
+
+						        if (URL == "")
+						            return
+
+						        window.open(URL, '_blank')
+						        parent.btnMostrarArchivos_onclick()
+
+						    });
+
+
+						}
+
+						function btnNOSIS_onclick(id_tipo, nro_docu) {
+						    if (!_permiso_editar_archivos) {
+						        alert("No posee permisos para modificar archivos en este crédito")
+						        return;
+						    }
+
+						    var existe = false
+
+						    j = archivos.length - 1
+
+						    for (i = 1; i < j; i++) {
+						        if (archivos[i]['archivo_descripcion'].indexOf('NOSIS') != -1)
+						            existe = true
+						    }
+
+						    if (existe) {
+						        window.top.Dialog.confirm("Ya existe un archivo de NOSIS para este crédito. ¿Desea cargar otro?", {
+						            width: 300,
+						            className: "alphacube",
+						            okLabel: "Aceptar",
+						            cancelLabel: "Cancelar",
+						            cancel: function(win) {
+						                win.close();
+						                return
+						            },
+						            ok: function(win) {
+
+						                cargar_NOSIS()
+						                win.close()
+						            }
+						        });
+						    } else {
+						        cargar_NOSIS()
+						    }
+						}
+
+
+						function cargar_NOSIS() {
+
+						    nro_banco = 0
+						    var strXML = nvFW.pageContents.filtro_credito
+						    var rs = new tRS();
+						    rs.open(strXML,"","<id_tipo type='igual'>" + id_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + nro_archivo_id_tipo + "</nro_archivo_id_tipo>","","")
+						    nro_banco = rs.getdata("nro_banco")
+
+						    sac_html_guardar(id_tipo, nro_docu, function(strXML) {
+						        try {
+						            var oXML = new tXML();
+						            oXML.loadXML(strXML)
+						            var num_error = oXML.selectSingleNode('xml/resultado/@num_error').nodeValue
+						            if (num_error == 1) {
+						                //window.close()
+						                window.top.alert('No se pudo generar el archivo. Consulte al administrador del sistema.')
+						                return
+						            }
+						            //var URL = oXML.selectSingleNode('xml/resultado/URL').text
+
+						            var NURL = oXML.selectNodes('xml/resultado')
+						            var URL = XMLText(selectSingleNode('URL', NURL[0]))
+						            window.open(URL, '_blank')
+						            parent.btnMostrarArchivos_onclick()
+						        } catch (e) {
+						            window.top.alert('No se pudo generar el archivo. Consulte al administrador del sistema.')
+						        }
+						    }, {
+						        CDA: 0,
+						        nro_vendedor: 0,
+						        nro_banco: nro_banco
+						    })
+
+						}
+
+						var win_BCRA
+						var param_BCRA = {}
+
+						function btnBCRA_onclick() {
+
+						    if (!_permiso_editar_archivos) {
+						        alert("No posee permisos para modificar archivos en este crédito")
+						        return;
+						    }
+
+						    if ((window.top.permisos_web2 & 268435456) > 0) {
+						        var id_tipo = ($('id_tipo') == undefined) ? pvid_tipo : $F('id_tipo')
+						        if (id_tipo != "") {
+						            param_BCRA['cuit'] = ''
+						            param_BCRA['sit_bcra'] = ''
+						            param_BCRA['modo'] = ''
+
+						            var w = window.top.nvFW != undefined ? window.top.nvFW : nvFW
+						            win_BCRA = w.createWindow({
+						                className: 'alphacube',
+						                url: "bcra_captcha.aspx?modo=A&id_tipo=" + id_tipo + "&cuit=" + cuit,
+						                title: '<b>Consulta BCRA</b>',
+						                minimizable: false,
+						                maximizable: false,
+						                draggable: true,
+						                width: 720,
+						                height: 450,
+						                resizable: false,
+						                onClose: BCRA_consultar_return
+						            });
+
+						            win_BCRA.options.userData = {
+						                param_BCRA: param_BCRA
+						            }
+						            win_BCRA.showCenter(true)
+
+						        }
+
+						    } else
+						        alert("No posee permisos para realizar esta operacion. Consulte con el administrador del sistema")
+						}
+
+						function BCRA_consultar_return() {
+						    if (win_BCRA.options.userData.param_BCRA['modo'] == "ACTUALIZAR")
+						        parent.btnMostrarArchivos_onclick()
+						}
+
+						function cargar_titulo(id_tipo,nro_archivo_id_tipo) {
+            debugger
+						    var rs = new tRS();
+						    rs.open(nvFW.pageContents.filtro_verArchivos,"","<id_tipo type='igual'>" + pvid_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + pvnro_archivo_id_tipo + "</nro_archivo_id_tipo>","","")
+						    var path = ""
+
+						    if (!rs.eof())
+						        return rs.getdata('archivo_id_tipo') + ' : ' + id_tipo + ' - ' + rs.getdata('archivo_id_tipo') //+ ': ' + rs.getdata('nro_docu') + ' - ' + rs.getdata('strNombreCompleto')
+
+						    return 'Legajo : ' + id_tipo
+						}
+
+						var _permiso_editar_archivos;
+						var _solo_pagare = false;
+						var _solo_edicto_quiebra = false;
+						var _solo_acta_defuncion = false;
+						var _solo_carta_documento = false;
+
+						function parametros_editar_archivo() {
+
+						    _permiso_editar_archivos = true;
+						    var cred_par = new Array();
+
+						    var rs = new tRS();
+						    var nro_tipo_cobro;
+						    var nro_tabla_tipo;
+						    rs.open(nvFW.pageContents.verArchivos_parametros,"","<id_tipo type='igual'>" + id_tipo + "</id_tipo><nro_archivo_id_tipo type='igual'>" + nro_archivo_id_tipo + "</nro_archivo_id_tipo>","","")
+						    while (!rs.eof()) {
+						        cred_par[rs.getdata('parametro')] = rs.getdata('parametro_valor')
+						        estado = rs.getdata('estado')
+						        nro_tipo_cobro = rs.getdata('nro_tipo_cobro')
+						        nro_tabla_tipo = rs.getdata('nro_tabla_tipo')
+						        rs.movenext()
+						    }
+
+
+						    if (estados.indexOf(estado) != -1) {
+						        if (nro_tabla_tipo == 1 && nro_tipo_cobro == 4) {
+						            if ((window.top.permisos_web4 & 33554432) == 0) {
+						                _permiso_editar_archivos = false;
+						            }
+						        } else {
+						            if ((window.top.permisos_web3 & 134217728) == 0) {
+						                if ((window.top.permisos_web4 & 64) == 0 || cred_par["id_carpeta_control"] != 5)
+						                    _permiso_editar_archivos = false;
+						            }
+
+						        }
+
+						    }
+
+						    if ((window.top.permisos_web3 & 16384) == 0 && cred_par["id_control_digital"] == 2) {
+						        _permiso_editar_archivos = false;
+						    }
+						    if ((window.top.permisos_web3 & 268435456) == 0 && cred_par["id_carpeta_control"] == 2) {
+						        _permiso_editar_archivos = false;
+						    }
+						    if ((window.top.permisos_web3 & 536870912) == 0 && cred_par["id_control_contenido"] == 2) {
+						        _permiso_editar_archivos = false;
+						    }
+
+						    if ((window.top.permisos_web4 & 2) == 0 && cred_par["id_control_contenido"] == 4) {
+						        _permiso_editar_archivos = false;
+						    }
+						    if ((window.top.permisos_web4 & 4) == 0 && cred_par["id_control_digital"] == 5) {
+						        _permiso_editar_archivos = false;
+						    }
+						    if ((window.top.permisos_web4 & 1) != 0 && cred_par["id_control_contenido"] == 4) {
+						        _solo_pagare = true;
+						    }
+						    if ((window.top.permisos_web4 & 8) != 0 && cred_par["id_control_digital"] == 5) {
+						        _solo_pagare = true;
+						    }
+
+
+						    //Permiso para solo documentos de quiebras
+						    if ((window.top.permisos_archivos & 2) != 0) {
+						        _solo_edicto_quiebra = true
+						    }
+
+						    //Permiso para solo documentos de defuncion
+						    if ((window.top.permisos_archivos & 4) != 0) {
+						        _solo_acta_defuncion = true
+						    }
+
+						    //Permiso para solo cargar carta documento 
+						    if ((window.top.permisos_archivos & 8) != 0) {
+						        _solo_carta_documento = true
+						    }
+
+
+						}
+						]]>
+						</xsl:comment>
+					</script>
+
+				<script language="javascript" type="text/javascript">
+					
+					campos_head.id_exp_origen = '<xsl:value-of select="xml/id_exp_origen"/>'
+					var mantener_origen = '<xsl:value-of select="xml/mantener_origen"/>'
+					campos_head.cacheID = '<xsl:value-of select="xml/params/@cacheID"/>'
+					campos_head.cacheControl = '<xsl:value-of select="xml/params/@cacheControl"/>'
+					campos_head.recordcount = <xsl:value-of select="xml/params/@recordcount"/>
+					campos_head.PageCount = <xsl:value-of select="xml/params/@PageCount"/>
+					campos_head.PageSize = <xsl:value-of select="xml/params/@PageSize"/>
+					campos_head.AbsolutePage = <xsl:value-of select="xml/params/@AbsolutePage"/>
+					if (mantener_origen == '0')
+					campos_head.nvFW = parent.nvFW
+          
+				</script>
+				<script type="text/javascript" >
+					<xsl:comment>
+						<![CDATA[ 
+            
+            
+                                var vButtonItems = {}
+
+        vButtonItems[0] = {}
+        vButtonItems[0]["nombre"] = "Visualizador";
+        vButtonItems[0]["etiqueta"] = "Visualizador";
+        vButtonItems[0]["imagen"] = "buscar";
+        vButtonItems[0]["onclick"] = "return abrir_visualizador(event)";
+
+        var vListButtons = new tListButton(vButtonItems, 'vListButtons')
+        vListButtons.loadImage("buscar", '/FW/image/icons/buscar.png')
+
+                        function window_onresize() {
+                            try {
+
+                                var dif = Prototype.Browser.IE ? 5 : 2
+                                var body_height = $$('body')[0].getHeight()
+                                var tbCabe_height = $('tbCabe').getHeight()
+                                var div_pag_height = $('div_pag').getHeight()
+
+                                $('divDetalle').setStyle({
+                                    height: body_height - div_pag_height - tbCabe_height - dif + 'px'
+                                })
+
+                                $('tbDetalle').getHeight() - $('divDetalle').getHeight() >= 0 ? tdScroll_hide_show(false) : tdScroll_hide_show(true)
+                            } catch (e) {}
+                        }
+
+                        function tdScroll_hide_show(show) {
+                            var i = 1
+                            while (i <= campos_head.recordcount) {
+                                if (show && $('tdScroll' + i) != undefined)
+                                    $('tdScroll' + i).show()
+
+                                if (!show && $('tdScroll' + i) != undefined)
+                                    $('tdScroll' + i).hide()
+
+                                i++
+                            }
+                        }
+
+                        function window_onload() {
+                            parametros_editar_archivo()
+                            vListButtons.MostrarListButton()
+                            window_onresize()
+                            
+                        }
+
+                        function abrir_visualizador(e) {
+
+                            var path = '/fw/archivo/verArchivosTodos.aspx?id_tipo=' + pvid_tipo +'&nro_archivo_id_tipo=' + pvnro_archivo_id_tipo;
+                            var link = 'link_mostrar_archivos';
+
+                            if (e.ctrlKey == true) {
+                                $(link).href = path + '&ventana=1';
+                            } else if (e.shiftKey == true) {
+                                $(link).target = '_blank'
+                                $(link).href = path + '&ventana=1';
+                            } else {
+                                abrir_ventana_emergente(path, cargar_titulo(pvid_tipo,pvnro_archivo_id_tipo), undefined, undefined, 580, 1100, true, true, true, true, false)
+                            }
+                        }
+                        
+                        function abrir_ventana_emergente(path, titulo) {
+                          var win = window.top.nvFW.createWindow({
+                              className: 'alphacube',
+                              async: false,
+                              url: path,
+                              title: titulo,
+                              minimizable: false,
+                              maximizable: false,
+                              draggable: true,
+                              resizable: false,
+                              modulo: false,
+                              width: 1100,
+                              height: 580,
+                              onClose: function (err) {
+                              }
+                          });
+                          win.showCenter(true)
+                        }
+					   
+                    ]]>
+					</xsl:comment>
+				</script>
+				
+				</head>
+				<body onload="return window_onload()" onResize="return window_onResize()" style="width:100%;height:100%; overflow:hidden">
+          <xsl:variable name="id_tipo" select="xml/parametros/id_tipo"/>
+          <xsl:variable name="nro_def_archivo_actual" select="xml/parametros/nro_def_archivo_actual"/>
+
+					<form name="frm1" id="frm1">						
+						<table id="tbCuerpo" class="tb1" >
+							<tr class="tbLabel" >
+								<td colspan="3">
+									<table class="tb1" id="tbEncabezado1" cellspacing="0" cellpadding="0">
+										<tr>
+											<td style="text-align:center">	
+												<xsl:if test="$id_tipo != ''"><b><xsl:value-of select ="/xml/rs:data/z:row/@def_archivo"/>: <xsl:value-of select="$id_tipo"/></b></xsl:if>
+												
+											</td>
+										</tr>	
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='2' style='width:85%'>
+
+									<table width="100%" class="tb1" id="tbCabe">
+										<tr class="tbLabel">
+											<td colspan="3">
+												<table width="100%">
+													<tr class="tbLabel">
+														<td style='text-align: center; width:45%'>
+															<script>
+																campos_head.agregar('Documentos', true, 'archivo_descripcion')
+															</script>
+
+														</td>
+														<td style='text-align: center; width:10%'>
+															<script>
+																campos_head.agregar('Requisito', true, 'requerido')
+															</script>
+														</td>
+
+														<td style='text-align: center;  width:5%'>
+													
+														</td>
+														<td style='text-align: center; width:5%'>
+
+														</td>
+														<td style='text-align: center; width:5%'>
+
+														</td>
+														<td style='text-align: center; width:10%'>
+															<script>
+																campos_head.agregar('Fecha', true, 'momento')
+															</script>
+														</td>
+														<td style='text-align: center; width:10%'>
+															<script>
+															campos_head.agregar('Operador', true, 'operador')
+															</script>
+														</td>
+														<td style='text-align: center; width:10%'>
+													    
+														</td>
+                            <!-->td style='text-align: center; width:10%'>
+													    
+														</td-->
+														
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+									<div id="divDetalle" style="width:100%;overflow:auto">
+										<table class="tb1 highlightEven highlightTROver" id="tbDetalle">
+											<xsl:apply-templates select="xml/rs:data/z:row" />
+										</table>
+									</div>
+									<div id="div_pag" class="divPages">
+										<script type="text/javascript">
+											document.write(campos_head.paginas_getHTML())
+										</script>
+									</div>
+								
+								</td>
+								<td style="vertical-align:top">
+									<table class="tb1">
+										<tr>
+											<td>
+												<DIV style="WIDTH: 100%" id="divVisualizador">
+                       
+												</DIV>
+											</td>
+										</tr>
+									</table>
+								<table class="tb1">
+									<tr class="tbLabel0">
+										<td>Documentos</td>
+									</tr>										
+									<tr>	
+										<td>
+											<input type="button" name="btn_NvoDoc" value="Nuevo" style="width:100%">
+                      <xsl:attribute name ="onclick">ABMDocumentos(<xsl:value-of select ="$nro_def_archivo_actual"/>,0,null,null,13,null)</xsl:attribute> 
+                      </input>
+										</td>
+									</tr>
+                  <xsl:if test="xml/rs:data/z:row/@permiso_nosis = 'True'">
+                    <tr>
+                      <td>
+                        <input type="button" name="btn_NOSIS" value="NOSIS" style="width:100%" onclick="btnNOSIS_onclick(pvid_tipo,pvnro_archivo_id_tipo, nro_docu)"></input>
+                      </td>
+                    </tr>
+                  </xsl:if>
+        			  <tr>
+		              <td>
+                    <xsl:if test="xml/rs:data/z:row/@permiso_bcra = 'True'">
+                      <input type="button" name="btn_DocBCRA" value="BCRA" style="width:100%" onclick="btnBCRA_onclick()"></input>
+                    </xsl:if>
+					        </td>
+               </tr>
+                  <xsl:if test="xml/rs:data/z:row/@permiso_uif = 'True'">
+                      <tr >
+                          <td>
+                              <input type="button" name="btn_UIF" value="UIF" style="width:100%;" onclick="btnUIF_onclick(pvid_tipo,pvnro_archivo_id_tipo)"></input>
+                          </td>
+                      </tr>
+                  </xsl:if>
+									
+									<tr class="tbLabel0">
+										<td>Grupos</td>
+									</tr>
+									</table>
+									<div  style="overflow: auto; height: 136px;">
+									<table class="tb1" id ="grupos">
+									</table>
+									</div>
+									<script type="text/javascript">obtener_grupos(pvid_tipo,pvnro_archivo_id_tipo)</script>
+
+								</td>
+							</tr>
+							
+							
+						</table>
+
+				</form>
+				<form name="formVarios" action="../reportViewer/exportarReporte.aspx" method="POST">
+					<input type="hidden" name="filtroXML" value=""></input>
+					<input type="hidden" name="xsl_name" value=""></input>
+				</form>
+			</body>
+		</html>
+	</xsl:template>
+	<xsl:template match="z:row">
+    <xsl:variable name="id_tipo" select="xml/parametros/id_tipo"/>
+    <xsl:variable name="nro_def_archivo_actual" select="/xml/parametros/nro_def_archivo_actual"/>
+		<xsl:variable name="pos" select="position()"/>
+		<tr>
+			<xsl:attribute name="id">tr_ver<xsl:value-of select="$pos"/></xsl:attribute>			 
+			<xsl:attribute name="style">
+				<xsl:value-of select="@style_vencimiento"/>
+			</xsl:attribute>
+			<xsl:attribute name="title">
+				<xsl:choose>
+					<xsl:when test="@style_vencimiento = 'color:red !Important'">Documentación venciada o falta presentar</xsl:when>
+					<xsl:when test="@style_vencimiento = 'color:#AAA60F !Important'">Dos día para el vencimiento de la documentación</xsl:when>
+					<xsl:when test="@style_vencimiento = 'color:#ED8714 !Important'">Un día para el vencimiento de la documentación</xsl:when>
+					<xsl:when test="@style_vencimiento = 'color:green !Important'">Documentación no presentada, pero es opcional</xsl:when>
+					<xsl:when test="@style_vencimiento = 'color:blue !Important'">Documentación presentada</xsl:when>
+					<xsl:when test="@style_vencimiento = 'color:black !Important'">Documentación no vigente</xsl:when>
+					<xsl:otherwise></xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
+
+			<td style='text-align: left; width:40%;'>
+						
+				
+				<xsl:attribute name="style">
+					text-align: left;<xsl:value-of select="@style_vencimiento"/>
+				</xsl:attribute>
+				<xsl:choose>
+					<xsl:when test='string(@requerido) = "True" and string(@nro_archivo) != "NULL"'>
+						<xsl:attribute name="style">
+							color:Red
+						</xsl:attribute>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:attribute name="style">
+							color:Green
+						</xsl:attribute>
+					</xsl:otherwise>
+
+				</xsl:choose>
+				<xsl:if test='string(@nro_archivo) != ""'>
+					<xsl:attribute name="style">
+						cursor:pointer;color:blue; font-weight:bold; text-decoration: underline;
+					</xsl:attribute>
+					
+					<xsl:attribute name="onclick">
+					  window.open('/fw/get_file.aspx?nro_archivo=<xsl:value-of select="@nro_archivo"/>')
+					 </xsl:attribute>
+					
+				</xsl:if>
+				
+					<xsl:choose>							
+						<xsl:when test="string-length(@archivo_descripcion) &#62; 100">
+							<xsl:value-of select="substring(@archivo_descripcion,1,100)"/>...
+							<xsl:if test='string(@nro_archivo) != ""'>
+							- <xsl:value-of select="@nro_archivo"/>
+							</xsl:if>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="@archivo_descripcion"/>
+							<xsl:if test='string(@nro_archivo) != ""'>
+							- <xsl:value-of select="@nro_archivo"/>
+							</xsl:if>
+						</xsl:otherwise>			
+					</xsl:choose>
+
+			</td>
+			<td style='text-align: left; width:10%'>
+				<xsl:attribute name="style">text-align: left; width:10%;<xsl:value-of select="@style_vencimiento"/></xsl:attribute>
+				<xsl:choose>
+					<xsl:when test="string(@requerido) = 'True'">
+						Obligatorio
+					</xsl:when>
+					<xsl:otherwise>
+						Opcional
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td style='text-align: center;width:5%'>
+				<xsl:if test='@nro_def_archivo = $nro_def_archivo_actual'>
+					<a>
+					<xsl:attribute name="onclick">
+						ABMDocumentos(<xsl:value-of select="@nro_def_archivo"/>,<xsl:value-of select="@nro_def_detalle"/>,<xsl:value-of select="@orden"/>,'<xsl:value-of select="@readonly"/>','<xsl:value-of select="@nro_archivo"/>','<xsl:value-of select="@nro_archivo_def_tipo"/>','<xsl:value-of select="@permiso_tiene"/>')
+					</xsl:attribute>
+					<img title="Adjuntar Archivo" src="/fw/image/icons/agregar.png" style="cursor:pointer;cursor:hand" border="0"/>
+				</a>
+				</xsl:if>
+			</td>
+
+			<td style='text-align: center; width:5%' nowrap='true'>
+				<a>
+					<xsl:attribute name="onclick">abrir_ventana_emergente('/fw/archivo/verArchivosTodos.aspx?id_tipo='+pvid_tipo+'&amp;nro_archivo_id_tipo=pvnro_archivo_id_tipo&amp;nroarchivo=<xsl:value-of select="@nro_archivo"/>', cargar_titulo(pvid_tipo,pvnro_archivo_id_tipo), undefined, undefined, 580, 1100, true, true, true, true, false)</xsl:attribute>
+					<img src="/fw/image/icons/ver_adjunto.png" style="cursor:pointer" border="0" >
+						<xsl:attribute name="title">Vista Preliminar</xsl:attribute>
+					</img>
+				</a>
+
+
+			</td>
+			<td style='text-align: center; width:5%' nowrap='true'>
+				
+				<xsl:if test='string(@cantidad) > 0'>
+					<xsl:attribute name="onclick">
+						verDocumentosWin(<xsl:value-of select="@id_tipo"/>,<xsl:value-of select="@nro_archivo_id_tipo"/>,<xsl:value-of select="@nro_def_detalle"/>)
+					</xsl:attribute>
+					<img src="../../fw/image/icons/reporte.png" style="cursor:pointer" border="0" >
+						<xsl:attribute name="title">Historial Documentos</xsl:attribute>
+					</img>
+				</xsl:if>
+			</td>
+			
+				<td style='text-align: center; width:10%' nowrap='true'>
+				<xsl:value-of select="foo:FechaToSTR(string(@momento))"/>
+		
+			</td>
+			<td style='width:10% !Important'>
+				<xsl:value-of select="@operador"/>
+			</td>
+
+			<td style='text-align: center; width:5%' nowrap='true'>
+
+				<xsl:if test='@nro_archivo != ""'>
+					<xsl:attribute name="onclick">
+						editarDocumentosWin(<xsl:value-of select="@nro_archivo"/>,"<xsl:value-of select="@archivo_descripcion"/>","<xsl:value-of select="@nro_registro"/>")
+					</xsl:attribute>
+					<img src="/fw/image/icons/editar.png" style="cursor:pointer" border="0" >
+						<xsl:attribute name="title">Editar Archivo</xsl:attribute>
+					</img>
+				</xsl:if>
+			</td>
+			
+			<td style='text-align: center; width:5%' nowrap='true'>
+
+				<xsl:if test='@nro_archivo != ""'>
+					<xsl:attribute name="onclick">
+						verParametros(<xsl:value-of select="@id_tipo"/>,<xsl:value-of select="@nro_archivo_id_tipo"/>,<xsl:value-of select="@nro_def_detalle"/>)
+					</xsl:attribute>
+					<img src="/fw/image/icons/propiedades.png" style="cursor:pointer" border="0" >
+						<xsl:attribute name="title">Ver Parámetros</xsl:attribute>
+					</img>
+				</xsl:if>
+			</td>
+		</tr>
+	</xsl:template>
+</xsl:stylesheet>

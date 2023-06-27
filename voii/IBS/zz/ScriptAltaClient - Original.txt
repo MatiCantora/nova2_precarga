@@ -1,0 +1,482 @@
+﻿/*********************Variables de conexion**************************/
+declare @tipdoc_usr smallint
+declare @usrident numeric(17,0)
+
+select @tipdoc_usr =1
+select @usrident = 23519078
+
+/*************************Variable a cargar*************************/
+declare   @tipdoc_ej  smallint
+declare   @nrodoc_ej  numeric(17,0)
+declare   @tipdoc_alta  smallint
+declare   @nrodoc_alta  numeric(17,0)
+declare   @tipdoc1_alta  smallint
+declare   @nrodoc1_alta  numeric(17,0)
+declare   @tipdoc2_alta  smallint
+declare   @nrodoc2_alta  numeric(17,0)
+declare   @tipdoc3_alta  smallint
+declare   @nrodoc3_alta  varchar(30)
+declare   @fecha datetime
+
+
+select @tipdoc_ej = 5
+select @nrodoc_ej = 20044155649
+
+Select @tipdoc_alta =5
+select @nrodoc_alta = 20179172780
+
+Select @tipdoc1_alta =1
+select @nrodoc1_alta = 17917278
+
+Select @tipdoc2_alta =null
+select @nrodoc2_alta = null
+
+Select @tipdoc3_alta =null
+select @nrodoc3_alta = null
+
+select @fecha = getdate ()
+/*************************declaracion de  variable*********************/
+/*************************scl_itcl_Cliente_DatoBasicos*****************/
+
+declare   @entidadcodpar  numeric(4,0)
+declare   @entidadpasswpar  char(20)
+declare   @paiscod  smallint
+declare   @bcocod  smallint
+declare   @tipdoc  smallint
+declare   @nrodoc  numeric(17,0)
+declare   @clinum  numeric(8,0)
+declare   @climatcod  char(10)
+declare   @clifecalt  datetime
+declare   @tipocli  smallint
+declare   @perconcod  smallint
+declare   @clasicod  smallint
+declare   @clicondgi  smallint
+declare   @tiporel  smallint
+declare   @vip  tinyint
+declare   @impgancod  smallint
+declare   @residencia  tinyint
+declare   @tipcartcod  smallint
+declare   @fecambiosit  datetime
+declare   @fecccongelsit  datetime
+declare   @objsocial  varchar(255)
+declare   @cantpersonal  numeric(5,0)
+declare   @totinganual  numeric(18,2)
+declare   @sectorfin  smallint
+declare   @vincbanco  tinyint
+declare   @invercalif  tinyint
+declare   @impempre  tinyint
+declare   @titcod  int
+declare   @siter  int
+declare   @numextranj  numeric(17,0)
+declare   @fecamsitant  datetime
+declare   @fecongsitant  datetime
+declare   @tipbalcod  smallint
+declare   @situaclicod  smallint
+declare   @criteriomonto  tinyint
+declare   @policaexpuesto  tinyint
+declare   @clifecmodif  datetime
+declare   @estfatca  smallint
+declare   @giin  varchar(20)
+declare   @perfoper  numeric(17,2)
+/************Declaracion Variable *****************************/
+/************scl_itcl_CliPartDatosBasico**********************/
+declare   @clinom  Varchar(30)
+declare   @cliape  Varchar(30)
+declare   @clifecnac  datetime
+declare   @clisexo  char(1)
+declare   @tipdoc1  smallint
+declare   @tipdoc2  smallint
+declare   @nrodoc1  numeric(17,0)
+declare   @nrodoc2  numeric(17,0)
+declare   @cliestcivcod  smallint
+declare   @profesion  smallint
+declare   @persoc  smallint
+declare   @peract  smallint
+declare   @club  Varchar(30)
+declare   @servmed  Varchar(30)
+declare   @cliviafrec  char(1)
+declare   @cliviafrecint  char(1)
+declare   @clinac  smallint
+declare   @nivedic  smallint
+declare   @vivpropia  char(1)
+declare   @alqgastos  numeric(12,2)
+declare   @perscargo  tinyint
+declare   @reltrabajo  tinyint
+declare   @pais_natal  smallint
+declare   @codprov_natal  smallint
+declare   @dptocod_natal  smallint
+declare   @loccod_natal  integer
+declare   @emancip  tinyint
+declare   @profesional  tinyint
+declare   @advertencia  Varchar(2)
+declare   @fecingrecli  datetime
+declare   @fecvtorestran  datetime
+declare   @tipdoc3  smallint
+declare   @nrodoc3  varchar(30)
+/************Declaracion Variable *****************************/
+/************scl_itcl_estadocli**********************/
+
+declare   @succod  smallint
+declare   @fecestado  datetime
+declare   @observacion  Varchar(30)
+--declare   @tiporel  smallint /* ojo misma variable end dos tablas*/
+/************Declaracion Variable *****************************/
+/************scl_itcl_cliente_oficial**********************/
+
+                /*Reuso variables ya existentes*/
+
+
+/************Declaracion Variable *****************************/
+/************scl_iutcl_historico_gral**********************/
+
+
+declare   @id_hist_gral  numeric(17,0)
+declare   @fecproceso  datetime
+declare   @nombre_campo  varchar(30)
+declare   @valor_anterior  varchar(30)
+declare   @valor_nuevo  varchar(30)
+declare @fecreal datetime
+/**************************Carga variable "fijas"*************************/
+select @entidadcodpar = 1057
+select @entidadpasswpar = "PSW CENSYS"
+/*************************carga de  variable*********************/
+/*************************tcl_Cliente_DatoBasicos*****************/
+select 
+@paiscod=paiscod,
+@bcocod=bcocod,
+@tipdoc=tipdoc,
+@nrodoc=nrodoc,
+@clinum=clinum,
+@climatcod=climatcod,
+@clifecalt=clifecalt,
+@tipocli=tipocli,
+@perconcod=perconcod,
+@clasicod=clasicod,
+@clicondgi=clicondgi,
+--@tiporel=tiporel,
+@vip=vip,
+@impgancod=impgancod,
+@residencia=residencia,
+@tipcartcod=tipcartcod,
+@fecambiosit=fecambiosit,
+@fecccongelsit=fecccongelsit,
+@objsocial=objsocial,
+@cantpersonal=cantpersonal,
+@totinganual=totinganual,
+@sectorfin=sectorfin,
+@vincbanco=vincbanco,
+@invercalif=invercalif,
+@impempre=impempre,
+@titcod=titcod,
+@siter=siter,
+@numextranj=numextranj,
+@fecamsitant=fecamsitant,
+@fecongsitant=fecongsitant,
+@tipbalcod=tipbalcod,
+@situaclicod=situaclicod,
+@criteriomonto=criteriomonto,
+@policaexpuesto=policaexpuesto,
+@clifecmodif=clifecmodif,
+@estfatca=estfatca,
+@giin=giin,
+@perfoper=perfoper
+from 
+tcl_Cliente_DatoBasicos
+where
+tipdoc = @tipdoc_ej and
+nrodoc = @nrodoc_ej
+
+/*************************carga de  variable*********************/
+/*************************tcl_CliPartDatosBasico*****************/
+select 
+@clinom="prueba",
+@cliape=cliape+convert (varchar (17),@nrodoc_alta),
+@clifecnac=clifecnac,
+@clisexo=clisexo,
+@tipdoc1=@tipdoc1_alta,
+@tipdoc2=@tipdoc2_alta,
+@nrodoc1=@nrodoc1_alta,
+@nrodoc2=@nrodoc2_alta,
+@cliestcivcod=cliestcivcod,
+@profesion=profesion,
+@persoc=persoc,
+@peract=peract,
+@club=club,
+@servmed=servmed,
+@cliviafrec=cliviafrec,
+@cliviafrecint=cliviafrecint,
+@clinac=clinac,
+@nivedic=nivedic,
+@vivpropia=vivpropia,
+@alqgastos=alqgastos,
+@perscargo=perscargo,
+@reltrabajo=reltrabajo,
+@pais_natal=pais_natal,
+@codprov_natal=codprov_natal,
+@dptocod_natal=dptocod_natal,
+@loccod_natal=loccod_natal,
+@emancip=emancip,
+@profesional=profesional,
+@fecingrecli=fecingrecli,
+@fecvtorestran=fecvtorestran,
+@tipdoc3=@tipdoc3_alta,
+@nrodoc3=@nrodoc3_alta
+from 
+dbo.tcl_CliPartDatosBasico
+where
+tipdoc = @tipdoc_ej and
+nrodoc = @nrodoc_ej
+/*************************carga de  variable*********************/
+/*************************scl_itcl_estadocli*****************/
+
+select @succod = 1
+select @fecreal = getdate()
+select @fecestado =@fecreal
+select @observacion = "ALTA DESDE NOVA"
+Select @tiporel = 7 /* actualmente el cliente queda con este estado 7 NO ClIENTE*/
+/*************************carga de  variable*********************/
+/*************************scl_iutcl_historico_gral*****************/
+select   @fecproceso = fecproceso from tgl_fechaproceso where succod =1 and sistcod =7  
+select   @nombre_campo = "perfoper"
+select   @valor_anterior = " "
+Select   @valor_nuevo = convert(varchar(30), @perfoper)
+
+
+
+/*************************emulacion de conexión*********************/
+Execute ssg_segu_prog 54,312,1,@tipdoc_usr,@usrident
+/*************************ejecucion Sp1*****************************/
+declare @status smallint
+
+BEGIN TRAN MAXI 
+execute scl_itcl_Cliente_DatoBasicos
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@clinum = @clinum,
+@climatcod = @climatcod,
+@clifecalt = @clifecalt,
+@tipocli = @tipocli,
+@perconcod = @perconcod,
+@clasicod = @clasicod,
+@clicondgi = @clicondgi,
+@tiporel = @tiporel,
+@vip = @vip,
+@impgancod = @impgancod,
+@residencia = @residencia,
+@tipcartcod = @tipcartcod,
+@fecambiosit = @fecambiosit,
+@fecccongelsit = @fecccongelsit,
+@objsocial = @objsocial,
+@cantpersonal = @cantpersonal,
+@totinganual = @totinganual,
+@sectorfin = @sectorfin,
+@vincbanco = @vincbanco,
+@invercalif = @invercalif,
+@impempre = @impempre,
+@titcod = @titcod,
+@siter = @siter,
+@numextranj = @numextranj,
+@fecamsitant = @fecamsitant,
+@fecongsitant = @fecongsitant,
+@tipbalcod = @tipbalcod,
+@situaclicod = @situaclicod,
+@criteriomonto = @criteriomonto,
+@policaexpuesto = @policaexpuesto,
+@clifecmodif = @clifecmodif,
+@estfatca = @estfatca,
+@giin = @giin,
+@perfoper = @perfoper
+
+execute scl_itcl_CliPartDatosBasico
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@clinom = @clinom,
+@cliape = @cliape,
+@clifecnac = @clifecnac,
+@clisexo = @clisexo,
+@tipdoc1 = @tipdoc1,
+@tipdoc2 = @tipdoc2,
+@nrodoc1 = @nrodoc1,
+@nrodoc2 = @nrodoc2,
+@cliestcivcod = @cliestcivcod,
+@profesion = @profesion,
+@persoc = @persoc,
+@peract = @peract,
+@club = @club,
+@servmed = @servmed,
+@cliviafrec = @cliviafrec,
+@cliviafrecint = @cliviafrecint,
+@clinac = @clinac,
+@nivedic = @nivedic,
+@vivpropia = @vivpropia,
+@alqgastos = @alqgastos,
+@perscargo = @perscargo,
+@reltrabajo = @reltrabajo,
+@pais_natal = @pais_natal,
+@codprov_natal = @codprov_natal,
+@dptocod_natal = @dptocod_natal,
+@loccod_natal = @loccod_natal,
+@emancip = @emancip,
+@profesional = @profesional,
+@advertencia = @advertencia,
+@fecingrecli = @fecingrecli,
+@fecvtorestran = @fecvtorestran,
+@tipdoc3 = @tipdoc3,
+@nrodoc3 = @nrodoc3
+
+execute scl_itcl_estadocli
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@succod = @succod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@fecestado = @fecestado,
+@observacion = @observacion,
+@tiporel = @tiporel
+
+execute scl_itcl_cliente_oficial
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@ofipaiscod = @paiscod,
+@ofibcocod = @bcocod,
+@ofisuccod = @succod,
+@ofitipdoc = @tipdoc_usr,
+@ofiusrident = @usrident
+
+execute scl_iutcl_historico_gral
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@id_hist_gral = @id_hist_gral,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@fecproceso = @fecproceso,
+@fecreal = @fecreal,
+@nombre_campo = @nombre_campo,
+@valor_anterior = @valor_anterior,
+@valor_nuevo = @valor_nuevo,
+@tipdoc_usr = @tipdoc_usr,
+@usrident = @usrident
+
+
+Execute sgl_iutgl_tipocli_clientes
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta,
+@tagentecod = 1 /* Banco VOII solo usa el tipo de agente 1*/
+
+execute scl_categorizacion_clte_iibb
+@entidadcodpar = @entidadcodpar,
+@entidadpasswpar = @entidadpasswpar,
+@paiscod = @paiscod,
+@bcocod = @bcocod,
+@succod = @succod,
+@sistcod = 7,
+@tipdoc = @tipdoc_alta,
+@nrodoc = @nrodoc_alta
+
+
+
+SELECT * FROM tcl_Cliente_DatoBasicos
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+SELECT * FROM dbo.tcl_CliPartDatosBasico
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+
+SELECT * FROM dbo.tcl_estadocli
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tcl_cliente_oficial
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tcl_historico_gral
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+Select * from tgl_tipocli_clientes
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tgl_padron_rentas
+where 
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+
+select * from tsg_log_local
+where
+loglocalfec >= dateadd (ss,-500,@fecha)
+
+rollback tran MAXI
+
+/*declare   @tipdoc_alta  smallint
+declare   @nrodoc_alta  numeric(17,0)
+
+
+Select @tipdoc_alta =5
+select @nrodoc_alta = 20235190789
+*/
+
+SELECT * FROM tcl_Cliente_DatoBasicos
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+SELECT * FROM dbo.tcl_CliPartDatosBasico
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tcl_estadocli
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tcl_cliente_oficial
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tcl_historico_gral
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+Select * from tgl_tipocli_clientes
+where
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta
+
+select * from tgl_padron_rentas
+where 
+tipdoc = @tipdoc_alta and
+nrodoc = @nrodoc_alta

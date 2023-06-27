@@ -1,0 +1,14 @@
+﻿<campos_defs>
+  <campo_def accion="A" campo_def='campo_def' descripcion='Campos_defs' nro_campo_tipo='1' depende_de='otro' depende_de_campo='' permite_codigo='false' json='true' >
+    <filtroXML><![CDATA["<criterio><select vista='campos_def'><campos> distinct campo_def as id, descripcion as [campo] </campos><orden>[campo]</orden><filtro></filtro></select></criterio>"]]></filtroXML>
+    <filtroWhere><![CDATA[<%campo_def%  type='igual'>'%campo_value%'</%campo_def%>]]></filtroWhere>
+  </campo_def>
+  <campo_def accion='M' campo_def='campo_def' descripcion='Campos_defs' nro_campo_tipo='1' depende_de='false' depende_de_campo='' permite_codigo='false' json='true' >
+    <filtroXML><![CDATA["<criterio><select vista='campos_def'><campos> distinct campo_def as id, descripcion as [campo] </campos><orden>[campo]</orden><filtro></filtro></select></criterio>"]]></filtroXML>
+    <filtroWhere><![CDATA[<%campo_def%  type='igual'>'%campo_value%'</%campo_def%>]]></filtroWhere>
+  </campo_def>
+  <campo_def accion='B' campo_def='campo_def' descripcion='Campos_defs' nro_campo_tipo='1' depende_de='false' depende_de_campo='' permite_codigo='false' json='true' >
+    <filtroXML><![CDATA["<criterio><select vista='campos_def'><campos> distinct campo_def as id, descripcion as [campo] </campos><orden>[campo]</orden><filtro></filtro></select></criterio>"]]></filtroXML>
+    <filtroWhere><![CDATA[<%campo_def%  type='igual'>'%campo_value%'</%campo_def%>]]></filtroWhere>
+  </campo_def>
+</campos_defs>

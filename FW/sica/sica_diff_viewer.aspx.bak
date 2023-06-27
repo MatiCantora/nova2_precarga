@@ -1,0 +1,464 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%
+
+
+    
+    '<diff><source1 modo="GET_DEF"  cod_objeto    cod_obj_tipo  objeto path cod_modulo_version></source1>'
+    '<source2 modo="GET_IMP"  cod_servidor cod_sistema port objeto  path  cod_obj_tipo></source1>'
+    
+    
+    ' GET DEF
+    ' cod_objeto               
+    ' or
+    '  cod_obj_tipo + objeto +  path + cod_modulo_version
+
+
+    'GET_IMP
+    ' cod_servidor, cod_sistema, port
+    ' objeto + path + cod_obj_tipo
+    '
+    
+    
+    
+    
+    Dim strXML As String = nvFW.nvUtiles.obtenerValor("strXML", "")
+    Me.contents("strXML")=strXML
+    
+    
+    
+    'Dim cod_objeto As String = nvFW.nvUtiles.obtenerValor("cod_objeto", "")
+    'Dim cod_obj_tipo As String = nvFW.nvUtiles.obtenerValor("cod_obj_tipo", "")
+    'Dim objeto As String = nvFW.nvUtiles.obtenerValor("objeto", "")
+    'Dim path_ori As String = nvFW.nvUtiles.obtenerValor("path_ori", "")
+    'Dim path_dest As String = nvFW.nvUtiles.obtenerValor("path_dest", "")
+    'Dim cod_modulo_version As String = nvFW.nvUtiles.obtenerValor("cod_modulo_version", "")
+    'Dim cod_servidor As String = nvFW.nvUtiles.obtenerValor("cod_servidor", "")
+    'Dim cod_sistema As String = nvFW.nvUtiles.obtenerValor("cod_sistema", "")
+    'Dim port As String = nvFW.nvUtiles.obtenerValor("port", "")
+    
+
+    'Me.contents("cod_objeto") = cod_objeto
+    'Me.contents("cod_obj_tipo") = cod_obj_tipo
+    'Me.contents("objeto") = objeto
+    'Me.contents("path_ori") = path_ori
+    'Me.contents("path_dest") = path_dest
+    'Me.contents("cod_modulo_version") = cod_modulo_version
+    
+    'Me.contents("cod_servidor") = cod_servidor
+    'Me.contents("cod_sistema") = cod_sistema
+    'Me.contents("port") = port
+    
+    
+    
+    
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>NOVA Administrador</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" language='javascript' src="/FW/script/swfobject.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/tCampo_def.js"></script>
+    <link type="text/css" rel="stylesheet" href="/fw/script/jsdifflib/diffview.css" />
+    <script type="text/javascript" src="/fw/script/jsdifflib/difflib.js"></script>
+    <script type="text/javascript" src="/fw/script/jsdifflib/diffview.js"></script>
+    <% = Me.getHeadInit()%>
+    <script type="text/javascript">
+        
+        var win = nvFW.getMyWindow();
+
+        var cod_objeto, cod_obj_tipo, objeto, path_ori, path_dest
+        var cod_modulo_version
+
+        var cod_servidor, cod_sistema, port
+
+        var src_base, src_modificado, objeto
+
+
+        var source1 = {}
+        var source2 = {}
+
+
+        function window_onload() {
+
+            // comparacion con 10 lineas de contexto por default
+            $('showAllLines').click()
+            $('contextSize').value = 10
+
+            
+            var objXML = new tXML()
+            objXML.loadXML(nvFW.pageContents.strXML)
+
+
+            var nodeSource1 = objXML.selectNodes("diff/source1")[0]
+
+            var modoS1 = nodeSource1.getAttribute("modo")
+
+            if (modoS1 == "GET_DEF") {
+                source1["modo"] = "GET_DEF"
+                source1["cod_objeto"] =  getAttribute(nodeSource1, "cod_objeto")
+                source1["cod_obj_tipo"] = getAttribute(nodeSource1, "cod_obj_tipo")
+                source1["objeto"] = getAttribute(nodeSource1, "objeto")
+                source1["path"] = getAttribute(nodeSource1, "path")
+                source1["cod_modulo_version"] = getAttribute(nodeSource1, "cod_modulo_version") 
+            } else {
+
+                source1["modo"] = "GET_IMP"
+                source1["cod_servidor"] = getAttribute(nodeSource1, "cod_servidor")
+                source1["cod_sistema"] = getAttribute(nodeSource1, "cod_sistema")
+                source1["port"] = getAttribute(nodeSource1, "port")
+                source1["objeto"] = getAttribute(nodeSource1, "objeto")
+                source1["path"] = getAttribute(nodeSource1, "path")
+                source1["cod_obj_tipo"] = getAttribute(nodeSource1, "cod_obj_tipo")
+            }
+
+            var nodeSource2 = objXML.selectSingleNode("diff/source2")
+            var modoS2 = nodeSource2.getAttribute("modo")
+
+            if (modoS2 == "GET_DEF") {
+                source2["modo"] = "GET_DEF"
+                source2["cod_objeto"] = getAttribute(nodeSource2, "cod_objeto")
+                source2["cod_obj_tipo"] = getAttribute(nodeSource2, "cod_obj_tipo")
+                source2["objeto"] = getAttribute(nodeSource2, "objeto")
+                source2["path"] = getAttribute(nodeSource2, "path")
+                source2["cod_modulo_version"] = getAttribute(nodeSource2, "cod_modulo_version")
+            } else {
+
+                source2["modo"] = "GET_IMP"
+                source2["cod_servidor"] = getAttribute(nodeSource2, "cod_servidor")
+                source2["cod_sistema"] = getAttribute(nodeSource2, "cod_sistema")
+                source2["port"] = getAttribute(nodeSource2, "port")
+                source2["objeto"] = getAttribute(nodeSource2, "objeto")
+                source2["path"] = getAttribute(nodeSource2, "path")
+                source2["cod_obj_tipo"] = getAttribute(nodeSource2, "cod_obj_tipo")
+            }
+
+
+
+            objeto = source1["objeto"]?source1["objeto"]:source2["objeto"]
+
+            printMenu();
+
+            var select1 = $('select_encoding1')
+            var select2 = $('select_encoding2')
+            var encoding1 = select1.options[select1.selectedIndex].value;
+            var encoding2 = select2.options[select2.selectedIndex].value;
+
+
+            source1["encoding"] = encoding1
+            source2["encoding"] = encoding2
+
+
+            var onEnd = function () { getSource(source2, "modificado", printOutput) }
+
+            getSource(source1, "base", onEnd)
+           
+
+
+            nvFW.window_key_action["13"] = function (e) {
+                if (src_base && src_modificado) {
+                    printOutput();
+                }
+            }
+
+
+            window_onresize()
+        }
+
+
+
+
+        function getSource(source1, target, onEnd) {
+            
+            var url = ""
+            if(source1["modo"]== "GET_DEF"){
+                
+                url = '/fw/sica/get_objeto_def_source.aspx?' 
+                var params = "cod_objeto=" +  source1["cod_objeto"] + "&cod_obj_tipo=" +
+                 source1["cod_obj_tipo"] + "&objeto=" + encodeURIComponent(source1["objeto"]) + 
+                 "&path=" + encodeURIComponent(source1["path"]) +
+                 "&cod_modulo_version=" + source1["cod_modulo_version"] + "&encoding=" + encodeURIComponent(source1["encoding"])
+
+                url = url + params
+            }
+
+            if(source1["modo"]== "GET_IMP"){
+                
+                url = '/fw/sica/get_objeto_imp_source.aspx?' 
+                var params = "cod_servidor=" +  encodeURIComponent(source1["cod_servidor"]) + "&cod_sistema=" +
+                 encodeURIComponent(source1["cod_sistema"]) + "&port=" + source1["port"] + 
+                 "&objeto=" + encodeURIComponent(source1["objeto"]) + "&path=" + encodeURIComponent(source1["path"]) +
+                 "&cod_obj_tipo=" + source1["cod_obj_tipo"] + "&encoding=" + encodeURIComponent(source2["encoding"])
+
+                url = url + params
+            }
+
+            
+
+            nvFW.error_ajax_request(url, {
+                onSuccess: function (err, transport) {
+                
+                    if (err.numError == 0) {
+                        
+                        if (target == 'base') {
+                            src_base = err.params["objetoContent"]
+                            $('select_encoding1').value = err.params["encoding"].toUpperCase()
+                        } else {
+
+                            src_modificado = err.params["objetoContent"]
+                            $('select_encoding2').value = err.params["encoding"].toUpperCase()
+                        }
+
+                        if (onEnd) {
+                            onEnd()
+                        }
+                    }
+                } 
+            });
+
+
+            /*
+            nvFW.error_ajax_request('/fw/sica/get_objeto_source.aspx', {
+                parameters: {
+                    modo: modo,
+                    cod_objeto: cod_objeto,
+                    cod_obj_tipo: cod_obj_tipo,
+                    objeto: objeto,
+                    path_ori: path_ori,
+                    path_dest: path_dest,
+                    cod_modulo_version: cod_modulo_version,
+                    cod_servidor: cod_servidor,
+                    cod_sistema: cod_sistema,
+                    port: port,
+                    encoding_definition: encoding_definition,
+                    encoding_implementation: encoding_implementation
+                },
+                onSuccess: function (err, transport) {
+                    if (err.numError == 0) {
+
+                        if (modo == 'GET_DEF_AND_IMP' || modo == 'GET_DEF') {
+                            src_base = err.params["objetoContent_definition"]
+
+                            // restablecer codificacion
+                            if (err.params["encoding_definition"] != "") {
+                                $('select_encoding1').value = err.params["encoding_definition"]
+                            }
+
+                        }
+                        if (modo == 'GET_DEF_AND_IMP' || modo == 'GET_IMP') {
+                            src_modificado = err.params["objetoContent_implementation"]
+
+                            // restablecer codificacion
+                            if (err.params["encoding_implementation"] != "") {
+                                $('select_encoding2').value = err.params["encoding_implementation"]
+                            }
+                        }
+
+
+                        if (modo == 'GET_DEF_AND_' || modo == 'GET_IMP') {
+                            src_modificado = err.params["objetoContent_implementation"]
+
+                            // restablecer codificacion
+                            if (err.params["encoding_implementation"] != "") {
+                                $('select_encoding2').value = err.params["encoding_implementation"]
+                            }
+                        }
+
+
+
+                        printOutput();
+
+                    }
+                }
+            });*/
+
+        }
+
+
+        function printMenu() {
+
+            var vMenuObj = new tMenu('divObjeto', 'vMenuObj');
+            Menus["vMenuObj"] = vMenuObj
+            Menus["vMenuObj"].alineacion = 'centro';
+            Menus["vMenuObj"].estilo = 'A';
+            Menus["vMenuObj"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 100%; font-size:medium; text-align:center'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>" + objeto + "</Desc></MenuItem>")
+            vMenuObj.MostrarMenu()
+        }
+
+
+        function printOutput() {
+
+
+            srcBase = difflib.stringAsLines(src_base)
+            srcModificado = difflib.stringAsLines(src_modificado)
+
+            // create a SequenceMatcher instance that diffs the two sets of lines
+            var sm = new difflib.SequenceMatcher(srcBase, srcModificado);
+
+            // get the opcodes from the SequenceMatcher instance
+            // opcodes is a list of 3-tuples describing what changes should be made to the base text
+            // in order to yield the new text
+            var opcodes = sm.get_opcodes();
+            var diffoutputdiv = $("diffoutput");
+            //while (diffoutputdiv.firstChild) diffoutputdiv.removeChild(diffoutputdiv.firstChild);
+
+            diffoutputdiv.innerHTML = "";
+
+
+            var contextSize = null
+            if (!$('showAllLines').checked) {
+                if ($('contextSize').value != "" && $('contextSize').value >= 0) {
+                    contextSize = $('contextSize').value
+                }
+            } 
+
+
+            // build the diff view and add it to the current DOM
+            diffoutputdiv.appendChild(diffview.buildView({
+                baseTextLines: srcBase,
+                newTextLines: srcModificado,
+                opcodes: opcodes,
+                // set the display titles for each resource
+                baseTextName: "Definición",
+                newTextName: "Instancia",
+                contextSize: contextSize,
+                viewType: 0
+            }));
+
+        }
+
+
+
+        function window_onresize() {
+            var body_h = $$('BODY')[0].getHeight();
+            var body_w = $$('BODY')[0].getWidth();
+
+            var divHeader_h = $('divHeader').getHeight();
+            var height = body_h - divHeader_h - 40; // los 40 son para darle lugar al scroll horizontal
+
+            if (height > 0) {
+                $('diffoutput').setStyle({ height: height + 'px', width: body_w + 'px' });
+            }
+        }
+
+
+
+        function getDefSource(select) {
+            var encoding = select.options[select.selectedIndex].value;
+            source1["encoding"] = encoding
+            getSource(source1, "base", printOutput)
+        }
+
+        function getImpSource(select) {
+            var encoding = select.options[select.selectedIndex].value;
+            source2["encoding"] = encoding
+            getSource(source2, "modificado", printOutput)
+        }
+
+        function showAllLinesCheck(element) {
+            if (element.checked) {
+                $('tdNLineas').style.color = "darkgrey"
+                campos_defs.habilitar("contextSize", false)
+
+                if (src_base && src_modificado) {
+                    printOutput();
+                }
+
+            } else {
+                $('tdNLineas').style.color = ""
+                campos_defs.habilitar("contextSize", true)
+            }
+        }
+
+
+        function formatXml(xml) {
+            var formatted = '';
+            var reg = /(>)(<)(\/*)/g;
+            xml = xml.replace(reg, '$1\r\n$2$3');
+            var pad = 0;
+
+            var arr = xml.split('\r\n')
+
+            for (var index in arr) {
+                var node = arr[index]
+
+                try {
+                    var indent = 0;
+                    if (node.match(/.+<\/\w[^>]*>$/)) {
+                        indent = 0;
+                    } else if (node.match(/^<\/\w/)) {
+                        if (pad != 0) {
+                            pad -= 1;
+                        }
+                    } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
+                        indent = 1;
+                    } else {
+                        indent = 0;
+                    }
+
+                    var padding = '';
+                    for (var i = 0; i < pad; i++) {
+                        padding += '  ';
+                    }
+
+                    formatted += padding + node + '\r\n';
+                    pad += indent;
+                } catch (e) {
+                }
+            }
+
+            return formatted;
+        }
+
+
+    </script>
+</head>
+<body onload="window_onload()" onresize="window_onresize()" style="height: 100%;
+    width: 100%; overflow: hidden">
+    <div id='divHeader' style="width: 100%">
+        <div style="width: 100%" id="divObjeto">
+        </div>
+
+        <table>
+            <tr>
+                <td style="white-space: nowrap;"><label for="showAllLines">Mostrar Todo</label><input type="checkbox" id="showAllLines" checked="checked" onclick="showAllLinesCheck(this)"/></td>
+                <td id='tdNLineas' style="white-space: nowrap;color:darkgray">
+                    Nº Lineas en Contexto:
+                </td>
+                <td>
+
+                    <script type="text/javascript">
+                        campos_defs.add("contextSize", { enDB: false, nro_campo_tipo: 100 })
+                        campos_defs.set_value("contextSize", 100)
+                        campos_defs.habilitar("contextSize", false)
+                    </script>
+                     
+                </td>
+            </tr>
+        </table>
+
+        <div style="float: left">
+            <select id="select_encoding1" onchange="getDefSource(this)">
+                <option value="ISO-8859-1">ISO-8859-1</option>
+                <option value="UTF-8">UTF-8</option>
+            </select>
+        </div>
+
+        <div style="float: right">
+            <select id="select_encoding2" onchange="getImpSource(this)">
+                <option value="ISO-8859-1">ISO-8859-1</option>
+                <option value="UTF-8">UTF-8</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div id="diffoutput" style="background-color:white;width: 100%; overflow: auto">
+    </div>
+</body>
+</html>

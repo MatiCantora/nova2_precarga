@@ -1,0 +1,302 @@
+﻿function tParam_def(param) {
+    //parametro, tipo_dato, etiqueta, valor, requerido, editable, visible, campo_def, valor_defecto_editable, id_param, valor_defecto, permiso_ver, permiso_edicion
+
+    if (!param)
+        param = {}
+
+    if (!param.tipo_dato) param.tipo_dato = 'varchar'
+    if (!param.etiqueta) param.etiqueta = ''
+    if (!param.valor) param.valor = ''
+    if (!param.requerido) param.requerido = false
+    if (!param.editable) param.editable = false
+    if (param.visible == undefined) param.visible = true
+    if (!param.campo_def) param.campo_def = ''
+    if (!param.valor_defecto_editable) param.valor_defecto_editable = ''
+    if (!param.id_param) param.id_param = ''
+    if (!param.valor_defecto) param.valor_defecto = ''
+    if (!param.file_max_size) param.file_max_size = 0
+    if (!param.file_filtro) param.file_filtro = ''
+    if (!param.interno) param.interno = false
+
+    this.parametro = param.parametro
+    this.valor = param.valor
+    this.etiqueta = param.etiqueta
+    this.tipo_dato = param.tipo_dato
+    this.campo_def = param.campo_def
+    this.requerido = param.requerido
+    this.editable = param.editable
+    this.visible = param.visible
+    this.orden = param.orden
+    this.valor_defecto_editable = param.valor_defecto_editable
+    this.id_param = param.id_param
+    this.valor_defecto = param.valor_defecto
+    this.file_max_size = param.file_max_size
+    this.file_filtro = param.file_filtro
+    this.interno = param.interno
+    this.permiso_ver = param.permiso_ver
+    this.permiso_edicion = param.permiso_edicion
+    this.add = param_def_add
+
+    return this
+}
+
+nvFW.param_def_setValues = function (params, poptions, onSave, filtroXMLHistorico, permite_titulo) {
+    
+    if (!poptions) {
+        poptions = {
+            width: 500, height: "230",
+            title: "<b>Editar</b>",
+            maximizable: false,
+            minimizable: false
+        }
+    }
+
+    poptions.url = "/FW/param_def/param_def_setValues.aspx",
+    poptions.userData = {}
+
+    poptions.userData.params = params
+
+    poptions.userData.onSave = onSave
+    poptions.userData.filtroHistorico = filtroXMLHistorico
+
+    poptions.userData.permite_titulo = permite_titulo
+
+    var win = nvFW.createWindow(poptions)
+    win.showCenter(true)
+    return win
+}
+
+
+nvFW.param_def_history = function (param, poptions,filtroXMLHistorico) {
+
+    if (!poptions) {
+        poptions = {
+            width: 500, height: "230",
+            title: "<b>Editar</b>",
+            maximizable: false,
+            minimizable: false
+        }
+    }
+
+    poptions.url = "/FW/param_def/param_valor_log.aspx",
+    poptions.userData = {}
+    poptions.userData.param = param
+    poptions.userData.filtro_historico = filtroXMLHistorico
+
+    var winH = nvFW.createWindow(poptions)
+    winH.showCenter(true)
+    return winH
+}
+
+
+nvFW.param_def_edit = function (params, onSave, poptions) {
+
+    var options = {}
+    if (!poptions) poptions = {}
+
+    for (p in poptions)
+        options[p] = poptions[p]
+
+    options.url = "/FW/param_def/param_def_edit.aspx",
+    options.userData = {}
+    options.userData.params = params
+    options.userData.onSave = onSave
+
+    var win = nvFW.createWindow(options)
+    win.showCenter(!options.modal ? false : true)
+
+    return win
+}
+
+function edit_param_onclick(obj, _params, onSave, filtroXMLHistorico, options) {
+
+    var el, id = "", esTitle = false, etiqueta = ""
+    if (obj.tagName.toLowerCase() == 'input')
+        el = obj
+    else if ($(obj.id.replace('param_', '')))
+        el = $(obj.id.replace('param_', ''))
+    else
+        id = obj.id.replace('param_', '')
+
+    if (id == "")
+        id = el.id
+    else {
+        esTitle = true
+        etiqueta = _params[id].etiqueta
+    }
+
+    var paramsArr = []
+    if (!options) {
+        options = {
+            width: 600,
+            height: 400,
+            maximizable: false,
+            minimizable: false
+        }
+        options.title = "<b>Editar Parámetros " + etiqueta + "</b>"
+    }
+
+    //hiddens
+    var abrirVentana = false
+    if (!esTitle) {
+        //paramsArr.push(_params[id])
+        for (p in _params) {
+            _params[p].visible = true
+
+            if (_params[p] != _params[id])
+                _params[p].visible = false
+
+            if (_params[p].tipo_dato == "function (int)" || _params[p].tipo_dato == "function (datetime)" || _params[p].tipo_dato == "function (varchar)") {
+                var valor = eval(_params[p].valor_defecto + "('" + _params[p].parametro + "', '" + _params[p].parametro + "_sv" + "', 't_" + i + "', '" + (_params[p].valor != _params[p].valor_defecto ? _params[p].valor : "") + "', false)")
+
+                if (valor == "" && _params[p].valor == _params[p].valor_defecto)
+                    _params[p].valor = ""
+                else if (valor != "")
+                    _params[p].valor = valor
+
+                var tipo_dato = "varchar"
+                if (_params[p].tipo_dato == "function (int)")
+                    tipo_dato = "int"
+
+                if (_params[p].tipo_dato == "function (datetime)")
+                    tipo_dato = "datetime"
+
+                _params[p].tipo_dato = tipo_dato
+            }
+
+            paramsArr.push(_params[p])
+        }
+
+    } else {
+        for (p in _params) {
+            if (parseInt(_params[p].orden) > parseInt(_params[id].orden)) {
+                if (_params[p].tipo_dato == "title") break
+                else {
+                    paramsArr.push(_params[p])
+                    if (_params[p].editable && abrirVentana == false) abrirVentana = true
+                }
+            }
+        }
+    }
+
+    if (!abrirVentana && esTitle) {
+        alert("No hay parmámetros editables.")
+    }
+    else
+        nvFW.param_def_setValues(paramsArr, options, onSave, filtroXMLHistorico)
+}
+
+
+//target es el id del div de parametros
+function param_def_add(filtroXML, filtroWhere, target, onSave, filtroXMLHistory, options) {
+    
+    var filtroXMLHistory = filtroXMLHistory
+    var onSave = onSave
+   
+    var _params = {};
+
+    if (options.params)
+        for (var i = 0; i < options.params.length; i++) {
+         if ('parametro' in options.params[i])
+            {
+             var param = options.params[i].parametro
+             _params[param] = options.params[i]
+            }
+        }
+
+    var paramRs = new tRS();
+    paramRs.open(filtroXML, "", filtroWhere, "", "");
+    while (!paramRs.eof()) {
+        var esEditable = paramRs.getdata("editable") === "True"
+        var param = new tParam_def({
+            parametro: paramRs.getdata("param"),
+            valor: paramRs.getdata("valor"),
+            orden: paramRs.getdata("orden"),
+            etiqueta: paramRs.getdata("etiqueta"),
+            tipo_dato: paramRs.getdata("tipo_dato"),
+            campo_def: paramRs.getdata("campo_def"),
+            requerido: paramRs.getdata("requerido") === "True",
+            visible: paramRs.getdata("visible") === "True",
+            editable: esEditable,
+            valor_defecto: paramRs.getdata("valor_defecto"),
+            permiso_ver: paramRs.getdata("permiso_ver"),
+            permiso_edicion: paramRs.getdata("permiso_edicion")
+        });
+        _params[paramRs.getdata("param")] = param;
+
+        paramRs.movenext()
+    }
+
+    $(target).innerHTML = '<table class="tb1"><tbody id="tabla_' + target + '"></tbody></table>'
+    
+    for (var p in _params) {
+        var param = _params[p]
+        if (param.tipo_dato == "title") {
+            var fila = '<tr class="Tit2"><td id="param_' + param.parametro + '"style="text-align:center" colspan="2"><b>' + param.etiqueta + '</b></td></tr >';
+            $$('#tabla_' + target)[0].insert(fila);
+
+        } else if (param.visible) {
+            var fila = '<tr><td class="Tit2" width="50%">' + param.etiqueta + ':</td>' + '<td id="param_' + param.parametro + '" ><span style="display:none;" id="def_' + param.parametro + '"></span></td></tr>';
+            
+            $$('#tabla_' + target)[0].insert(fila);
+            var campo_text = ""
+
+            var is_function = (param.tipo_dato == "function (int)" || param.tipo_dato == "function (datetime)" || param.tipo_dato == "function (varchar)") ? true : false
+            if (is_function && param.permiso_ver == "1") {
+                try {
+                    var fn_str = param.valor_defecto + "('" + param.parametro + "', '" + param.campo_def + "', 'param_" + param.parametro + "', '" + (param.valor != param.valor_defecto ? param.valor : "") + "', true)"
+                    setTimeout(fn_str, 100)
+                } catch (e) {
+                    campo_text = "Imposible calcular el valor. Verifique."
+                    param.editable = false
+                }
+            }
+            else
+                campo_text = param.permiso_ver == "1" ? param.valor : "******"
+
+            var type = "text", checked, disabled = "", width = "width:100%"
+            if (param.tipo_dato == 'bit') {
+                width = ""
+                campo_text = param.valor == '1' ? 'SI' : 'NO'
+                param.valor == '1' ? checked = true : checked = false
+                type = "checkbox"
+                disabled = "disabled"
+            }
+
+            if (param.campo_def != "") {
+                campos_defs.add(param.campo_def, { target: 'def_' + param.parametro })
+
+                if (!is_function) {
+                    campos_defs.set_value(param.campo_def, campo_text)
+                    var descripcion = campos_defs.get_desc(param.campo_def)
+                    if (descripcion)
+                        campo_text = descripcion
+                }
+            }
+            
+            $$('#tabla_' + target + ' #param_' + param.parametro)[0].innerHTML += '<input id="' + param.parametro + '" name="' + param.parametro + '" type="' + type + '" class="Tit4" style="' + width + '" value="' + (param.permiso_ver == "1" ? campo_text : "*******") + '" title="' + campo_text + '" readonly ' + disabled + '/>';
+            
+            if (checked) $(param.parametro).checked = true
+            if (param.editable) {
+                var obj_edit = '#tabla_' + target + ' '
+                if (param.tipo_dato == 'bit' || param.tipo_dato == "title")
+                    obj_edit = '#param_' + param.parametro
+                else
+                    obj_edit = '#' + param.parametro
+                
+                $$(obj_edit)[0].addClassName('param_editable').observe('click', function () {
+                    
+                    //si es de tipo bit this.name=undefined -> this.id=param_name -> sustraigo param_
+                    if (_params[ (this.name) ? this.name : (this.id.substring(6, this.id.length)) ].permiso_edicion == "1")
+                        edit_param_onclick(this, _params, onSave, filtroXMLHistory, options)
+                    else
+                        alert("No tiene permisos para realizar esta acción.")
+                });
+                //$$(obj_edit)[0].addClassName('param_editable').observe('click', function () { edit_param_onclick(this, _params, onSave, filtroXMLHistory, options) });
+            }
+        }
+    }
+
+    return _params
+}
+

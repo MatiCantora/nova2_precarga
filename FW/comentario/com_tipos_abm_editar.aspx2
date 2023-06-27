@@ -1,0 +1,205 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%
+    Me.contents("vistaTipos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verCom_tipos'><campos>*</campos><filtro></filtro></select></criterio>")
+
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>NOVA Modulo Comentarios</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <script type="text/javascript" src="/FW/script/tTable.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript">
+        var win = nvFW.getMyWindow()
+        var modo = ''
+
+        function window_onresize() {
+
+        }
+
+        function window_onload() {
+            let modo_edicion = win.options.userData.modo_edicion;
+            let nro_com_tipo = parseInt(win.options.userData.nro_com_tipo);
+            let com_tipo = win.options.userData.com_tipo;
+            let nro_permiso = parseInt(win.options.userData.nro_permiso);
+            let nro_permiso_grupo = parseInt(win.options.userData.nro_permiso_grupo);
+            let nombre_asp = win.options.userData.nombre_asp;
+            let style = win.options.userData.style;
+            campos_defs.habilitar('nro_com_tipo', false)
+
+            if (modo_edicion == "nuevo")
+                return
+
+            if ((modo_edicion == "modificar") && (nro_com_tipo != undefined)) { //si existe
+                campos_defs.set_value('nro_com_tipo', parseInt(nro_com_tipo));              
+                campos_defs.set_value('com_tipo', com_tipo);
+                campos_defs.set_value('nombre_asp', nombre_asp);
+                campos_defs.set_value('style', style);
+                if (!isNaN(nro_permiso))
+                    campos_defs.set_value("nro_permiso_dep", nro_permiso);
+                if (!isNaN(nro_permiso_grupo))
+                    campos_defs.set_value("nro_permiso_grupo", nro_permiso_grupo);
+            }
+        }
+
+        function guardar() {
+            let com_tipo = campos_defs.get_value('com_tipo')
+            let nro_com_tipo = campos_defs.get_value('nro_com_tipo')
+            let style = campos_defs.get_value('style')
+            let nro_permiso = campos_defs.get_value('nro_permiso_dep')
+            let nombre_asp = campos_defs.get_value('nombre_asp')
+            let nro_permiso_grupo = campos_defs.get_value('nro_permiso_grupo')
+
+
+            if (nro_com_tipo == "")
+                modo = "agregar"
+            else
+                modo = "modificar"
+            
+            if (com_tipo == "") {
+                nvFW.alert('Error. Debe completar obligatoriamente el campo tipo para guardar');
+                return;
+            }
+
+            let xml = '<?xml version="1.0" encoding="ISO-8859-1"?><tipos><tipo accion="' + modo + '" nro_com_tipo="' + nro_com_tipo + '" com_tipo="' + com_tipo + '" style="' + style + '" nro_permiso="' + nro_permiso + '" nombre_asp="' + nombre_asp + '" nro_permiso_grupo="' + nro_permiso_grupo + '" ></tipo></tipos>'
+           
+            if (modo == 'agregar') {
+                nvFW.error_ajax_request("/FW/comentario/com_tipos_abm.aspx", {
+                    parameters: {
+                        xml: xml,
+                        modo: "ajax_call",
+                        accionBack: "guardar"
+                    },
+
+                    onSuccess: function (err, transport) {
+                        campos_defs.set_value('nro_com_tipo', err.params['nro_com_tipo']);
+                        modo = "modificar";
+                    },
+
+                    onFailure: function (err, transport) {
+                        nvFW.alert("Ocurrió un error. Contacte al administrador.");
+                    },
+                    error_alert: false
+                })
+                
+            }
+
+            else if (modo == 'modificar') {
+                nvFW.error_ajax_request("/FW/comentario/com_tipos_abm.aspx", {
+                    parameters: {
+                        xml: xml,
+                        modo: "ajax_call",
+                        accionBack: "guardar"
+                    },
+                    
+                    onFailure: function (err, transport) {
+                        top.nvFW.alert("Ocurrió un error. Contacte al administrador.")
+                    },
+                    error_alert: false
+                })
+            }
+        }
+
+        function cargarDatos(nro_com_tipo) {
+
+        }
+
+    </script>
+
+</head>
+<body onload="window_onload()" onresize="window_onresize()" style="width:100%;height:100%; overflow:hidden">
+    <div id="divMenuAgregar">
+            <script type="text/javascript">
+                var vMenuAgregar = new tMenu('divMenuAgregar', 'vMenuAgregar');
+                Menus["vMenuAgregar"] = vMenuAgregar
+                Menus["vMenuAgregar"].loadImage("guardar", '/fw/image/icons/guardar.png')
+                Menus["vMenuAgregar"].alineacion = 'izquierda';
+                Menus["vMenuAgregar"].estilo = 'A';
+                Menus["vMenuAgregar"].CargarMenuItemXML("<MenuItem id='0'><Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>guardar()</Codigo></Ejecutar></Acciones></MenuItem>")
+
+                vMenuAgregar.MostrarMenu()
+            </script>
+    </div>
+
+    <table class="tb1" id="tbDatos">
+         <tr> 
+            <td class="Tit1"> Nro Tipo </td>
+            <td> 
+                <script type="text/javascript">
+                    campos_defs.add('nro_com_tipo', {
+                        nro_campo_tipo: 100,
+                        enDB: false,
+                        placeholder: "se define automáticamente"
+                    })
+                </script>
+            <td>
+        </tr>
+
+        <tr> 
+            <td class="Tit1"> Tipo </td>
+            <td> 
+                <script type="text/javascript">
+                    campos_defs.add('com_tipo', {
+                        nro_campo_tipo: 104,
+                        enDB: false
+                    })
+                </script>
+            <td>
+        </tr>
+
+         <tr>
+            <td class="Tit1"> Permiso grupo </td>
+            <td>
+                 <script type="text/javascript">
+                     campos_defs.add('nro_permiso_grupo')
+                 </script>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="Tit1"> Permiso </td>
+            <td> 
+                <script type="text/javascript">
+                    campos_defs.add('nro_permiso_dep')
+                </script>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="Tit1"> Nombre ASP </td>
+            <td> 
+                <script type="text/javascript">
+                    campos_defs.add('nombre_asp', {
+                        nro_campo_tipo: 104,
+                        enDB: false
+                    })
+                </script>
+            </td>
+        </tr>
+        <tr>
+            <td class="Tit1"> Definir estilo </td>
+            <td colspan="2" >  
+                <script type="text/javascript">
+                    campos_defs.add('style', {
+                        nro_campo_tipo: 104,
+                        enDB: false
+                    })
+                </script>
+            </td>
+        </tr>
+
+    </table>
+
+
+</body>
+</html>

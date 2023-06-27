@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<resultado>
+  <MenuItems>
+
+    <MenuItem id="10">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>inicio</icono>
+      <Desc>Inicio</Desc>
+      <Acciones>
+        <Ejecutar Tipo="link">
+          <Target>_top</Target>
+          <URL>Default.aspx</URL>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+    
+    <MenuItem id="20">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>abm</icono>
+      <Desc>ABM</Desc>
+      <MenuItems>
+        
+        <MenuItem id="21">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>tabla</icono>
+          <Desc>Validaciones</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/IDS/ids_validaciones_abm.aspx', 'ABM Validaciones', 'permisos_parametros', 1, 800, 1100, true, true, true, true, false)</codigo>
+              <!--<codigo>abrir_ventana_emergente('/IDF/ids_config_abm.aspx', 'ABM configuración de IDS', 'permisos_sica', 15, 800, 1100, true, true, true, true, false)</codigo>-->
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+
+        <MenuItem id="22">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>estructura</icono>
+          <Desc>PKI ABM</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <!--<codigo>abrir_ventana_emergente('/fw/pki/pki_nodos_tree.aspx', 'PKI - ABM', 'permisos_parametros', 1, 500, 1000)</codigo>-->
+              <codigo>abrir_ventana_emergente('/FW/pki/pki_nodos_tree.aspx', 'PKI - ABM', 'permisos_parametros', 1, 500, 1000)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+
+        <MenuItem id="23">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>parametros</icono>
+          <Desc>Parámetros - Esquema</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <!--<codigo>abrir_ventana_emergente('/FW/parametros/parametros_nodos_modulo.aspx', 'Esquema de Parámetros', 'permisos_parametros',1,600,1000, true, true, true, true, false)</codigo>-->
+              <codigo>abrir_ventana_emergente('/FW/parametros/parametros_nodos_modulo.aspx', 'Esquema de Parámetros', 'permisos_parametros',1,600,1000, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        
+        <MenuItem id="24">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>parametros</icono>
+          <Desc>Parámetros - Asignación</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <!--<codigo>abrir_ventana_emergente('/FW/parametros/parametros_nodos_modulo.aspx?accion=asignar', 'Asignación de Parámetros', 'permisos_parametros',2,600,1000, true, true, true, true, false)</codigo>-->
+              <codigo>abrir_ventana_emergente('/FW/parametros/parametros_nodos_modulo.aspx?accion=asignar', 'Asignación de Parámetros', 'permisos_parametros', 1,600,1000, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        
+      </MenuItems>
+    </MenuItem>
+
+    <MenuItem id="30">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>seguridad</icono>
+      <Desc>Seguridad</Desc>
+      <MenuItems>
+
+        <MenuItem id="31">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>operador</icono>
+          <Desc>Operadores</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <!-- VER GRUPOS DE PERMISOS Y NRO DE PERMISO -->
+              <codigo>abrir_ventana_emergente('/FW/security/operador_abm.aspx', 'Operador ABM', 'permisos_seguridad', 1, 800, 1100, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+
+        <MenuItem id="32">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>llave</icono>
+          <Desc>Permisos</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <!-- VER GRUPOS DE PERMISOS Y NRO DE PERMISO -->
+              <codigo>abrir_ventana_emergente('/FW/security/permiso_abm.aspx', 'Permiso ABM', 'permisos_seguridad', 3, 800, 1100, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+
+      </MenuItems>
+    </MenuItem>
+
+    <MenuItem id="40">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>herramientas</icono>
+      <Desc>Herramientas</Desc>
+      <MenuItems>
+
+        <MenuItem id="41">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>herramientas</icono>
+          <Desc>Consulta Dispositivos</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/IDS/ids_device_abm_list.aspx', 'Listado de Dispositivos', 'permisos_herramientas', 6, 800, 1100, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        
+      </MenuItems>
+    </MenuItem>
+
+  </MenuItems>
+</resultado>

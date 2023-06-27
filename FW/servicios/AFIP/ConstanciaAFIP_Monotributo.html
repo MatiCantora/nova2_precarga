@@ -1,0 +1,261 @@
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/estilo.css" />
+<link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/estilo_base.css" />
+<link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/internet.css" />
+
+<HTML>
+  <HEAD>
+  <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <META http-equiv="Pragma" content="no-cache" />
+  <META http-equiv="Expires" content="-1" />
+  
+  <META http-equiv="Cache-Control" content="no-cache" />
+  <META http-equiv="Cache-Control" content="must-revalidate" />
+  <META http-equiv="Cache-Control" content="proxy-revalidate" />
+  <style type="text/css">
+  td {
+	  border-width: 0px;
+  }
+  </style>  	    
+  <TITLE>Formulario de Impresi&#243;n de Constancia de Monotributo</TITLE>
+  </HEAD>
+  <BODY>
+  <FORM><INPUT type="hidden" name="response" value="constancia-sin-error"/></FORM>
+  	
+  <style type="text/css">
+@media print {
+    #printpagetoolbar {
+        display :  none;
+    }
+}
+</style>
+<link rel="stylesheet" type="text/css" href="/fw/servicios/afip/css/estilosGenericosParaConstancias.css" >
+  
+    <TABLE border="1" cellPadding="0" cellSpacing="0" rules="groups" width="100%">
+      <TR>      
+      
+        <TD width="40px" rowspan="0" ALIGN="CENTER" valign="middle">
+	        <table>
+	      		<tr><td valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/></td></tr>
+	      		<tr><td valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/></td></tr>
+	      		<tr><td valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/></td></tr>
+	      		<tr><td valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/></td></tr>
+	      		<tr><td valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/></td></tr>
+	      	</table>
+        </TD>
+        
+        <TD valign="top" align="center" width="100%">
+        
+          <TABLE  width="100%" ALIGN="CENTER">
+            <tr>
+              <TD>&nbsp;</TD>
+            </tr>            
+            <TR>
+              <TD ALIGN="LEFT">
+                <BR/>
+                <IMG src="/fw/servicios/afip/images/afipsolo.png"/>
+              </TD>
+            </TR>
+            <TR>
+              <TD ALIGN="CENTER">
+                <BR/>
+                <b>
+                <FONT face="Arial" SIZE="6">CONSTANCIA DE OPCI&Oacute;N</FONT>
+                </b>
+                <BR/>
+                <b>
+                <FONT face="Arial" SIZE="4">R&eacute;gimen Simplificado para Peque&ntilde;os Contribuyentes</FONT>
+                </b>
+              </TD>
+            </TR>
+            <tr>
+              <TD>&nbsp;</TD>
+            </tr>            
+            <tr>
+              <TD>&nbsp;</TD>
+            </tr>            
+            <tr>
+              <TD>&nbsp;</TD>
+            </tr>            
+
+
+      <TR>
+        <TD>
+          <TABLE border="1" cellPadding="0" cellSpacing="0" rules="groups" ALIGN="LEFT" width="100%">
+            <TR>
+              <TD>                
+                <b>
+                <FONT face="Arial" SIZE="2">{%tipoClave%}:&nbsp;</FONT>
+                </b>
+                <FONT face="Arial" SIZE="2">{%idPersona%}</FONT>
+              </TD>
+            </TR>
+            <TR>
+              <TD>
+                <FONT face="Arial" SIZE="2">{%razonSocial%}</FONT>
+              </TD>
+            </TR>
+
+            
+            <TR>
+              <TD>
+              
+                <FONT face="Arial" SIZE="2">{%direccion%}</FONT>
+              </TD>
+            </TR>
+            
+            <TR>
+              <TD>
+                <FONT face="Arial" SIZE="2">{%Localidad%}&nbsp;</FONT>
+              </TD>
+            </TR>
+            
+            <TR>
+              <TD>
+                <FONT face="Arial" SIZE="2">{%codPostal%}-{%descripcionProvincia%}</FONT>
+              </TD>
+            </TR>
+            
+          </TABLE>
+        </TD>
+      </TR>
+      
+      <tr>
+        <TD>&nbsp;</TD>
+      </tr>            
+     {%insert_impuestos%}           
+      
+      
+      <TR ALIGN="LEFT">
+        <TD ALIGN="CENTER">
+          <table width="100%">
+		       
+            {%categoriaMonotributo%}
+
+            <!-- Esta es la descripcion de la categoria -->
+             
+             	<tr>
+	              <TD><HR/></TD>
+	            </tr>
+	            <tr>
+        		  <td>&nbsp;</td>
+      			</tr>
+      			<tr>
+        		  <td>
+        		  <table>
+        		  
+        		  
+        		  {%insert_actividad%}
+        		  
+        		  {%insert_regimenes%}
+        		  </table>
+        		  
+        		  </td>
+      			</tr>
+      			
+             
+             
+             
+            
+            
+            
+            <tr>
+              <TD><FONT face="Arial" SIZE="2"> </FONT></TD>
+            </tr>
+            
+
+            
+            
+            
+            <tr>
+              <TD>&nbsp;</TD>
+            </tr>            
+      <TR>
+        <TD>
+        
+          <TABLE width="100%">
+            <tr>
+            
+        <TD align="left">
+          <FONT face="Arial" SIZE="1">Vigencia de la presente constancia:&nbsp;
+            <b>            
+            {%metadata_fechaHora_desde%}
+            &nbsp;a&nbsp;
+            
+            {%metadata_fechaHora_hasta%}
+            
+           
+           </B> 
+          </FONT>
+          </td>
+          <td align="right">
+	        <FONT face="Arial" SIZE="1">Hora&nbsp;</font>
+	        <FONT face="Arial" SIZE="1">
+	        <b>
+	        {%metadata_hora%}
+	        </b>	       
+          <BR/>	        
+        </TD> 
+        
+            </tr>
+          </TABLE>
+        
+        </TD>
+      </TR>    
+
+
+
+
+          </TABLE>
+        </TD>
+        
+        <TD width="40px" rowspan="0" ALIGN="CENTER" valign="middle">
+	        <table>
+	      		<tr><td align="right" valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/></td></tr>
+	      		<tr><td align="right" valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/></td></tr>
+	      		<tr><td align="right" valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/></td></tr>
+	      		<tr><td align="right" valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/></td></tr>
+	      		<tr><td align="right" valign="middle" height="105px"><IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/></td></tr>
+	      	</table>
+        </TD>
+      </TR>
+
+
+
+
+
+      <TR>
+        <TD colspan="3" ALIGN="CENTER"><BR/>
+            <table width="100%" style="display: none;">
+				<tr>
+					<td>&nbsp;</td>
+					<td width="592px">
+						<table width="100%">
+							<tr>
+								<td width="20%" align="center"><IMG src="/fw/servicios/afip/images/h_afip.png"/></td>
+								<td width="20%" align="center"><IMG src="/fw/servicios/afip/images/h_afip.png"/></td>
+								<td width="20%" align="center"><IMG src="/fw/servicios/afip/images/h_afip.png"/></td>
+								<td width="20%" align="center"><IMG src="/fw/servicios/afip/images/h_afip.png"/></td>
+								<td width="20%" align="center"><IMG src="/fw/servicios/afip/images/h_afip.png"/></td>
+							</tr>
+						</table>
+					</td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>       
+        </TD>
+      </TR>
+    </TABLE>
+    <TABLE  width="100%">
+      <TR>
+        <TD>
+          <FONT face="Arial" SIZE="1">Los datos contenidos en la presente constancia deber&aacute;n ser validados por el receptor de la misma en la p&aacute;gina institucional de AFIP <a href="http://www.afip.gob.ar" target="_blank" rel="noopener noreferrer"><u>http://www.afip.gob.ar</u></a>.</FONT>
+        </TD>
+      </TR>
+    </TABLE>
+    <FORM><INPUT type="hidden" name="idMensaje" id="idMensaje" value="puc.Constancia"/></FORM>
+  </BODY>
+</HTML>

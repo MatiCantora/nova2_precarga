@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resultado>
+  <MenuItems>
+    <MenuItem id="1">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>inicio</icono>
+      <Desc>Inicio</Desc>
+      <Acciones>
+        <Ejecutar Tipo="link">
+          <Target>_top</Target>
+          <URL>default.aspx</URL>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+    <MenuItem id="54">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>upload</icono>
+      <Desc>Archivos</Desc>
+      <Acciones>
+        <Ejecutar Tipo="script">
+          <codigo>abrir_ventana_emergente('/fw/file_dialog/file_dialog.aspx?f_seleccionar=0','Explorador de Archivos','permisos_web',8,500,1000)</codigo>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+    <MenuItem id="50">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>ref</icono>
+      <Desc>Referencia</Desc>
+      <MenuItems>
+        <MenuItem id="51">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>nueva</icono>
+          <Desc>Nueva</Desc>
+          <MenuItems>
+            <MenuItem id="52">
+              <Lib TipoLib="offLine">DocMNG</Lib>
+              <icono>nueva</icono>
+              <Desc>Nueva</Desc>
+              <Acciones>
+                <Ejecutar Tipo="script">
+                  <codigo>abrir_ventana_emergente('/wiki/referencias_abm.aspx','Editar Referencia','permisos_referencias',1,500,1000,false, true, true, true, false,window.top.abrir_ventana_emergente_OnClose)</codigo>
+                </Ejecutar>
+              </Acciones>
+            </MenuItem>
+            <MenuItem id="53">
+              <Lib TipoLib="offLine">DocMNG</Lib>
+              <icono>ref</icono>
+              <Desc>Últimas Modificadas</Desc>
+              <Acciones>
+                <Ejecutar Tipo="script">
+                  <codigo>ultimasReferenciasModificadas(event)</codigo>
+                </Ejecutar>
+              </Acciones>
+            </MenuItem>
+            <MenuItem id="54">
+              <Lib TipoLib="offLine">DocMNG</Lib>
+              <icono>servicio_asignar</icono>
+              <Desc>Suscripciones</Desc>
+              <Acciones>
+                <Ejecutar Tipo="script">
+                  <codigo>suscripciones(event)</codigo>
+                </Ejecutar>
+              </Acciones>
+            </MenuItem>
+            <MenuItem id="55">
+              <Lib TipoLib="offLine">DocMNG</Lib>
+              <icono>ref</icono>
+              <Desc>Sin Guardar</Desc>
+              <Acciones>
+                <Ejecutar Tipo="script">
+                  <codigo>referenciasNoGuardadas(event)</codigo>
+                </Ejecutar>
+              </Acciones>
+            </MenuItem>
+          </MenuItems>
+        </MenuItem>
+        <MenuItem id="56">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>ref</icono>
+          <Desc>Últimas Modificadas</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>ultimasReferenciasModificadas(event)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="57">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>servicio_asignar</icono>
+          <Desc>Suscripciones</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>suscripciones(event)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="58">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>ref</icono>
+          <Desc>Sin Guardar</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>referenciasNoGuardadas(event)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+      </MenuItems>
+    </MenuItem>
+    <MenuItem id="59">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>buscar</icono>
+      <Desc>Buscar Referencia</Desc>
+      <Acciones>
+        <Ejecutar Tipo="script">
+          <codigo>Busqueda(event,'referencias')</codigo>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+    <MenuItem id="60">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>vincular</icono>
+      <Desc>Tareas</Desc>
+      <Acciones>
+        <Ejecutar Tipo="script">
+          <codigo>tareasPendientes(event)</codigo>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+    <MenuItem id="10">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>herramientas</icono>
+      <Desc>Herramientas</Desc>
+      <MenuItems>
+        <MenuItem id="11">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>operador</icono>
+          <Desc>Operador Abm</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/FW/security/operador_consultar.aspx','Seguridad - Accesos','permisos_seguridad',1,500,1000)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="12">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>operador</icono>
+          <Desc>Roles Consulta</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/pki/entidad_consultar.aspx?nro_rol=2','Roles Abm','permisos_seguridad',1,700,1000)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="17">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>operador</icono>
+          <Desc>Roles Abm</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/entidades/rol_abm.aspx?nro_rol=2','Roles Abm','permisos_seguridad',1,700,1000)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="13">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>imprimir</icono>
+          <Desc>Configurar impresión pdf</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/wiki/ref_pre_export_pdf.aspx?save_db=1','Configurar impresión pdf', undefined, undefined, 230, 350)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="13">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>play</icono>
+          <Desc>PKI ABM</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/pki/pki_nodos_tree.aspx', 'PKI - ABM', 'permisos_parametros', 1, 500, 1000)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="14">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>parametros</icono>
+          <Desc>Esquema de Parámetros</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx','Esquema de Parámetros','permisos_parametros',1,600,1000, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="15">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>parametros</icono>
+          <Desc>Parámetros -  Asignación</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx?accion=asignar','Parámetros -  Asignación','permisos_parametros',2,600,1000, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+        <MenuItem id="16">
+          <Lib TipoLib="offLine">DocMNG</Lib>
+          <icono>parametros</icono>
+          <Desc>Iniciar Circuito de Firmas</Desc>
+          <Acciones>
+            <Ejecutar Tipo="script">
+              <codigo>abrir_ventana_emergente('/fw/visor_pdf/seleccion_entidad_circuito.aspx','Circuito de Firmas','permisos_parametros',2,740,1200, true, true, true, true, false)</codigo>
+            </Ejecutar>
+          </Acciones>
+        </MenuItem>
+      </MenuItems>
+    </MenuItem>
+  </MenuItems>
+</resultado>

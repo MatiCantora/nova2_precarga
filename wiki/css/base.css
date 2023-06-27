@@ -1,0 +1,256 @@
+BODY {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: white;
+    line-height: 1.5 !important;
+    font: 13px Arial, Helvetica, sans-serif;
+}
+.cont_h1, .cont_h2, .cont_h9 {
+    margin-top:0cm;
+    margin-right:0cm;
+    margin-bottom:0cm;
+    font-size:9pt;
+    font-family:Arial, Helvetica, sans-serif;
+}
+.cont_h1
+{
+    margin-left:1cm;
+}
+.cont_h2
+{
+    margin-left:1.5cm;
+}
+.cont_h9
+{
+    margin-left:0cm;
+}
+h1, h2, h3, h4, h5, h6
+{
+    margin: 12px 0;
+    font-family:Arial, Helvetica, sans-serif;
+    color:black;
+    font-weight:bold;
+}
+h1
+{
+    font-size:18px;
+}
+h2
+{
+    font-size:16px;
+}
+h3
+{
+    font-size:14px;
+}
+h4,h5,h6
+{
+    font-size:13px;
+}
+blockquote
+{
+    text-align:justify;
+	text-indent:1cm;
+    margin: 2pt 0 0;
+	font-style:italic;
+	font-size:8.5pt;
+	font-family:Verdana;
+	color:blue;
+	background-color:white;
+}
+a:link
+{
+    color:blue;
+    text-decoration:none;
+}
+a:visited
+{
+    color:purple;
+    text-decoration:none;
+}
+a:hover
+{
+    text-decoration:underline;
+}
+p
+{
+    text-align: justify;
+    text-indent: 1em;
+    margin: 1em 0;
+    font: 13px Arial, Helvetica, sans-serif;
+    color:black;
+    background-color:white;
+    min-height: 1em;
+}
+@media print
+{ 
+	BODY
+	{
+	    font-size: 100% !Important;
+	    vertical-align: top !Important;
+	}
+	p
+	{
+	    font-size: 13px !Important;
+  	}
+  	blockquote
+  	{
+	    font-size: 9pt !Important;
+  	} 
+  	cont_h1
+  	{
+  	    font-size: 9pt !Important;
+  	} 
+  	cont_h2
+  	{
+  	    font-size: 9pt !Important;
+  	} 
+  	cont_h9
+  	{
+  	    font-size: 9pt !Important;
+  	} 
+  	a
+  	{
+	    font-size: 9pt !Important;
+  	} 
+  	h1
+    {
+        font-size:18px;
+    }
+    h2
+    {
+        font-size:16px;
+    }
+    h3
+    {
+        font-size:14px;
+    }
+    h4,h5,h6
+    {
+        font-size:13px;
+    }   
+  	li
+  	{
+	    font-size: 13px !Important;
+  	}  
+  	ol
+  	{
+	    font-size: 13px !Important;
+  	}   
+  	ul
+  	{
+	    font-size: 13px !Important;
+  	}     
+  	.ref_titulo
+  	{
+  	    font-size: 1.5em !Important;
+  	}
+  	.ref_titulo_sub
+  	{
+  	    font-size: 12px !Important;
+  	}
+  	.ref_doc_titulo
+  	{
+  	    font-size: 18px !Important;
+  	}
+  	.tbDoc_cab
+  	{
+  	    font-size: 11px !Important;
+  	}
+  	#tbContenido
+  	{
+  	    font-size: 11pt !Important;
+  	} 
+    div
+	{
+	    vertical-align:top;
+	}
+}  
+UL, OL {
+    text-indent:1cm;
+    margin: 0 0 0 0.5cm;
+    font: 13px Arial, Helvetica, sans-serif;
+    color:black;
+    background-color:white;
+}
+LI {
+    text-indent:0cm;
+    margin: 0 0 0 0.5cm;
+    color:black;
+    background-color:white;
+}
+.ref_titulo
+{
+    font-family:bold 1.5em Arial, Helvetica, sans-serif;
+    text-align:center;
+    background-color: #d0d0d0;
+    color: #404040;
+}
+.ref_titulo_sub
+{
+    font: 12px Arial, Helvetica, sans-serif;
+}
+.tbDoc_cab
+{
+    margin-top: 10px;
+    width:100%;
+    font-family:11px Arial, Helvetica, sans-serif;
+    color:black;
+    border-bottom: solid #6883BB 2px;
+}
+.ref_doc_titulo
+{
+    font: bold 18px/22px Arial, Helvetica, sans-serif;
+}
+.resumen_tb 
+{
+    width: 100%; 
+    font-family:13px Arial, Helvetica, sans-serif;
+}
+.resumen_titulo
+{
+    font-family:bold 13px Arial, Helvetica, sans-serif;
+    border-style:solid;
+    background-color:#C4C4C8;
+    border-width:1px;
+    text-align:center;
+    text-indent:0px
+}
+.resumen_titulo td {
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+}
+.resumen_tb tr td
+{
+    border-width:1px;
+    border-style:solid;
+	text-align: justify;
+   	table-layout: auto;
+}
+#tbContenido
+{
+    margin: 0.2cm;
+    font-family: 13px Arial, Helvetica, sans-serif;
+    border: solid gray 1px;
+    background-color: #F9F9F9;
+}
+.MO
+{
+    cursor: hand;
+    cursor: pointer;
+}
+.MU
+{
+    cursor: default;
+}
+#rtoIFrame0
+{
+    padding-left: 0.3cm;
+}
+.body_fckEditor
+{ 
+    margin-left:0.5cm;
+    vertical-align:top;
+}
+table { line-height: 1.5 !important; font: 13px Arial, Helvetica, sans-serif; }

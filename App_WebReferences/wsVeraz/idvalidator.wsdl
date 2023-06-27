@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ax21="http://exceptions.idvalidator.veraz.com/xsd" xmlns:ax23="http://model.idvalidator.veraz.com/xsd" xmlns:ax28="http://utils.idvalidator.veraz.com/xsd" xmlns:ns="http://webservices.idvalidator.veraz.com" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax24="http://request.model.idvalidator.veraz.com/xsd" targetNamespace="http://webservices.idvalidator.veraz.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>idvalidator</wsdl:documentation>
+  <wsdl:types>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.idvalidator.veraz.com/xsd">
+      <xs:complexType name="IDValidatorException">
+        <xs:sequence />
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:ax25="http://request.model.idvalidator.veraz.com/xsd" xmlns:ax29="http://utils.idvalidator.veraz.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.idvalidator.veraz.com/xsd">
+      <xs:import namespace="http://request.model.idvalidator.veraz.com/xsd" />
+      <xs:import namespace="http://utils.idvalidator.veraz.com/xsd" />
+      <xs:complexType name="ResponseRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="error" nillable="true" type="ax25:Error" />
+          <xs:element minOccurs="0" name="requestResult" nillable="true" type="ax25:RequestResult" />
+          <xs:element minOccurs="0" name="result" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ResponseRequestExperto">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="error" nillable="true" type="ax25:Error" />
+          <xs:element minOccurs="0" name="requestResult" nillable="true" type="ax25:RequestResult" />
+          <xs:element minOccurs="0" name="result" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="runnerModelResult" nillable="true" type="ax29:RunnerModelResult" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://utils.idvalidator.veraz.com/xsd">
+      <xs:complexType name="RunnerModelResult">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="atributos" nillable="true" type="xs:anyType" />
+          <xs:element minOccurs="0" name="error" type="xs:boolean" />
+          <xs:element minOccurs="0" name="errorDescription" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="errorName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="modelname" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="resultado" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="trace" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="transactionId" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="usernickname" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:ax26="http://model.idvalidator.veraz.com/xsd" xmlns:ax27="http://request.model.idvalidator.veraz.com/xsd" xmlns:ax22="http://exceptions.idvalidator.veraz.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://webservices.idvalidator.veraz.com">
+      <xs:import namespace="http://exceptions.idvalidator.veraz.com/xsd" />
+      <xs:import namespace="http://model.idvalidator.veraz.com/xsd" />
+      <xs:import namespace="http://request.model.idvalidator.veraz.com/xsd" />
+      <xs:element name="idvalidatorIDValidatorException">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="IDValidatorException" nillable="true" type="ax22:IDValidatorException" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="obtenerPreguntas">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="matrix" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="user" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="password" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sector" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sucursal" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="lastName" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="firstName" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="documentNumber" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="gender" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="questionary" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="referencia" nillable="true" type="xs:decimal" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="obtenerPreguntasResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ResponseRequest" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="obtenerListaNombres">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="userLogon" nillable="true" type="ax27:UserLogon" />
+            <xs:element minOccurs="0" name="consultaNombres" nillable="true" type="ax27:ConsultaNombres" />
+            <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="autorizacion" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="producto" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="obtenerListaNombresResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax27:ListaNombresResponse" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="mensajeRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="identificador" nillable="true" type="ax27:Identificador" />
+            <xs:element minOccurs="0" name="consulta" nillable="true" type="ax27:Consulta" />
+            <xs:element minOccurs="0" name="respuestas" nillable="true" type="ax27:Respuestas" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="mensajeRequestResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax27:MensajeResponse" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getVersion">
+        <xs:complexType>
+          <xs:sequence />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getVersionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="enviarRespuestasExperto">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="matrix" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="user" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="password" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sector" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sucursal" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="idCuestionario" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="answers" nillable="true" type="ax27:Answer" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="enviarRespuestasExpertoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ResponseRequestExperto" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="enviarRespuestas">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="matrix" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="user" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="password" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sector" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="sucursal" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="idCuestionario" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="answers" nillable="true" type="ax27:Answer" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="enviarRespuestasResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ResponseRequest" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://request.model.idvalidator.veraz.com/xsd">
+      <xs:complexType name="Error">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="descripcion" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="id" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RequestResult">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="autorization" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="error" nillable="true" type="ax24:Error" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="integrantes" nillable="true" type="ax24:Integrante" />
+          <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="questionary" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="questions" nillable="true" type="ax24:Question" />
+          <xs:element minOccurs="0" name="resultado" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Integrante">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="alertas" nillable="true" type="ax24:Alerta" />
+          <xs:element minOccurs="0" name="cuestionario" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="documento" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="estado" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="fecha_nac" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="nombre" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="referencia" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="score" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="sexo" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="valor" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Alerta">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id_alerta" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="tipo" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Question">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="answerOptions" nillable="true" type="ax24:AnswerOption" />
+          <xs:element minOccurs="0" name="orden" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="questionId" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AnswerOption">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="optionId" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="UserLogon">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cliente" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="matriz" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="password" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="sector" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="sucursal" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="usuario" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ConsultaNombres">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="apellido" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="documento" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="nombre" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="sexo" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ListaNombresResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="autorizacion" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="error" nillable="true" type="ax24:Error" />
+          <xs:element minOccurs="0" name="nombres" nillable="true" type="ax24:Nombre" />
+          <xs:element minOccurs="0" name="resultado" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Nombre">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="nombre" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Identificador">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="autorizacion" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="lote" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="producto" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="userLogon" nillable="true" type="ax24:UserLogon" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Consulta">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="integrante" nillable="true" type="ax24:Integrante" />
+          <xs:element minOccurs="0" name="integrantes" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Respuestas">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="integrante" nillable="true" type="ax24:IntegranteRespuesta" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IntegranteRespuesta">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="valor" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="variables" nillable="true" type="ax24:Variables" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Variables">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cuestionario" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="respuesta" nillable="true" type="ax24:Respuesta" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Respuesta">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id_pregunta" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="id_respuesta" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MensajeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="identificador" nillable="true" type="ax24:Identificador" />
+          <xs:element minOccurs="0" name="respuesta" nillable="true" type="ax24:RespuestaResponse" />
+          <xs:element minOccurs="0" name="resultado" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RespuestaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="integrante" nillable="true" type="ax24:IntegranteResponse" />
+          <xs:element minOccurs="0" name="integrantes" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IntegranteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="alertas" nillable="true" type="ax24:AlertasResponse" />
+          <xs:element minOccurs="0" name="documento" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="estado" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="fecha_nac" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="nombre" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="referencia" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="score" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="sexo" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="valor" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="variables" nillable="true" type="ax24:VariablesResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AlertasResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="alertas" nillable="true" type="ax24:AlertaResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AlertaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="alerta_id" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="tipo" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="VariablesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id_cuestionario" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="preguntas" nillable="true" type="ax24:Preguntas" />
+          <xs:element minOccurs="0" name="score_id_dni" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Preguntas">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cant_preguntas" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="hash" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="pregunta" nillable="true" type="ax24:PreguntaResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PreguntaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="opcionrespuesta" nillable="true" type="ax24:OptionResponse" />
+          <xs:element minOccurs="0" name="orden" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OptionResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Answer">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="questionId" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="obtenerPreguntasRequest">
+    <wsdl:part name="parameters" element="ns:obtenerPreguntas" />
+  </wsdl:message>
+  <wsdl:message name="obtenerPreguntasResponse">
+    <wsdl:part name="parameters" element="ns:obtenerPreguntasResponse" />
+  </wsdl:message>
+  <wsdl:message name="idvalidatorIDValidatorException">
+    <wsdl:part name="parameters" element="ns:idvalidatorIDValidatorException" />
+  </wsdl:message>
+  <wsdl:message name="enviarRespuestasExpertoRequest">
+    <wsdl:part name="parameters" element="ns:enviarRespuestasExperto" />
+  </wsdl:message>
+  <wsdl:message name="enviarRespuestasExpertoResponse">
+    <wsdl:part name="parameters" element="ns:enviarRespuestasExpertoResponse" />
+  </wsdl:message>
+  <wsdl:message name="enviarRespuestasRequest">
+    <wsdl:part name="parameters" element="ns:enviarRespuestas" />
+  </wsdl:message>
+  <wsdl:message name="enviarRespuestasResponse">
+    <wsdl:part name="parameters" element="ns:enviarRespuestasResponse" />
+  </wsdl:message>
+  <wsdl:message name="obtenerListaNombresRequest">
+    <wsdl:part name="parameters" element="ns:obtenerListaNombres" />
+  </wsdl:message>
+  <wsdl:message name="obtenerListaNombresResponse">
+    <wsdl:part name="parameters" element="ns:obtenerListaNombresResponse" />
+  </wsdl:message>
+  <wsdl:message name="mensajeRequestRequest">
+    <wsdl:part name="parameters" element="ns:mensajeRequest" />
+  </wsdl:message>
+  <wsdl:message name="mensajeRequestResponse">
+    <wsdl:part name="parameters" element="ns:mensajeRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="getVersionRequest">
+    <wsdl:part name="parameters" element="ns:getVersion" />
+  </wsdl:message>
+  <wsdl:message name="getVersionResponse">
+    <wsdl:part name="parameters" element="ns:getVersionResponse" />
+  </wsdl:message>
+  <wsdl:portType name="idvalidatorPortType">
+    <wsdl:operation name="obtenerPreguntas">
+      <wsdl:input wsaw:Action="urn:obtenerPreguntas" message="ns:obtenerPreguntasRequest" />
+      <wsdl:output wsaw:Action="urn:obtenerPreguntasResponse" message="ns:obtenerPreguntasResponse" />
+      <wsdl:fault wsaw:Action="urn:obtenerPreguntasidvalidatorIDValidatorException" name="idvalidatorIDValidatorException" message="ns:idvalidatorIDValidatorException" />
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestasExperto">
+      <wsdl:input wsaw:Action="urn:enviarRespuestasExperto" message="ns:enviarRespuestasExpertoRequest" />
+      <wsdl:output wsaw:Action="urn:enviarRespuestasExpertoResponse" message="ns:enviarRespuestasExpertoResponse" />
+      <wsdl:fault wsaw:Action="urn:enviarRespuestasExpertoidvalidatorIDValidatorException" name="idvalidatorIDValidatorException" message="ns:idvalidatorIDValidatorException" />
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestas">
+      <wsdl:input wsaw:Action="urn:enviarRespuestas" message="ns:enviarRespuestasRequest" />
+      <wsdl:output wsaw:Action="urn:enviarRespuestasResponse" message="ns:enviarRespuestasResponse" />
+      <wsdl:fault wsaw:Action="urn:enviarRespuestasidvalidatorIDValidatorException" name="idvalidatorIDValidatorException" message="ns:idvalidatorIDValidatorException" />
+    </wsdl:operation>
+    <wsdl:operation name="obtenerListaNombres">
+      <wsdl:input wsaw:Action="urn:obtenerListaNombres" message="ns:obtenerListaNombresRequest" />
+      <wsdl:output wsaw:Action="urn:obtenerListaNombresResponse" message="ns:obtenerListaNombresResponse" />
+      <wsdl:fault wsaw:Action="urn:obtenerListaNombresidvalidatorIDValidatorException" name="idvalidatorIDValidatorException" message="ns:idvalidatorIDValidatorException" />
+    </wsdl:operation>
+    <wsdl:operation name="mensajeRequest">
+      <wsdl:input wsaw:Action="urn:mensajeRequest" message="ns:mensajeRequestRequest" />
+      <wsdl:output wsaw:Action="urn:mensajeRequestResponse" message="ns:mensajeRequestResponse" />
+      <wsdl:fault wsaw:Action="urn:mensajeRequestidvalidatorIDValidatorException" name="idvalidatorIDValidatorException" message="ns:idvalidatorIDValidatorException" />
+    </wsdl:operation>
+    <wsdl:operation name="getVersion">
+      <wsdl:input wsaw:Action="urn:getVersion" message="ns:getVersionRequest" />
+      <wsdl:output wsaw:Action="urn:getVersionResponse" message="ns:getVersionResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="idvalidatorSoap11Binding" type="ns:idvalidatorPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="obtenerPreguntas">
+      <soap:operation soapAction="urn:obtenerPreguntas" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestasExperto">
+      <soap:operation soapAction="urn:enviarRespuestasExperto" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestas">
+      <soap:operation soapAction="urn:enviarRespuestas" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="mensajeRequest">
+      <soap:operation soapAction="urn:mensajeRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerListaNombres">
+      <soap:operation soapAction="urn:obtenerListaNombres" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getVersion">
+      <soap:operation soapAction="urn:getVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="idvalidatorSoap12Binding" type="ns:idvalidatorPortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="obtenerPreguntas">
+      <soap12:operation soapAction="urn:obtenerPreguntas" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap12:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestasExperto">
+      <soap12:operation soapAction="urn:enviarRespuestasExperto" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap12:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestas">
+      <soap12:operation soapAction="urn:enviarRespuestas" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap12:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="mensajeRequest">
+      <soap12:operation soapAction="urn:mensajeRequest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap12:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerListaNombres">
+      <soap12:operation soapAction="urn:obtenerListaNombres" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="idvalidatorIDValidatorException">
+        <soap12:fault use="literal" name="idvalidatorIDValidatorException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getVersion">
+      <soap12:operation soapAction="urn:getVersion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="idvalidatorHttpBinding" type="ns:idvalidatorPortType">
+    <http:binding verb="POST" />
+    <wsdl:operation name="obtenerPreguntas">
+      <http:operation location="obtenerPreguntas" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestasExperto">
+      <http:operation location="enviarRespuestasExperto" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enviarRespuestas">
+      <http:operation location="enviarRespuestas" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="mensajeRequest">
+      <http:operation location="mensajeRequest" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerListaNombres">
+      <http:operation location="obtenerListaNombres" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getVersion">
+      <http:operation location="getVersion" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="idvalidator">
+    <wsdl:port name="idvalidatorHttpsSoap11Endpoint" binding="ns:idvalidatorSoap11Binding">
+      <soap:address location="https://online.org.veraz.com.ar/WsIDValidator/services/idvalidator.idvalidatorHttpsSoap11Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="idvalidatorHttpsSoap12Endpoint" binding="ns:idvalidatorSoap12Binding">
+      <soap12:address location="https://online.org.veraz.com.ar/WsIDValidator/services/idvalidator.idvalidatorHttpsSoap12Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="idvalidatorHttpsEndpoint" binding="ns:idvalidatorHttpBinding">
+      <http:address location="https://online.org.veraz.com.ar/WsIDValidator/services/idvalidator.idvalidatorHttpsEndpoint/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

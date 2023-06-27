@@ -1,0 +1,121 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageVOIIClienteInterfaces" %>
+<%
+    '--------------------------------------------------------------------------
+    ' Consultar moviminetos psp
+    '--------------------------------------------------------------------------
+
+
+    'Dim io As System.IO.Stream = HttpContext.Current.Request.InputStream
+    'io.Position = 0
+    'Dim buffer(io.Length - 1) As Byte
+    'io.Read(buffer, 0, buffer.Length)
+    'io.Position = 0
+
+
+    'Dim strJSON As String = nvFW.nvConvertUtiles.currentEncoding.GetString(buffer)
+    'Dim logTrack As String = nvLog.getNewLogTrack()
+    'nvLog.addEvent("lg_interface_request", logTrack & ";" & Request.Url.ToString & ";" & Request.QueryString.ToString & ";" & strJSON)
+
+    Dim e As New tError()
+
+
+    ' reverso el string de atras para adelante para extraer el path sin los parametros incrustados
+    Dim strSQL As String = "select * from verOperador_permisos where permiso_grupo = 'permisos_api_clientes' and "
+    strSQL += " Permitir like reverse(substring(reverse('" & HttpContext.Current.Request.RawUrl & "'),charindex('/',reverse('" & HttpContext.Current.Request.RawUrl & "'))+1,len('" & HttpContext.Current.Request.RawUrl & "')))"
+    Dim tienePermiso As Boolean = False
+
+    Dim rsP As ADODB.Recordset = nvDBUtiles.DBOpenRecordset(strSQL)
+    If rsP.EOF = False Then
+        tienePermiso = True
+    End If
+    nvDBUtiles.DBCloseRecordset(rsP)
+
+    If tienePermiso = False Then
+        e.numError = 403
+        e.titulo = "Consulta de Saldo"
+        e.mensaje = "El usuario no tiene permisos necesarios para realizar esta acción"
+        GoTo salir
+    End If
+
+
+    Try
+
+        Dim cbu As String = nvUtiles.obtenerValor("cbu", "")
+
+        If cbu = "" Then
+            e.numError = 403
+            e.mensaje = "El CBU cliente no tiene defindo un valor"
+            GoTo salir
+        End If
+
+
+        ' checkear si tiene permiso de acceso a el API
+        Dim clitipdoc As String = nvApp.operador.datos("cli_tipdoc").value
+        Dim clinrodoc As String = nvApp.operador.datos("cli_nrodoc").value
+        Dim cuecod As Integer = 0
+        Dim sistcod As Integer = 0
+        Dim moncod As Integer = 0
+
+        strSQL = "select sistcod,cuecod,case when moneda = 840 then 2 else 0 end as moncod from API_clientes_cuentas_cfg where nrodoc = " & clinrodoc & " and tipdoc = " & clitipdoc & " and cbu = '" & cbu & "' and vigente = 1 "
+
+        Dim rs As ADODB.Recordset = nvDBUtiles.DBOpenRecordset(strSQL)
+        If rs.EOF = False Then
+            sistcod = rs.Fields("sistcod").Value
+            cuecod = rs.Fields("cuecod").Value
+	    moncod = rs.Fields("moncod").Value
+        End If
+        nvDBUtiles.DBCloseRecordset(rs)
+
+        If cuecod = 0 And sistcod = 0 Then
+            e.numError = 400
+            e.mensaje = "El cliente no tiene asociada el CBU " & cbu & ", para realizar esta acción."
+            e.response()
+            GoTo salir
+        End If
+
+
+        Dim trsVarios As New nvFW.trsParam
+        trsVarios("succod") = 1
+        trsVarios("sistcod") = sistcod
+        trsVarios("codsubsist") = 0
+        trsVarios("moncod") = moncod
+        trsVarios("cuecod") = cuecod
+
+        e = nvFW.IBS.Cuenta_Consultar.saldo.scc_impre_gral_cta(trsVarios, debug:=false)
+
+        Dim saldo_disponible As Decimal = 0
+        Dim saldo_acuerdo As Decimal = 0
+        Dim saldo_capital As Decimal = 0
+
+        If e.numerror = 0 Then
+            saldo_disponible = e.params("sdodisponible")
+            saldo_acuerdo = e.params("sdosinacuerdo")
+            saldo_capital = e.params("imp_sdocap")
+        End If
+
+        e.params = New trsParam()
+
+        e.params("nro_cuenta") = cuecod
+        e.params("saldo_capital") = saldo_capital
+        e.params("saldo_acuerdo") = saldo_acuerdo
+        e.params("saldo_disponible") = saldo_disponible
+
+
+    Catch ex As Exception
+        e.numError = -99
+        e.mensaje = "Ocurrio una excepción no controlada"
+        e.debug_desc = ex.Message
+        e.debug_src = "Consulta Saldo Disponible::Consulta"
+    End Try
+
+
+    'cerrar la sesion
+salir:
+
+    ' nvLog.addEvent("lg_interface_response", logTrack & ";" & Request.Url.ToString & ";" & Request.QueryString.ToString & ";" & strJSON)
+
+    nvSession.Abandon()
+    e.response()
+
+
+%>

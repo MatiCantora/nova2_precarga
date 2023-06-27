@@ -1,0 +1,86 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<% 
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Buscar Parámetros:</title>
+
+    <link href='/fw/css/base.css' type='text/css' rel='stylesheet' />
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <% =Me.getHeadInit()%>
+
+    <script type="text/javascript" language="javascript">
+
+       var win = nvFW.getMyWindow();
+
+        function window_onload() {
+            cargar_tabla();
+            window_onresize();
+        }
+
+        function window_onresize() {
+            var iframe = $('iframeParametros')
+            var body = $$('BODY')[0]
+            var busqueda = $('busqueda')
+            var l = body.getHeight() - iframe.cumulativeOffset().top - busqueda.height
+            if (l > 0)
+                iframe.setStyle({ height: l + 'px' })
+        }
+
+        function mostrar(idParam) {
+            parent.redraw(idParam);
+            win.close();
+        }
+
+        function cargar_tabla() {           
+            var filtroXML = win.options.parameters.consulta;
+            var filtro = ""
+            if ( win.options.parameters.filtro)
+                filtro += win.options.parameters.filtro 
+            
+            if (campos_defs.value('idParam') != '')
+                filtro+= "<id_param type='like'>%" + campos_defs.value('idParam') + "%</id_param>" 
+            
+            if(campos_defs.value('descParam') != '')
+                filtro+= "<param type='like'>%" + campos_defs.value('descParam') + "%</param>"
+           
+            nvFW.exportarReporte({
+                filtroXML: filtroXML,
+                filtroWhere: filtro,
+                path_xsl: win.options.parameters.path_reporte,
+                ContentType: "text/html",
+                salida_tipo: "adjunto",
+                formTarget: "iframeParametros",
+                nvFW_mantener_origen: true,
+                id_exp_origen: 0
+            });
+        }
+
+    </script>
+</head>
+<body onload="window_onload()" onresize="return window_onresize()" style="margin: 0px; padding: 0px;width:100%;height:100%;overflow:hidden">
+
+    <table class='tb1' style="width:100%;" id='busqueda'>
+        <tr>
+            <td class="Tit1" style="width:15%;">Id Param:</td>
+            <td style="width:30%;">
+                <script type="text/jscript">campos_defs.add('idParam', { nro_campo_tipo: 104, enDB: false })</script>
+            </td>
+            <td class="Tit1" style="width:15%;">Descripcion:</td>
+            <td style="width:30%;">
+                <script type="text/jscript">campos_defs.add('descParam', { nro_campo_tipo: 104, enDB: false })</script>
+            </td>
+            <td style="width:10%;"><input type="button" onclick="cargar_tabla()" value='Buscar'/></td>
+        </tr>
+    </table>
+
+    <iframe name="iframeParametros" id="iframeParametros"  style="width:100%; height: 100%; overflow:auto;" frameborder="0" src="enBlanco.htm"></iframe>
+
+</body>
+</html>

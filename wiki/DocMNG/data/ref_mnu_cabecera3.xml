@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<resultado>
+    <MenuItems>
+        <MenuItem id="1">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>inicio</icono>
+            <Desc>Inicio</Desc>
+            <Acciones>
+                <Ejecutar Tipo="link">
+                    <Target>_top</Target>
+                    <URL>default.aspx</URL>
+                </Ejecutar>
+            </Acciones>
+        </MenuItem>
+
+        <MenuItem id="20">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>upload</icono>
+            <Desc>Archivos</Desc>
+            <Acciones>
+                <Ejecutar Tipo="script">
+                    <codigo>nvFW.file_dialog_show()</codigo>
+                </Ejecutar>
+            </Acciones>
+        </MenuItem>
+
+        <MenuItem id="30">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>ref</icono>
+            <Desc>Referencia</Desc>
+            <MenuItems>
+                <MenuItem id="31">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>nueva</icono>
+                    <Desc>Nueva</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/wiki/referencias_abm.aspx', 'Editar Referencia', 'permisos_referencias', 1, 600, 1200, false, true, true, true, false, window.top.abrir_ventana_emergente_OnClose)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="32">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>ref</icono>
+                    <Desc>Últimas Modificadas</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>ultimasReferenciasModificadas(event)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="33">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>servicio_asignar</icono>
+                    <Desc>Suscripciones</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>suscripciones(event)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="34">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>ref</icono>
+                    <Desc>Sin Guardar</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>referenciasNoGuardadas(event)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="35">
+                  <Lib TipoLib="offLine">DocMNG</Lib>
+                  <icono>imprimir</icono>
+                  <Desc>Configurar impresión pdf</Desc>
+                  <Acciones>
+                    <Ejecutar Tipo="script">
+                      <codigo>window.top.abrir_ventana_emergente("/wiki/ref_pre_export_pdf.aspx?save_db=1", "Configurar impresión pdf", 'permisos_parametros', 1, 256, 418, true, false, false, true, false)</codigo>
+                    </Ejecutar>
+                  </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+
+        <MenuItem id="40">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>buscar</icono>
+            <Desc>Buscar Referencia</Desc>
+            <Acciones>
+                <Ejecutar Tipo="script">
+                    <codigo>Busqueda(event,'referencias')</codigo>
+                </Ejecutar>
+            </Acciones>
+        </MenuItem>
+
+        <MenuItem id="50">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>vincular</icono>
+            <Desc>Tareas</Desc>
+            <Acciones>
+                <Ejecutar Tipo="script">
+                    <codigo>tareasPendientes(event)</codigo>
+                </Ejecutar>
+            </Acciones>
+        </MenuItem>
+
+        <MenuItem id="55">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>herramientas</icono>
+            <Desc>Herramientas</Desc>
+            <MenuItems>
+                <MenuItem id="56">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Parámetros -  Asignación</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx?accion=asignar','Parámetros -  Asignación','permisos_parametros',2,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="57">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Parámetros - ABM Esquema</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx','Esquema de Parámetros','permisos_parametros',1,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="59">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>play</icono>
+                    <Desc>PKI ABM</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/pki/pki_nodos_tree.aspx', 'PKI - ABM', 'permisos_parametros', 1, 500, 1000, true, true, true, true)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+
+        <MenuItem id="60">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>seguridad</icono>
+            <Desc>Seguridad</Desc>
+            <MenuItems>
+                <MenuItem id="61">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>ABM Operadores</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/FW/security/operador_consultar.aspx','Seguridad - Accesos','permisos_seguridad',1,500,1000)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="62">
+                  <Lib TipoLib="offLine">DocMNG</Lib>
+                  <icono>permiso</icono>
+                  <Desc>Cambiar Contraseña</Desc>
+                  <Acciones>
+                    <Ejecutar Tipo="script">
+                      <codigo>window.top.abrir_ventana_emergente('/FW/security/operador_pwd_cambiar.aspx','Seguridad - Cambiar Contraseña','permisos_seguridad',1,160,500, true, false, true, false, false)</codigo>
+                    </Ejecutar>
+                  </Acciones>
+                </MenuItem>
+                <!--<MenuItem id="62">
+						<Lib TipoLib="offLine">DocMNG</Lib>
+						<icono>login</icono>
+						<Desc>ABM Login</Desc>
+						<Acciones>
+								<Ejecutar Tipo="script">
+										<codigo>Busqueda()</codigo>
+								</Ejecutar>
+						</Acciones>
+				    </MenuItem>-->
+                <MenuItem id="63">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>ABM Permisos WIKI</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/security/permiso_abm.aspx','ABM Permisos de WIKI','permisos_seguridad',3,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="64">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>ABM Esquema</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/security/permiso_nodos_tree.aspx','Esquema de Permisos','permisos_seguridad',2,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+
+        <!--<MenuItem id="70">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>seguridad</icono>
+            <Desc>BPM</Desc>
+            <MenuItems>
+                <MenuItem id="71">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>play</icono>
+                    <Desc>Procesos y Tareas</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/transferencia/procesos_tareas_consultar.aspx','Procesos y Tareas','permisos_transferencia',1,500,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+
+                <MenuItem id="72">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>play</icono>
+                    <Desc>Transferencias ABM</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/fw/transferencia/transferencia_abm.aspx','Procesos y Tareas','permisos_transferencia',1,500,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>-->
+
+        <!--<MenuItem id="80">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>sistema</icono>
+            <Desc>Sistemas</Desc>
+            <MenuItems>
+            </MenuItems>
+        </MenuItem>-->
+    </MenuItems>
+</resultado>

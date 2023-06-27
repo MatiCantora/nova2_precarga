@@ -1,0 +1,778 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<% 
+   
+    Me.contents("filtro_onboarding") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select expire_minutes='2' cacheControl='Session' cn='db_horus' vista='%vista%'><campos>%campos%</campos></select></criterio>")
+    Me.contents("filtro_vista") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select expire_minutes='2' cacheControl='Session' cn='db_horus' top='0' vista='%vista%'><campos>*</campos></select></criterio>")
+    Me.contents("filtro_config") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select cn='db_horus' vista='config_guardada'><campos>*</campos></select></criterio>")
+
+    Me.addPermisoGrupo("permisos_web5")
+    nvDBUtiles.DBExecute("INSERT INTO zLog_onboarding([fecha],[operador])  VALUES (getdate(), dbo.rm_nro_operador())")
+
+
+    Dim accion As String = nvFW.nvUtiles.obtenerValor("accion", "")
+    Dim vista As String = nvFW.nvUtiles.obtenerValor("vista", "")
+    Dim strXML As String = nvFW.nvUtiles.obtenerValor("strXML", "")
+    Dim nombre As String = nvFW.nvUtiles.obtenerValor("nombre", "")
+    Dim id_conf As String = nvFW.nvUtiles.obtenerValor("id_conf", "0")
+   
+    Dim err As New tError
+    If accion = "G" Then
+        Try
+            nvDBUtiles.DBExecute("INSERT INTO config_guardada([conf_nombre],[tabla],[conf_guardada])  VALUES ('" & nombre & "', '" & vista & "' , '" & strXML & "' )", cod_cn:="db_horus")
+            Dim rs As ADODB.Recordset = nvDBUtiles.DBExecute("select conf_id from config_guardada where conf_nombre = '" & nombre & "'", cod_cn:="db_horus")
+            err.params("id") = rs.Fields("conf_id").Value
+        Catch e As Exception
+            err.parse_error_script(e)
+        End Try
+        
+        err.response()
+        
+    ElseIf accion = "M" Then
+        Try
+            nvDBUtiles.DBExecute("UPDATE config_guardada set conf_guardada = '" & strXML & "' , conf_nombre = '" & nombre & "' where conf_id = " & CInt(id_conf), cod_cn:="db_horus")
+            err.params("id") = CInt(id_conf)
+        Catch e As Exception
+            err.parse_error_script(e)
+        End Try
+        
+        err.response()
+    
+    ElseIf accion = "E" Then
+        Try
+            nvDBUtiles.DBExecute("delete config_guardada where conf_id = " & id_conf, cod_cn:="db_horus")
+        Catch e As Exception
+            err.parse_error_script(e)
+        End Try
+        
+        err.response()
+    End If
+    
+
+ %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Listado tablas onboarding</title>
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>                      
+
+    <%= Me.getHeadInit() %>
+    
+
+    <style>
+     .div_drag_enter{
+        opacity:0.5 ;
+        border-left-width: 5px !important;
+        border-left-color: #272222 !important;
+     }
+
+     .div_drag_leave{
+        opacity:1 ;
+        border-left-width: 1px !important;
+        border-left-color: rgb(166, 166, 166) !important;
+     }
+    
+    </style>
+
+    <script type="text/javascript">
+
+    document.ondragover = function(e){
+        e.dataTransfer.dropEffect = "move"
+        return false
+    }
+    document.ondrop = function(e) {  e.preventDefault(); return false; };
+
+    function window_onload() {
+        if (!nvFW.tienePermiso('permisos_web5', 20)){   
+            alert("No tiene permisos para visualizar esta pantalla")
+            window.location.href = "/FW/nvLogin.aspx"
+        }
+        
+        campos_defs.items["vista"]["onchange"] = cargar_campos_vista
+        campos_defs.items["config"]["onchange"] = cargar_campos_config
+        window_onresize()
+       
+    }
+    
+    var array_campos = new Array() 
+    
+    function cargar_campos_vista(){
+        nvFW.bloqueo_activar($(document.body), 'cargando_config')
+        $("tablaConcepto").src = "/FW/enBlanco.htm"
+        ocultar_filtros()
+
+        array_campos = new Array()
+        var rs = new tRS()
+        rs.open(nvFW.pageContents.filtro_vista, "", "", "", "<criterio><params vista='" + campos_defs.get_value("vista") + "'/></criterio>")
+        for (var i = 0; i < rs.fields.length; i++){
+            var campo = rs.fields[i].name
+            var datos = new Array()
+            datos['indice'] = i
+            datos['campo'] = campo
+            datos['valor'] = ''
+            datos['check'] = 'checked'
+
+            array_campos.push(datos)
+        }
+
+        dibujar()
+    }
+
+    function cargar_campos_config() {
+         
+        if (campos_defs.get_value("config") == '' ){
+            $("tablaConcepto").src = "/FW/enBlanco.htm"
+            cargar_campos_vista()
+            return
+        }
+        
+        ocultar_filtros()
+        array_campos = new Array()
+        nvFW.bloqueo_activar($(document.body), 'cargando_config')
+                                           
+        var rs = new tRS()
+        rs.open(nvFW.pageContents.filtro_config, "", "<conf_id type='igual'>'" + campos_defs.get_value("config") + "'</conf_id>")
+        var parametros = new tXML()
+        parametros.loadXML(rs.getdata("conf_guardada"))
+        
+        var list_nodos = parametros.selectNodes('/campos')[0].childNodes
+        for (var i = 0; i < list_nodos.length; i++){
+            var e = list_nodos[i]
+            var datos = new Array()
+            datos['indice'] = i
+            datos['campo'] = e.nodeName
+            datos['valor'] = e.innerHTML
+            datos['check'] = e.getAttribute("check")
+
+            array_campos.push(datos)
+        }
+
+        dibujar()
+    }
+
+    var lista_campos
+    var campo_fecha = '' , campo_dni = ''
+    function dibujar(){
+        filtro_campos_extras = ''
+        var lista_filtros = ''
+            
+        var strHTML = ''
+        lista_campos = "0"
+        for (var i = 0, a = 0; i < array_campos.length; i++, a++){
+            var width = 14.28
+           
+           var campo = array_campos[i]['campo']
+            
+            switch (campo){
+                case 'fe_inicio':
+                case 'fe_consulta':
+                    $('fecha_ini').style.display = 'inline'
+                    $('td_fe_ini').setStyle({ display: 'inline' })
+                    campos_defs.set_value("fe_ini", array_campos[i]['valor'])
+                    lista_campos += ", " + campo
+                    campo_fecha = campo 
+                    a--
+                    break;
+                case 'fe_fin':
+                    $('fecha_fin').setStyle({ display: 'inline' })
+                    $('td_fe_fin').style.display = 'inline'
+                    campos_defs.set_value("fe_fin", array_campos[i]['valor'])      
+                    lista_campos += ", " + campo
+                    a--
+                    break;
+                case 'operador':
+                case 'nombre_operador':
+                    $('operador').setStyle({ display: 'inline' })
+                    $('td_operador').setStyle({ display: 'inline' });
+                    campos_defs.set_value("fe_fin", array_campos[i]['valor'])
+                    lista_campos += ", " + campo
+                    a--
+                    break;
+                case '_id_transf_log': 
+                case 'id_transf_log':
+                    $('id_log').style.display = 'inline'
+                    $('td_id_transf_log').setStyle({ display: 'inline' })
+                    campos_defs.set_value("id_transf_log", array_campos[i]['valor'])
+                    lista_campos += ", " + campo 
+                    a--
+                    break;
+                case 'cuil':
+                case 'cuit':
+                    $('cuit').setStyle({ display: 'inline' })
+                    $('td_cuit').style.display = 'inline'
+                    campos_defs.set_value("cuil", array_campos[i]['valor'])
+                    lista_campos += ", " + campo 
+                    a--
+                    break;
+                case 'nro_docu':
+                case '_nro_docu':
+                case 'VI_DNI':
+                    $('nro_documento').setStyle({ display: 'inline' })
+                    $('td_nro_docu').setStyle({ display: 'inline' })
+                    campos_defs.set_value("nro_docu", array_campos[i]['valor'])
+                    lista_campos += ", " + campo 
+                    campo_dni = campo
+                    a--
+                    break;
+                case 'nro_credito':
+                case '_nro_credito':
+                    $('id_credito').setStyle({ display: 'inline' })
+                    $('td_nro_credito').setStyle({ display: 'inline' })
+                    campos_defs.set_value("nro_credito", array_campos[i]['valor'])
+                    lista_campos += ", " + campo 
+                    a--
+                    break;
+                default:
+                    var valor_campo = ''
+                    var imagen = "/fw/image/transferencia/filtro.png"
+                    
+                    if (array_campos[i]['valor'] != ''){   
+                        imagen = "/fw/image/transferencia/filtro-usado.png"
+                     }
+
+                    strHTML += '<div class="Tit4" id="div_' + i + '" style="white-space:nowrap;position:relative;float:left; width:' + width + '%; " draggable="true" ondragstart="start(event)"  ondragenter="return enter(event)"   >'
+                    strHTML += '<input type="checkbox" id="chk_' + campo + '" ' + array_campos[i].check + ' style="opacity:1 !Important"/>' 
+                    strHTML += (campo.length > 14) ?  campo.substr(0, 14)  : campo
+                    strHTML += '<input type="hidden" id="h_' + campo + '" value=' + array_campos[i]['valor'] + '>'
+                    strHTML += '<img id="i_' + campo + '"  src ="' + imagen + '" style="float:right; position:relative; top: 3px; white-space:nowrap; opacity:1 !Important; width:12px; height:12px"  draggable="false" onclick="agregar_filtro(\'h_' + campo + '\' , ' + i + ')" title="' + array_campos[i]['valor'] + '"/>&nbsp&nbsp'
+                   // strHTML += '<input type="image" id="i_' + campo + '"  src ="' + imagen + '" style="float:right; white-space:nowrap; opacity:1 !Important; background-size: 12px;"  draggable="false" onclick="agregar_filtro(\'h_' + campo + '\' , ' + i + ')" title="' + array_campos[i]['valor'] + '"/>&nbsp&nbsp'  
+                    strHTML += '</div>'                                                                  
+                    break;
+            }
+        }                                                                   
+       
+       $('filtros').innerHTML = strHTML
+       nvFW.bloqueo_desactivar($(document.body), 'cargando_config')
+       window_onresize()
+   }
+        
+    function ocultar_filtros(){ 
+        $('fecha_ini').style.display = 'none'
+        $('td_fe_ini').setStyle({ display: 'none' })
+        $('fecha_fin').setStyle({ display: 'none' })
+        $('td_fe_fin').style.display = 'none'
+        $('operador').setStyle({ display: 'none' })
+        $('td_operador').setStyle({ display: 'none' })
+        $('id_log').style.display = 'none'
+        $('td_id_transf_log').setStyle({ display: 'none' })
+        $('cuit').setStyle({ display: 'none' })
+        $('td_cuit').style.display = 'none'
+        $('nro_documento').setStyle({ display: 'none' })
+        $('td_nro_docu').setStyle({ display: 'none' })
+        $('id_credito').setStyle({ display: 'none' })
+        $('td_nro_credito').setStyle({ display: 'none' })
+        campos_defs.clear('fe_ini')
+        campos_defs.clear('fe_fin')
+        campos_defs.clear('nro_operador')
+        campos_defs.clear('id_transf_log')
+        campos_defs.clear('cuil')
+        campos_defs.clear('nro_docu')
+        campos_defs.clear('nro_credito')
+   } 
+
+    function agregar_filtro(input, index){
+        var campo = input.substr(2, input.length)
+        var html = '<table class="tb1" style="width:100%;overflow:hidden"><tr><td>' + campo + ':</td><td><input style="width:100%" type="text" id="valor" value="' + $(input).value + '"/></td></tr><tr></tr></table>'
+        html += '<div style="text-align:center"><input type="button" value="Aceptar" onclick="add_filtro_where( \'' + campo + '\',  $(\'valor\').value , ' + index + ')" />&nbsp<input  type="button" value="Limpiar" onclick="limpiar( \'' + campo + '\' ) " /></div>'
+        win = nvFW.createWindow({
+                title: "<b>Agregar filtro</b>",
+                width: 350,
+                height: 110,
+                minimizable: false,
+                maximizable: false,
+                closable: true,
+                draggable: false,
+                resizable: true,
+                setWidthMaxWindow: true,
+                destroyOnClose: true,
+                onShow: function() { }
+            });
+
+            win.showCenter(true);
+            win.setHTMLContent(html);
+    }   
+    
+    var filtro_campos_extras = ''
+    function add_filtro_where(campo, valor, index){    
+        win.close();
+        $('h_' + campo).value = valor
+        if(valor != '')
+            $('i_' + campo).src = "/fw/image/transferencia/filtro-usado.png"
+        else
+            $('i_' + campo).src = "/fw/image/transferencia/filtro.png"
+
+        $('i_' + campo).title = valor
+    }
+
+    function limpiar(campo){  
+        $('h_' + campo).value = ''
+        $('valor').value = ''
+    }
+
+    function tildar_todo(){  
+        var tilde = document.querySelectorAll("[type='checkbox']")[0].checked                                      
+        for (var i = 1; i < document.querySelectorAll("[type='checkbox']").length; i++){
+            document.querySelectorAll("[type='checkbox']")[i].checked = tilde
+        } 
+    }
+
+    function colapsar() {
+        if ($('tbDatosFiltro').style.display == ''){
+            $('tbDatosFiltro').hide()
+            $('vMenuModuloDatos_img0').src = '/fw/image/tTree/mas.jpg'
+        }
+        else{
+            if ($('tbDatosFiltro').style.display == 'none'){
+                $('tbDatosFiltro').show()
+                $('vMenuModuloDatos_img0').src = '/fw/image/tTree/menos.jpg'
+            }
+        }
+
+       window_onresize()
+    }
+    	
+    function buscar(exportar){
+        var vista = campos_defs.get_value("vista")
+              
+        if(vista == ''){
+            alert("Debe selecionar una vista.")
+            return
+        }
+              
+        var filtroWhere = ""
+        var campos = lista_campos  /* "fe_inicio, fe_fin, transferencia, _id_transf_log as id_transf_log, estado, nombre_operador, nro_Credito, cuil "*/
+        var filtroXML = nvFW.pageContents.filtro_onboarding
+        var i = 0
+        filtro_campos_extras = ''
+        
+        for(i = 0; i < document.querySelectorAll("[type='checkbox']:checked").length; i++ ){
+            var name = document.querySelectorAll("[type='checkbox']:checked")[i].id
+            if (name == 'chk_todos')  continue
+            campos += "," + name.substr(4)
+            if ($('h_' + name.substr(4)).value != '' )  
+                filtro_campos_extras += "<" + name.substr(4) + " type='like'>%" + ($('h_'+name.substr(4)).value).toString() + "%</" + name.substr(4) + ">"
+        }
+         
+        campos = campos.replace('0,', '')
+        campos = campos.replace('_id_transf_log', '_id_transf_log as id_transf_log')
+        campos = campos.replace('_nro_docu', '_nro_docu as nro_docu')
+        campos = campos.replace('_nro_credito', '_nro_credito as nro_credito')
+
+           
+        if (campos_defs.get_value("fe_ini") != "") {
+            filtroWhere += "<" + campo_fecha + " type='mas'>convert(datetime,'" + campos_defs.get_value("fe_ini") + "',103)</" + campo_fecha + ">"
+        }
+
+        if (campos_defs.get_value("fe_fin") != "") {
+            filtroWhere += "<fe_fin type='menor'>dateadd(day,1,convert(datetime,'" + campos_defs.get_value("fe_fin")  + "',103))</fe_fin>"
+        }
+
+        if (campos_defs.get_value("nro_operador") != "") {
+            filtroWhere += "<operador type='igual'>" + campos_defs.get_value("nro_operador") + "</operador>"
+        }
+        
+        if (campos_defs.get_value("id_transf_log") != ""){
+            filtroWhere += "<_id_transf_log type='in'>" + campos_defs.get_value("id_transf_log") + "</_id_transf_log>"
+        }
+
+        if (campos_defs.get_value("nro_docu") != "")
+        {
+            filtroWhere += "<"+ campo_dni +" type='igual'>" + campos_defs.get_value("nro_docu") + "</"+campo_dni+">"
+        }
+
+        if (campos_defs.get_value("cuil") != ""){
+            filtroWhere += "<cuil type='igual'>'" + campos_defs.get_value("cuil") + "'</cuil>"
+        }    
+        
+        if (campos_defs.get_value("nro_credito") != ""){
+            filtroWhere += "<_nro_credito type='igual'>" + campos_defs.get_value("nro_credito") + "</_nro_credito>"
+        }
+
+        if (campos == "") campos = '*'
+
+        var params = "<criterio><params vista='" + vista + "' campos='"+ campos +"'/></criterio>"
+             
+        if(exportar){ //exportar a excel
+            nvFW.exportarReporte({
+                filtroXML: filtroXML,
+                filtroWhere: "<criterio><select><filtro>" + filtroWhere + filtro_campos_extras + "</filtro></select></criterio>",
+                params: params,
+                parametros: params,
+                path_xsl: "report/excel_base.xsl",
+                filename: "Reporte tabla: " + vista + " .xls",
+                salida_tipo: "adjunto",
+                ContentType: "application/vnd.ms-excel",
+                content_disposition: "attachment"
+            })
+        }                 
+        else{  // mostrar resultados
+            var altura_contenedor = $("tablaConcepto").getHeight() - 28 // 22px: altura aproximada del paginador
+            var altura_fila = 21// "px" aproximados
+            var cant_filas = Math.floor(altura_contenedor / altura_fila)
+            var top = ""
+            if ($('cant_registros').value != "")  
+                top = "top='"+$('cant_registros').value+"'"
+            
+            nvFW.exportarReporte({
+                filtroXML: filtroXML
+                  , filtroWhere: "<criterio><select "+ top +" PageSize='" + cant_filas + "' AbsolutePage='1'><filtro>"+ filtroWhere + filtro_campos_extras +"</filtro></select></criterio>"
+                  ,params: params
+                  , path_xsl: "\\report\\onboarding\\onboarding_listar.xsl"
+                  , salida_tipo: "adjunto"
+                  , formTarget: "tablaConcepto"
+                  , nvFW_mantener_origen: true
+                  , bloq_contenedor: $('tablaConcepto')
+                  , cls_contenedor: "tablaConcepto"
+            })
+        }
+    }
+
+    function window_onresize() {      
+       try{      
+            var h_body = $$("BODY")[0].getHeight(),
+                h_table = $("tbVista").getHeight(),
+                h_menu = $("divMenu").getHeight(),
+                h_filtros = $("tbFiltros").getHeight(),
+                h_campos = $('tbCampos').getHeight(),
+                h_div = $('divFiltros').getHeight(),
+                frame = $("tablaConcepto")
+             
+            frame.setStyle({ height: h_body - h_table - h_menu - h_filtros - h_div - h_campos - 20 })
+       }
+      catch (e) {
+      }
+    }
+
+    function limpiar_todo(){
+        var list_imagenes = $('filtros').querySelectorAll("img[src='/fw/image/transferencia/filtro-usado.png']");
+      var list_input = $('filtros').querySelectorAll('input[value]:not([value=""])')
+      for (var i = 0; i < list_input.length; i++) {
+          list_input[i].value = '' 
+          list_imagenes[i].src = "/fw/image/transferencia/filtro.png"
+      }
+    }
+
+    function guardar_conf(){
+        if (campos_defs.get_value("vista") == ""){
+            alert("Debe seleccionar una vista para guardar su configuración")
+            return
+        }
+        
+        var desc = campos_defs.get_desc("config").split("(")[0]
+        var html = '<table class="tb1" style="width:100%;overflow:hidden"><tr><td style="width:25%">Nombre:</td><td><input style="width:100%" type="text" id="valor" value="' + desc + '"/></td></tr><tr></tr></table>'
+        html += '<div style="text-align:center"><input type="button" value="Aceptar" onclick="guardar($(\'valor\').value)" />&nbsp<input  type="button" value="Cancelar" onclick="win.close()" /></div>'
+        win = nvFW.createWindow({
+                title: "<b>Configuración</b>",
+                width: 350,
+                height: 110,
+                minimizable: false,
+                maximizable: false,
+                closable: true,
+                draggable: false,
+                resizable: true,
+                setWidthMaxWindow: true,
+                destroyOnClose: true,
+                onShow: function() { }
+            });
+
+            win.showCenter(true);
+            win.setHTMLContent(html);
+ 
+    }
+
+    function guardar(nombre) {     
+        if ( nombre == ''){
+            alert("Complete el nombre de la configuración")
+            return
+        }
+
+        var accion = 'G' 
+        if(campos_defs.get_value("config") != '')
+           accion = 'M'
+
+        win.close()
+       
+       var strXML = '<campos>'
+       for (var i = 0; i < array_campos.length; i++){    
+             
+            var campo = array_campos[i]['campo']
+            switch (campo){
+                case 'fe_inicio':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('fe_ini') + '</'+campo+'>'
+                    break;
+                case 'fe_fin':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('fe_fin') + '</'+campo+'>'
+                case 'operador':
+                case 'nombre_operador':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('nro_operador') + '</'+campo+'>'
+                    break;
+                case '_id_transf_log': 
+                case 'id_transf_log':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('id_transf_log')+'</'+campo+'>'
+                    break;
+                case 'cuil':
+                case 'cuit':
+                    strXML += '<'+campo+' check="">'+ campos_defs.get_value('cuil')+'</'+campo+'>'
+                    break;
+                case 'nro_docu':
+                case '_nro_docu':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('nro_docu')+'</'+campo+'>'
+                    break;
+                case 'nro_credito':
+                case '_nro_credito':
+                    strXML += '<'+campo+' check="">'+campos_defs.get_value('nro_credito')+'</'+campo+'>'
+                    break;
+                default:
+                    var check = $('chk_' + campo).checked ? 'checked' : ""
+                    strXML += '<' + campo + ' check="' + check + '">' + $('h_' + campo).value + '</' + campo + '>'
+            }
+        }
+        strXML += '</campos>'
+
+
+        nvFW.error_ajax_request("onboarding_tablas_list.aspx",
+                                                    { parameters: { strXML: strXML, accion: accion, vista: campos_defs.get_value("vista"), nombre: nombre, id_conf: campos_defs.get_value("config") }
+                                                    , onSuccess: function(e) {
+                                                            if (e.numError != 0 )
+                                                                alert(e.mensaje) 
+                                                            else{
+                                                                
+                                                                $('cbconfig').options.length = 0
+                                                                campos_defs.set_value("config", e.params.id)
+                                                                }
+                                                        }
+                                                    })
+    }
+
+    function eliminar_conf() {
+        if(campos_defs.get_value("config") == ''){
+            alert("No existe configuración seleccionada para eliminar.")
+            return
+        }
+
+        nvFW.confirm('¿Desea eliminar la configuración?', {
+            width: 300,
+            okLabel: "Aceptar",
+            cancelLabel: "Cancelar",
+            cancel: function(win){
+                win.close(); 
+                return
+            },
+            ok: function(win){
+                nvFW.error_ajax_request("onboarding_tablas_list.aspx",
+                                                    { parameters: { accion: 'E', vista: campos_defs.get_value("vista"), id_conf: campos_defs.get_value("config") }
+                                                    , onSuccess: function(e){    
+                                                        if (e.numError != 0)
+                                                            alert(e.mensaje)
+                                                        else{
+                                                            campos_defs.set_value("config", "")
+                                                            cargar_campos_vista()
+                                                            $('cbconfig').options.length = 0
+                                                       }
+                                                    }
+                                                    })
+                win.close()
+            }
+        });
+
+    }
+
+
+    function mostrar_selec(mostrar){
+         for(i = 0; i < $('filtros').querySelectorAll("[type='checkbox']").length; i++ ){
+             var check = $('filtros').querySelectorAll("[type='checkbox']")[i]
+           //  debugger
+            if (!mostrar) {
+                check.parentElement.style.display = 'inline'
+           }
+           else{
+                if (check.checked == false)
+                    check.parentElement.style.display = 'none'
+           }
+        }
+        onresize()
+    }
+    
+// ********************* DRAG AND DROP ************************ //
+    var div_destino = null
+    var div_origen = null
+    
+    function start(e) {  //se dispara cuando se selecciona el objeto a mover
+        try{
+            e.dataTransfer.effecAllowed = 'move'; // Define el efecto como mover (Es el por defecto)
+            e.dataTransfer.setData("Data", e.target.id); // toma el elemento que se va a mover
+            e.dataTransfer.setDragImage(e.target, 0, 0); // Define la imagen que se vera al ser arrastrado el elemento y por donde se coje el elemento que se va a mover (el raton aparece en la esquina sup_izq con 0,0)
+        
+            div_origen = e.target  //div que voy a mover 
+        }
+        catch (e){}
+    }
+
+    function enter(e){   //se dispara cuando el objeto seleccionado pasa por otro objeto que tiene este evento 
+//        e.target.style.opacity = 0.5
+//        e.currentTarget.style.borderLeftStyle = 'solid !Important' //'10px !Important;'
+        e.target.addClassName("div_drag_enter")
+      div_destino = e.currentTarget              
+    }
+
+    function leave(e){
+        e.target.removeClassName("div_drag_enter")    
+      //  e.target.addClassName("div_drag_leave")
+    }
+
+    function over(e) {
+        var elemArrastrable = e.dataTransfer.getData("Data"); // Elemento arrastrado
+        var id = e.target.id; // Elemento sobre el que se arrastra
+        return false;    // return false para que se pueda soltar  
+    }
+
+    function drop(e) {   /** Mueve el elemento **/                       
+        try {   
+            //div_destino.style.opacity = 1;
+            div_destino.childElements()[0].style.opacity = 1
+            div_destino.childElements()[2].style.opacity = 1
+            e.target.removeClassName("div_drag_enter")   
+            e.currentTarget.insertBefore(div_origen,div_destino)
+
+            //obtener los indices de los divs para ordenar el array de los campos para guardar luego
+            var campo_dest = div_destino.childElements()[0].id.split("chk_")[1]
+            var campo_or = div_origen.childElements()[0].id.split("chk_")[1]
+            var index_o = -1
+            var index_d = -1
+
+            for (var i = 0; i < array_campos.length; i++){
+                if (array_campos[i].campo == campo_or)
+                    index_o = i
+                if (array_campos[i].campo == campo_dest)
+                    index_d = i
+            }
+                        
+            if(index_o < index_d){
+                var new_array = array_campos.splice(index_d)
+                var mov = array_campos
+                mov = mov.splice(index_o, 1)
+            }
+            else{
+                var mov = array_campos
+                mov = mov.splice(index_o, 1)
+                var new_array = array_campos.splice(index_d)
+            }
+            
+            array_campos = array_campos.concat(mov)
+            array_campos = array_campos.concat(new_array)
+
+        }
+        catch (e)
+        {
+            console.log(e.toString())
+        }
+    }
+
+//********************************************************** //
+    </script>
+</head>
+
+<body onload="window_onload()" onresize="window_onresize()" style="background: white; width:100%; height:100%; overflow:hidden">
+    <div id="divMenu1" style="width: 100%;"></div>
+        <script language="javascript" type="text/javascript">
+            var vMenu1 = new tMenu('divMenu1', 'vMenu1');
+            vMenu1.loadImage("guardar", "/FW/image/icons/guardar.png");
+            vMenu1.loadImage("eliminar", "/FW/image/icons/eliminar.png");
+            Menus["vMenu1"] = vMenu1
+            Menus["vMenu1"].alineacion = 'centro';
+            Menus["vMenu1"].estilo = 'A';
+            Menus["vMenu1"].CargarMenuItemXML("<MenuItem id='1' style='text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar configuración</Desc><Acciones><Ejecutar Tipo='script'><Codigo>guardar_conf()</Codigo></Ejecutar></Acciones></MenuItem>");
+            Menus["vMenu1"].CargarMenuItemXML("<MenuItem id='2' style='text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono>eliminar</icono><Desc>Eliminar configuración</Desc><Acciones><Ejecutar Tipo='script'><Codigo>eliminar_conf()</Codigo></Ejecutar></Acciones></MenuItem>");
+            Menus["vMenu1"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 100%; text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
+           vMenu1.MostrarMenu();
+        </script>
+    <table class="tb1" id="tbVista" style="overflow: hidden">
+        <tr><td class="Tit1" style="width:15%">Vista:</td>                  
+            <td><%= nvFW.nvCampo_def.get_html_input("vista", enDB:=False, nro_campo_tipo:=1, filtroXML:="<criterio><select cn='db_horus' vista='config_visualizacion_tabla'><campos>tabla AS id, descripcion AS [campo]</campos><filtro><ver type='igual'>1</ver></filtro><orden>orden</orden></select></criterio>")%>
+            </td>
+            <td class="Tit1" style="15%">Configuración:</td>
+            <td><%= nvFW.nvCampo_def.get_html_input("config", enDB:=False, nro_campo_tipo:=1, filtroXML:="<criterio><select cn='db_horus' vista='config_guardada'><campos>conf_id AS id, conf_nombre AS [campo]</campos><orden></orden></select></criterio>", depende_de:="vista", depende_de_campo:="tabla")%>
+            </td>
+        </tr>
+    </table>
+    <div id="divMenu" style="width: 100%;"></div>
+        <script language="javascript" type="text/javascript">
+            var vMenu = new tMenu('divMenu', 'vMenu');
+            vMenu.loadImage("buscar", "/FW/image/icons/buscar.png");
+            vMenu.loadImage("excel", "/FW/image/filetype/excel.png");
+            vMenu.loadImage("guardar", "/FW/image/icons/guardar.png");
+            vMenu.loadImage("eliminar", "/FW/image/icons/eliminar.png");
+            Menus["vMenu"] = vMenu
+            Menus["vMenu"].alineacion = 'centro';
+            Menus["vMenu"].estilo = 'A';
+            Menus["vMenu"].CargarMenuItemXML("<MenuItem id='2' style='WIDTH: 100%; text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Filtros y columnas</Desc></MenuItem>")
+            Menus["vMenu"].CargarMenuItemXML("<MenuItem id='3' style='text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono>buscar</icono><Desc>Buscar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>buscar()</Codigo></Ejecutar></Acciones></MenuItem>");
+            Menus["vMenu"].CargarMenuItemXML("<MenuItem id='4' style='text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono>excel</icono><Desc>Exportar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>buscar(true)</Codigo></Ejecutar></Acciones></MenuItem>");
+            vMenu.MostrarMenu();
+        </script>
+ 
+    <table class="tb1" id="tbFiltros" style="overflow:hidden">
+        <tr><td>   
+            <div id="divf" style="width:100%;padding: 1px; ">  
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="fecha_ini">Fecha inicial:</div>
+                <div style="width:14%;padding: 2px;float:left" id="td_fe_ini"><%= nvFW.nvCampo_def.get_html_input("fe_ini", enDB:=False, nro_campo_tipo:=103)%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="fecha_fin">Fecha final:</div>
+                <div style="width:14%;padding: 2px;float:left" id="td_fe_fin"><%= nvFW.nvCampo_def.get_html_input("fe_fin", enDB:=False, nro_campo_tipo:=103)%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="operador">Operador:</div>
+                <div style="width:18%;padding: 2px;float:left" id="td_operador"><%= nvFW.nvCampo_def.get_html_input("nro_operador")%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="id_log">Id transf log:</div>
+                <div style="width:12%;padding: 2px;float:left" id="td_id_transf_log"><%= nvFW.nvCampo_def.get_html_input("id_transf_log", enDB:=False, nro_campo_tipo:=100)%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="cuit">Cuit:</div>
+                <div style="width:14%;padding: 2px;float:left" id="td_cuit"><%= nvFW.nvCampo_def.get_html_input("cuil", enDB:=False, nro_campo_tipo:=100)%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="nro_documento">Nro documento:</div>
+                <div  style="width:14%;padding: 2px;float:left" id="td_nro_docu"><%= nvFW.nvCampo_def.get_html_input("nro_docu", enDB:=False, nro_campo_tipo:=100)%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" id="id_credito">Nro crédito:</div>
+                <div style="width:14%;padding: 2px;float:left" id="td_nro_credito"><%= nvFW.nvCampo_def.get_html_input("nro_credito", enDB:=False, nro_campo_tipo:=enumnvCampo_def_tipos.input_entero )%></div>
+                <div class="Tit1" style="width:10%;padding: 2px;float:left" >Cant. Reg.:</div>
+                <div style="width:10%;padding: 2px;float:left" id="td_operador"><input type="number" id="cant_registros" style="width: 100%; text-align: right" onkeypress='return valDigito(event)' value="500"/></div>
+            </div>
+        </td></tr>
+    </table>
+
+    <table id ="tbCampos" class="tb1" style="overflow:auto">
+        <tr id="divMenuDatos">
+            <td style="height:20px;width: 100%; vertical-align: top;">
+            <div id="divMenuModuloDatos" style="margin: 0px; padding: 0px;"></div>
+            <script language="javascript" type="text/javascript">
+                var vMenuModuloDatos = new tMenu('divMenuModuloDatos', 'vMenuModuloDatos');
+                vMenuModuloDatos.loadImage("mas", "/fw/image/tTree/mas.jpg")
+                vMenuModuloDatos.loadImage("menos", "/fw/image/tTree/menos.jpg")
+                vMenuModuloDatos.loadImage("close", "/fw/image/icons/eliminar.png")
+                Menus["vMenuModuloDatos"] = vMenuModuloDatos
+                Menus["vMenuModuloDatos"].alineacion = 'derecha';
+                Menus["vMenuModuloDatos"].estilo = 'A';
+                Menus["vMenuModuloDatos"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 20px'><Lib TipoLib='offLine'>DocMNG</Lib><icono>menos</icono><Desc></Desc><Acciones><Ejecutar Tipo='script'><Codigo>colapsar('datos')</Codigo></Ejecutar></Acciones></MenuItem>")
+                Menus["vMenuModuloDatos"].CargarMenuItemXML("<MenuItem id='1' style=''><Lib TipoLib='offLine'>DocMNG</Lib><icono>close</icono><Desc>Limpiar filtros</Desc><Acciones><Ejecutar Tipo='script'><Codigo>limpiar_todo()</Codigo></Ejecutar></Acciones></MenuItem>")
+            //    Menus["vMenuModuloDatos"].CargarMenuItemXML("<MenuItem id='2' style=''><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Mostrar seleccionados</Desc><Acciones><Ejecutar Tipo='script'><Codigo>mostrar_selec()</Codigo></Ejecutar></Acciones></MenuItem>")
+                Menus["vMenuModuloDatos"].CargarMenuItemXML("<MenuItem id='3' style='WIDTH: 100%;text-align:center'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Agregar columnas</Desc></MenuItem>")    
+                vMenuModuloDatos.MostrarMenu()
+            </script>
+            </td>
+          </tr>
+    </table>
+    <div style="width: 100%; overflow: auto" id="divFiltros">
+        <table class="tb1">
+            <tr>
+                <td class='tit1' style="white-space:nowrap;"><input type='checkbox' id='chk_todos' onchange='tildar_todo()'  checked='checked' />Tildar/Destildar todo</td>
+                <td class='tit1' style="white-space:nowrap;"><label style="cursor: hand" onclick="mostrar_selec(true)">Ver seleccionados</label></td>
+                <td class='tit1' style="white-space:nowrap;"><label style="cursor: hand" onclick="mostrar_selec(false)">Ver todos</label></td>
+                <td class='tit1' style="width:100%"></td>
+            </tr>
+            <tr id="tbDatosFiltro">
+                <td colspan="4" id="filtros" style=""  ondragover="return over(event)" ondragleave="return leave(event)" ondrop="return drop(event)">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <iframe id="tablaConcepto" name="tablaConcepto" src="../enBlanco.htm" style="width:100%;height:100%; overflow:hidden" frameborder="0"></iframe>
+  
+</body>
+</html>

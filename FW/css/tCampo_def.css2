@@ -1,0 +1,43 @@
+﻿.campo_def_div_contenedor 
+            {
+            -moz-border-radius: 0.33em;
+            -webkit-border-radius: 0.33em;
+            border-radius: 0.33em;
+            background-color: white; 
+            z-index: 500; 
+            height: 154px; 
+            border: solid #d0d0d0 1px;
+            } 
+
+.campo_def_cbmulti_select 
+          {
+          background-color: #b7b7b7 !important;
+          color: black !important;
+          }
+
+
+.campo_def_cb_item 
+         {
+         }
+
+.campo_def_cb_item:hover 
+         {
+         cursor:pointer !important
+         }
+.campo_def_cb_item_disable 
+         {
+         color: gray !important
+         }
+
+.campo_def_cb_item_disable:hover 
+        {
+        cursor: not-allowed !important
+        }
+
+@media screen and (max-width: 580px) {
+
+    .campo_def_cb_item {
+        font-size: 1.1em !Important;
+        padding: 5px 0px;
+    }
+}

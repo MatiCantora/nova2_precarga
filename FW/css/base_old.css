@@ -1,0 +1,216 @@
+	
+HTML {height: 100%}
+
+BODY
+{
+    BACKGROUND-POSITION: center center;
+    FONT-SIZE: 12px;
+    BORDER: 0px;
+    PADDING: 0px;
+    MARGIN: 0px;
+    BACKGROUND-COLOR: #E9F0F4;
+    SCROLLBAR-ARROW-COLOR: #4169E1;
+    SCROLLBAR-BASE-COLOR: #C3D3DA;
+	  font: 11px Trebuchet, Tahoma, Arial, Helvetica;
+
+}
+select
+{
+  FONT: 11px Trebuchet, Tahoma, Arial, Helvetica;
+	border-right: #D0D0D0 1px solid;
+	border-top: #D0D0D0 1px solid;
+	border-left: #D0D0D0 1px solid;
+	border-bottom: #D0D0D0 1px solid;
+}
+
+input
+{
+  FONT: 11px Trebuchet, Tahoma, Arial, Helvetica;
+	border-right: #D0D0D0 1px solid;
+	border-top: #D0D0D0 1px solid;
+	border-left: #D0D0D0 1px solid;
+	border-bottom: #D0D0D0 1px solid;
+}
+
+.tb1
+{
+    WIDTH: 100%;
+    BACKGROUND-COLOR: #BDD2EC;
+    font: 11px Trebuchet, Tahoma, Arial, Helvetica;
+}
+
+
+.tb1 TR TD
+{
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR: #E9F0F4;
+    FONT-FAMILY: Arial;
+    VERTICAL-ALIGN: middle;
+    font: 11px Trebuchet, Tahoma, Arial, Helvetica;
+}
+
+.tbLabel TD
+{
+    /*BORDER: 1px !Important;*/
+    MARGIN: 0px !Important;
+    PADDING: 0px !Important;
+    FONT-FAMILY: Tahoma !Important;
+    FONT-SIZE: 11px !Important;
+    FONT-WEIGHT: bolder;
+    BACKGROUND-COLOR: #749BC4 !Important;
+    TEXT-ALIGN: center;
+	color:#FFFFFF;
+}
+.tbLabel0 TD
+{
+    MARGIN: 0px !Important;
+    PADDING: 1px 0px !Important;
+		font-family: tahoma,Verdana, Arial, Helvetica, sans-serif;
+		font-size:11px;
+    FONT-WEIGHT: bolder;
+    COLOR: white;
+    BACKGROUND-COLOR: #185683 !Important;
+    TEXT-ALIGN: center
+}
+
+.Tit1
+{
+    
+    BACKGROUND-COLOR: #749BC4 !Important;
+    FONT-FAMILY: Tahoma !Important;
+    FONT-SIZE: 11.5px !Important;
+    FONT-WEIGHT: bolder;
+    COLOR:#FFFFFF
+}
+
+.Tit2
+{
+    
+    BACKGROUND-COLOR: #3D648F !Important;
+    FONT-FAMILY: Tahoma !Important;
+    FONT-SIZE: 11.5px !Important;
+    COLOR:#FFFFFF
+}
+
+.Tit3
+{
+    MARGIN: 0px !Important;
+    PADDING: 1px !Important;
+		font-family: tahoma,Verdana, Arial, Helvetica, sans-serif;
+		font-size:11px;
+    FONT-WEIGHT: bolder;
+    COLOR: white;
+    BACKGROUND-COLOR: #185683 !Important;
+}
+
+.Tit4
+{
+    MARGIN: 0px !Important;
+    PADDING: 1px !Important;
+		font-family: tahoma,Verdana, Arial, Helvetica, sans-serif;
+		font-size:11px;
+    BORDER:1px #A6A6A6 Solid  !Important
+}
+
+.tb2
+{
+    WIDTH: 100%;
+    BACKGROUND-COLOR: #E9F0F4;
+    font: 11px Trebuchet, Tahoma, Arial, Helvetica;
+    border:0px
+}
+
+.tb2 TR TD
+{
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR: #E9F0F4;
+    FONT-FAMILY: Arial;
+    VERTICAL-ALIGN: middle;
+    font: 11px Trebuchet, Tahoma, Arial, Helvetica;
+}
+
+
+
+.tbPages {
+          font: 12px Trebuchet, Tahoma, Arial, Helvetica;
+        /*  text-align : right !Important;
+        /*  text-align : -moz-right !Important;
+          text-align:  -khtml-right !Important;
+          margin-right: auto !Important; 
+          margin-left: auto !Important;*/
+         }
+
+.divPages {/*IE*/
+            width:100%;
+            text-align : right !Important;
+         }
+
+.divPages {/*CHROME*/
+            width:100%;
+            text-align:  -khtml-right !Important;
+         }
+
+.divPages {/*FF*/
+            width:100%;
+            text-align : -moz-right !Important;
+         }
+ 
+.tdPageSelected
+         {
+          FONT-WEIGHT: bolder
+         }
+ 
+.tr_cel TD 
+         {
+          background-color: #F0FFFF !Important
+         }
+.tb_O
+{
+    BORDER: 0px;
+    PADDING: 0px;
+    MARGIN: 0px;
+    MARGIN: 0px;
+    WIDTH: 100%;
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR: #E9F0F4
+    
+}
+
+.tb_O tr
+{
+   BORDER: 0px;
+   PADDING: 0px;
+   MARGIN: 0px
+}
+.tb_O tr td 
+{
+   BORDER: 0px;
+   PADDING: 0px;
+   MARGIN: 0px
+}
+
+.tbLabel_O 
+{
+HEIGHT: 12px;
+BACKGROUND-COLOR: #E9F0F4
+
+}
+
+.tbLabel0_O 
+{
+HEIGHT: 24px;
+BACKGROUND-COLOR: #E9F0F4
+
+}
+.tbLabel_O TD
+{   FONT-SIZE: 12px !Important;
+    FONT-WEIGHT: bolder;
+    WHITE-SPACE: nowrap;
+    TEXT-ALIGN: center
+}
+.tbLabel0_O TD
+{
+    FONT-WEIGHT: bolder;
+    TEXT-ALIGN: center
+}         
+ 

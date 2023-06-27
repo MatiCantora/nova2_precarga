@@ -1,0 +1,485 @@
+﻿
+<% 
+
+    nvServer.Events.AddHandler("entidad_onSave", Sub([event] As String, nro_entidad As Integer, strXML As String)
+                                                     nvFW.nvVOIIUtiles.Entidad_Consolidar(nro_entidad, strXML)
+                                                 End Sub)
+
+    nvServer.Events.AddHandler("onApplicationEnd", Sub([event] As String, sender As Object, e As EventArgs)
+                                                       nvFW.servicios.nvQNET.thread_debin_query_stop()
+                                                   End Sub)
+
+    nvServer.Events.AddHandler("onSessionStart", Sub([event] As String, sender As Object, e As EventArgs)
+                                                     nvFW.servicios.nvQNET.thread_debin_query_start("nv_voii")
+                                                 End Sub)
+
+    nvServer.Events.AddHandler("Debin_StateChange", Sub([event] As String, debincredin As nvFW.trsParam, oldstate As String)
+
+
+                                                        If debincredin("dc_id_estado").toupper = "EN CURSO" Or debincredin("dc_id_estado").toupper = "INICIADO" Then
+                                                            Exit Sub
+                                                        End If
+
+                                                        Dim err As New nvFW.tError
+                                                        Dim rs As ADODB.Recordset
+
+                                                        If debincredin("internalcode").indexof("solpf") > -1 And debincredin("dc_mov_tipo").toupper = "D" Then
+
+                                                            Dim nro_sol As Integer = debincredin("internalcode").split("_")(1)
+
+                                                            Dim estado As String = ""
+                                                            Dim estado_nuevo As String = ""
+
+                                                            Select Case debincredin("dc_id_estado")
+
+                                                                Case "ACREDITADO"
+                                                                    estado_nuevo = "DA"
+
+                                                                Case "VENCIDO"
+                                                                    estado_nuevo = "DV"
+
+                                                                Case "RECHAZO DE CLIENTE"
+                                                                    estado_nuevo = "DR"
+
+                                                                Case Else '"ERROR ACREDITACION", "ERROR DATOS", "ERROR DEBITO", "SIN SALDO", "ELIMINADO", "SIN GARANTIA"
+                                                                    estado_nuevo = "DE"
+
+                                                            End Select
+
+
+                                                            rs = nvDBUtiles.DBOpenRecordset("select sol_estado from sol_solicitudes where nro_sol=" & nro_sol & "")
+                                                            If rs.EOF = False Then
+                                                                estado = rs.Fields("sol_estado").Value
+                                                            End If
+                                                            nvDBUtiles.DBCloseRecordset(rs)
+
+                                                            nvLog.addEvent("qnet_consulta_debincredin", "event debito estado solicitud Nº " & nro_sol & " - estado inicial " & estado & " estado nuevo " & estado_nuevo & "")
+
+                                                            Dim nro_com_tipo As Integer = 29
+                                                            If estado_nuevo <> "" Then
+
+                                                                If estado = "D" Then
+
+                                                                    If estado <> estado_nuevo Then
+
+                                                                        Dim paramXML As String = "<sol modo='E' nro_sol='" & nro_sol & "'><estado actual='" & estado & "' nuevo='" & estado_nuevo & "' /></sol>"
+
+                                                                        err = nvFW.nvVOIIUtiles.solicitud_abm(nro_sol, "PF OnLine", estado, estado_nuevo, paramXML)
+
+                                                                        If err.numError = 0 Then
+
+                                                                            err.mensaje = "ID: " & debincredin("dc_id") & ".</br> Estado: <b>" + debincredin("dc_id_estado") + "</b></br>Respuesta: " & debincredin("res_codigo") & " - " & debincredin("res_descripcion")
+                                                                            nro_com_tipo = 28
+
+                                                                            rs = nvDBUtiles.DBOpenRecordset("select sol_estado from sol_solicitudes where nro_sol=" & nro_sol & "")
+                                                                            If rs.EOF = False Then
+                                                                                estado = rs.Fields("sol_estado").Value
+                                                                            End If
+                                                                            nvDBUtiles.DBCloseRecordset(rs)
+
+                                                                        End If
+                                                                    Else
+                                                                        err.numError = 99
+                                                                        err.mensaje = "El estado de la solicitud es diferente a lo esperado, imposible cambiarlo. El nuevo estado (" & estado_nuevo & ") no se encuentra identificado."
+                                                                    End If
+
+                                                                    ' actualizar los paramentros de la solicitud
+                                                                    nvFW.nvDBUtiles.DBExecute("update sol_params set valor = '" & debincredin("dc_id") & "' where nro_sol = " & nro_sol & " and param = 'dc_id'")
+                                                                    nvFW.nvDBUtiles.DBExecute("update sol_params set valor = '" & debincredin("dc_id_estado") & "' where nro_sol = " & nro_sol & " and param = 'dc_id_estado'")
+
+                                                                    'Inserto Comentario
+                                                                    nvFW.nvDBUtiles.DBExecute("INSERT INTO [dbo].[com_registro] ([nro_entidad], [id_tipo], [nro_com_id_tipo], [nro_com_tipo], [comentario], [operador],[operador_destino]" &
+                                                                           ",[fecha], [nro_com_estado], [nro_registro_depende]) " &
+                                                                            "VALUES " &
+                                                                            "(null," & nro_sol & ", 5, " & nro_com_tipo & ",'" & err.mensaje & "', isnull(dbo.rm_nro_operador(),0), null,getdate(), 1, null)")
+
+                                                                End If
+
+                                                                nvLog.addEvent("qnet_consulta_debincredin", "event debito estado solicitud Nº " & nro_sol & " estado actual " & estado & " - estado nuevo " & estado_nuevo & "")
+
+                                                                If err.numError = 0 And estado = "DA" And estado_nuevo = "DA" Then
+
+                                                                    estado = "DA"
+                                                                    estado_nuevo = "T"
+                                                                    Dim paramXML As String = "<sol modo='E' nro_sol='" & nro_sol & "'><estado actual='" & estado & "' nuevo='" & estado_nuevo & "' /></sol>"
+
+                                                                    err = nvFW.nvVOIIUtiles.solicitud_abm(nro_sol, "PF OnLine", estado, estado_nuevo, paramXML)
+
+                                                                    If err.numError <> 0 Then
+
+                                                                        err.mensaje = "Error al cambiar de estado Debin Aceptado a Terminado. Verifique con el administrador del sistema. " & err.mensaje
+
+                                                                        'Inserto Comentario
+                                                                        nvFW.nvDBUtiles.DBExecute("INSERT INTO [dbo].[com_registro] ([nro_entidad], [id_tipo], [nro_com_id_tipo], [nro_com_tipo], [comentario], [operador],[operador_destino]" &
+                                                                                       ",[fecha], [nro_com_estado], [nro_registro_depende]) " &
+                                                                                        "VALUES " &
+                                                                                        "(null," & nro_sol & ", 5, 1,'" & err.mensaje & "', isnull(dbo.rm_nro_operador(),0), null,getdate(), 1, null)")
+
+                                                                    End If
+
+                                                                    nvLog.addEvent("qnet_consulta_debincredin", "event debito estado solicitud Nº " & nro_sol & " - estado actual " & estado & " estado nuevo " & estado_nuevo & "")
+
+                                                                End If
+
+
+                                                            End If
+
+                                                        End If
+
+                                                    End Sub)
+
+
+    nvServer.Events.AddHandler("Credin_PLF_StateChange", Sub([event] As String, debincredin As nvFW.trsParam)
+
+                                                             Dim err As New nvFW.tError
+                                                             Dim id_tipo As Integer = 0
+                                                             Dim rs As ADODB.Recordset
+                                                             Dim strSQL As String = ""
+
+                                                             '1	TRF Inmediata Interna TIV
+                                                             '2	CREDIN Mismo Titular CVMT
+                                                             '3	CREDIN Distinto Titular	 CVDT
+
+                                                             If debincredin("dc_mov_tipo").toupper = "C" And (debincredin("internalcode").indexof("TIV_") > -1 Or debincredin("internalcode").indexof("CVMT_") > -1 Or debincredin("internalcode").indexof("CVDT_") > -1) Then
+                                                                 Try
+
+                                                                     'instruccion de pago
+                                                                     Dim internalcode As Object = debincredin("internalcode").Split("_")
+                                                                     Dim concepto As String = internalcode(0)
+                                                                     Dim cuecod As String = internalcode(1)
+                                                                     Dim nroreferencia As String = internalcode(2)
+                                                                     Dim nro_cf_ci As String = internalcode(3)
+                                                                     Dim nro_proceso As String = internalcode(4)
+
+                                                                     Dim estado As Integer = 0
+                                                                     Select Case debincredin("dc_id_estado")
+
+                                                                         Case "ACREDITADO"
+                                                                             estado = 40
+
+                                                                         Case "EN CURSO"
+                                                                             estado = 20
+
+                                                                         Case Else
+                                                                             estado = 30
+
+                                                                     End Select
+
+
+                                                                     strSQL = String.Format(<![CDATA[
+
+                                                                                Declare @max_estado_credin int 
+                                                                                Declare @nro_cf_cab int 
+
+                                                                                select @nro_cf_cab = nro_cf_cab from tnv_comp_fondos_ci where nro_cf_ci = {0}
+
+                                                                                update tnv_comp_fondos_credin Set estado= {1},  estado_coelsa = '{2}' where id_credin = '{3}'
+
+                                                                                select @max_estado_credin = min_estado_credin
+                                                                                from DBAnexa..tnv_comp_fondos_cabecera cf
+                                                                                inner join (
+                                                                                            select e.nro_cf_cab,max(estado) as min_estado_credin
+                                                                                                from (select 
+                                                                                                b.nro_cf_cab,c.nro_cf_ci, c.orden, max(c.estado) as estado
+                                                                                                from
+                                                                                                DBAnexa..tnv_comp_fondos_cabecera a,
+                                                                                                DBAnexa..tnv_comp_fondos_ci b, 
+                                                                                                DBAnexa..tnv_comp_fondos_credin c
+                                                                                                where 
+                                                                                                a.nro_cf_cab = @nro_cf_cab and
+                                                                                                a.nro_cf_cab = b.nro_cf_cab and
+                                                                                                b.nro_cf_ci = c.nro_cf_ci
+                                                                                                group by b.nro_cf_cab,c.nro_cf_ci, c.orden) e group by e.nro_cf_cab
+                                                                                           ) abc on abc.nro_cf_cab = cf.nro_cf_cab
+                                                                                where cf.nro_cf_cab = @nro_cf_cab
+
+                                                                                update DBAnexa..tnv_comp_fondos_cabecera 
+                                                                                set fecha_estado= getdate()
+                                                                                  , estado = case when @max_estado_credin = 0 then 2
+                                                                                                  when @max_estado_credin = 10 then 2
+                                                                                                  when @max_estado_credin = 20 then 6
+                                                                                                  when @max_estado_credin = 30 then 7
+                                                                                                  when @max_estado_credin = 40 then 8 end
+                                                                                where 
+                                                                                nro_cf_cab = @nro_cf_cab]]>.Value(), nro_cf_ci, estado, debincredin("dc_id_estado").toupper, debincredin("dc_id"))
+
+                                                                     DBExecute(strSQL, _nvcn:=nvApp.getInstance().app_cns("BD_IBS_ANEXA"))
+
+
+                                                                 Catch ex As Exception
+                                                                     nvLog.addEvent("handler_error", "Credin_PLF_StateChange;-99;" & ex.message & ";" & strSQL)
+                                                                 End Try
+
+
+                                                             End If
+
+                                                             If debincredin("dc_mov_tipo").toupper = "C" And debincredin("dt_concepto").toupper = "PLF" Then
+                                                                 '  disparar TRAN cambio de estado
+                                                                 Try
+                                                                     'Stop
+                                                                     Dim notificar_acreditacion_cliente As String = nvUtiles.getParametroValor("QNET_NOTIFICAR_ACREDITACION", "SI")
+
+                                                                     Dim from As String = nvUtiles.getParametroValor("mail_from", "")
+                                                                     Dim from_title As String = nvUtiles.getParametroValor("mail_from_title", "Notificación Banco VOII")
+                                                                     Dim pass As String = nvUtiles.getParametroValor("mail_pwd", "")
+
+                                                                     Dim server As String = nvUtiles.getParametroValor("mail_server", "")
+                                                                     Dim server_port As String = nvUtiles.getParametroValor("mail_server_port", "")
+                                                                     Dim server_ssl As String = nvUtiles.getParametroValor("mail_ssl", "")
+
+                                                                     Dim _to As String = ""
+                                                                     Dim asunto As String = "Acreditación de Plazo Fijo Web"
+                                                                     Dim cuerpo As String = ""
+                                                                     Dim email As String = ""
+
+                                                                     cuerpo = String.Format(<![CDATA[ <p>:hola</p>
+
+                                                                            <p>Te&nbsp;informamos&nbsp;que&nbsp;en&nbsp;el&nbsp;d&iacute;a&nbsp;de&nbsp;hoy&nbsp;se&nbsp;acreditaron&nbsp;los&nbsp;fondos&nbsp;correspondientes&nbsp;al&nbsp;vencimiento&nbsp;de&nbsp;tu&nbsp;plazo&nbsp;fijo&nbsp;web&nbsp;en&nbsp;la&nbsp;cuenta&nbsp;detallada&nbsp;en&nbsp;la&nbsp;solicitud&nbsp;inicial.</p>
+
+                                                                            <p>Te&nbsp;invitamos&nbsp;a&nbsp;que&nbsp;sigas&nbsp;invirtiendo&nbsp;con&nbsp;nosotros.</p>
+
+                                                                            <p>&nbsp;</p>
+
+                                                                            <p><img src="cid:\voii\image\logos\voii_pie_mail.png" /></p>
+                                                                             ]]>.Value()).Replace(vbLf, "")
+
+
+                                                                     If debincredin("internalcode").indexof("cueoperplf") > -1 Then
+
+                                                                         Dim internalcode As Object = debincredin("internalcode").Replace("cueoperplf", "").Split("_")
+                                                                         Dim cuecod As String = internalcode(0)
+                                                                         Dim openro As String = internalcode(1)
+
+                                                                         rs = nvDBUtiles.DBOpenRecordset("select distinct s.nro_sol,s.email from sol_params p inner join sol_solicitudes s on s.nro_sol = p.nro_sol where nro_sol_tipo = 'PF OnLine' and param = 'IBS_nro_operacion' and valor = '" & openro & "'")
+                                                                         If rs.EOF = False Then
+
+                                                                             If notificar_acreditacion_cliente.ToUpper = "SI" Then
+                                                                                 _to = rs.Fields("email").Value
+                                                                             End If
+
+                                                                             id_tipo = rs.Fields("nro_sol").Value
+
+                                                                         End If
+                                                                         nvDBUtiles.DBCloseRecordset(rs)
+
+                                                                     End If
+
+
+                                                                     If debincredin("dc_id_estado").toupper <> "ACREDITADO" Then
+                                                                         _to = nvUtiles.getParametroValor("dc_notificacion_contacto ", "")
+                                                                     End If
+
+                                                                     err.mensaje = "La notificación del credin no se pudo enviar. Estado:" & debincredin("dc_id_estado") & " - Destino: " & _to
+
+                                                                     If _to <> "" Then
+
+                                                                         err = nvFW.nvNotify.sendMail(_from:=from, _to:=_to _
+                                                                                            , _port:=server_port,_pass:=pass, _server:= server, _ssl:=server_ssl _
+                                                                                            , _from_title:=from_title _
+                                                                                            , _subject:=asunto _
+                                                                                            , _body:=cuerpo)
+
+                                                                         If err.numError <> 0 Then
+                                                                             err.mensaje = "La notificación del credin no se pudo enviar. Detalle:" & err.mensaje
+                                                                         Else
+                                                                             err.mensaje = "La notificación del credin se envió correctamente."
+                                                                         End If
+
+                                                                     End If
+
+
+                                                                 Catch ex As Exception
+                                                                     err.mensaje = "El proceso de notificación de credin no se pudo realizar. Detalle:" & ex.Message
+                                                                 End Try
+
+                                                                 If id_tipo > 0 Then
+
+                                                                     'Inserto Comentario ABM
+                                                                     nvFW.nvDBUtiles.DBExecute("INSERT INTO [dbo].[com_registro] ([nro_entidad], [id_tipo], [nro_com_id_tipo], [nro_com_tipo], [comentario], [operador],[operador_destino]" &
+                                                                            ",[fecha], [nro_com_estado], [nro_registro_depende]) " &
+                                                                             "VALUES " &
+                                                                             "(null," & id_tipo & ", 5, 2,'El Credin <b>" & debincredin("dc_id") & "</b> se encuentra " & debincredin("dc_id_estado") & ".', isnull(dbo.rm_nro_operador(),0), null,getdate(), 1, null)")
+
+
+                                                                     'Inserto Comentario ABM
+                                                                     nvFW.nvDBUtiles.DBExecute("INSERT INTO [dbo].[com_registro] ([nro_entidad], [id_tipo], [nro_com_id_tipo], [nro_com_tipo], [comentario], [operador],[operador_destino]" &
+                                                                            ",[fecha], [nro_com_estado], [nro_registro_depende]) " &
+                                                                             "VALUES " &
+                                                                             "(null," & id_tipo & ", 5, 2,'" & err.mensaje & "', isnull(dbo.rm_nro_operador(),0), null,getdate(), 1, null)")
+
+                                                                 End If
+
+
+                                                             End If
+
+                                                         End Sub)
+
+    nvServer.Events.AddHandler("ABMRegistro_event", Sub([event] As String, nro_registro As String, strXML As String)
+
+
+                                                        Dim err As New tError()
+
+                                                        If nvFW.nvApp.getInstance.cod_sistema.ToUpper <> "NV_VOII" Then
+                                                            Exit Sub
+                                                        End If
+
+                                                        Dim strSQL As String = ""
+                                                        Dim oXML As New System.Xml.XmlDocument
+                                                        oXML.LoadXml(strXML)
+                                                        Dim nro_com_tipo = nvXMLUtiles.selectSingleNode(oXML, "/comentario/@nro_com_tipo").Value
+                                                        Dim nro_com_id_tipo = nvXMLUtiles.selectSingleNode(oXML, "/comentario/@nro_com_id_tipo").Value
+                                                        Dim id_tipo = nvXMLUtiles.selectSingleNode(oXML, "/comentario/@id_tipo").Value
+                                                        Dim nro_registro_depende As Integer = nvXMLUtiles.selectSingleNode(oXML, "/comentario/@nro_registro_depende").Value
+                                                        Dim descripcion As String = nvXMLUtiles.getNodeText(oXML, "/comentario/descripcion", "")
+
+                                                        If nro_com_tipo = 47 OrElse nro_com_tipo = 48 OrElse nro_com_tipo = 49 OrElse nro_com_tipo = 70 OrElse nro_com_tipo = 71 OrElse nro_com_tipo = 72 OrElse nro_com_tipo = 73 Then
+
+                                                            Dim nro_alarma As Integer = 0
+                                                            Dim secuencia As Integer = 0
+                                                            Dim id_estado_secuencia As Integer = 0
+                                                            Dim nro_com_parametro As Integer = 0
+                                                            Dim nro_com_tipo_depende As Integer = 0
+
+                                                            Try
+                                                                descripcion = HttpUtility.HtmlDecode(Regex.Replace(descripcion, "<[^>]*(>|$)", String.Empty))
+
+                                                                Select Case nro_com_tipo
+                                                                    Case 47
+                                                                        id_estado_secuencia = 2
+                                                                    Case 48
+                                                                        id_estado_secuencia = 3
+                                                                    Case 49
+                                                                        id_estado_secuencia = 4
+                                                                End Select
+
+
+                                                                strSQL  = "DECLARE @nro_com_parametro_depende int = 0" & vbCrLf
+                                                                strSQL += "DECLARE @nro_com_tipo_depende int = 0" & vbCrLf
+                                                                strSQL += "DECLARE @nro_com_parametro int = 0" & vbCrLf
+
+                                                                strSQL += "SELECT @nro_com_parametro = nro_com_parametro from com_parametros_tipo where nro_com_tipo = "& nro_com_tipo &" and com_parametro in ('nro_alarma_secuencia')" & vbCrLf
+
+                                                                strSQL += "SELECT @nro_com_tipo_depende = nro_com_tipo from com_registro where nro_registro = " & nro_registro_depende & vbCrLf
+                                                                strSQL += "SELECT @nro_com_parametro_depende = nro_com_parametro from com_parametros_tipo where nro_com_tipo = @nro_com_tipo_depende and com_parametro in ('nro_alarma_secuencia')" & vbCrLf
+                                                                strSQL += "SELECT com_parametro_valor,@nro_com_parametro as nro_com_parametro,@nro_com_tipo_depende as nro_com_tipo_depende FROM com_parametros WHERE nro_com_parametro = @nro_com_parametro_depende and nro_registro = " & nro_registro_depende
+
+                                                                Dim rs As ADODB.Recordset = DBExecute(strSQL)
+                                                                If rs.EOF = False Then
+
+                                                                    If rs.Fields("com_parametro_valor").Value.split("_").length > 1 Then
+                                                                        nro_alarma = rs.Fields("com_parametro_valor").Value.split("_")(0)
+                                                                    Else
+                                                                        nro_alarma = rs.Fields("com_parametro_valor").Value
+                                                                    End If
+
+                                                                    '  secuencia = rs.Fields("com_parametro_valor").Value.split("_")(1)
+                                                                    nro_com_parametro = rs.Fields("nro_com_parametro").Value
+                                                                    nro_com_tipo_depende = rs.Fields("nro_com_tipo_depende").Value
+                                                                End If
+                                                                DBCloseRecordset(rs)
+
+                                                                If nro_alarma = 0 Then
+
+                                                                    err.numError = 1
+                                                                    err.titulo = "Error en el proceso"
+                                                                    err.debug_desc = "El numero de alarma o la secuencia no existen"
+                                                                    err.mensaje = "Error al procesar cambio estado UNIDATO"
+                                                                    nvLog.addEvent("handler_error", "ABMRegistro_event;" & err.numError & ";" & err.debug_src & ";" & err.debug_desc)
+
+                                                                    Exit Sub
+
+                                                                End If
+
+
+                                                                strSQL = "if not exists(select 1 from com_parametros where nro_com_parametro = " & nro_com_parametro & " and nro_registro = " & nro_registro & ")" & vbCrLf
+                                                                strSQL += "insert into com_parametros " & vbCrLf
+                                                                strSQL += "         ([nro_com_parametro]" & vbCrLf
+                                                                strSQL += "         ,[nro_registro]" & vbCrLf
+                                                                strSQL += "         ,[com_parametro_valor])" & vbCrLf
+                                                                strSQL += " VALUES ( " & nro_com_parametro & vbCrLf
+                                                                strSQL += "         ," & nro_registro & vbCrLf
+                                                                strSQL += "         ," & nro_alarma & ")" & vbCrLf
+
+                                                                DBExecute(strSQL)
+
+                                                                strSQL = "if not exists(select 1 from nv_psp_clientes_alarmas_seg where nro_registro_depende = " & nro_registro_depende & " and unidato_numero_alarma = " & nro_alarma & ")" & vbCrLf
+                                                                strSQL += "INSERT INTO [dbo].[nv_psp_clientes_alarmas_seg]" & vbCrLf
+                                                                strSQL += "         ([unidato_numero_alarma]" & vbCrLf
+                                                                strSQL += "         ,[nro_registro]" & vbCrLf
+                                                                strSQL += "         ,[nro_seg_estado]" & vbCrLf
+                                                                strSQL += "         ,[nro_registro_depende]" & vbCrLf
+                                                                strSQL += "         ,[vigente])" & vbCrLf
+                                                                strSQL += " VALUES ( " & nro_alarma & vbCrLf
+                                                                strSQL += "         ," & nro_registro_depende & vbCrLf
+                                                                strSQL += "         ," & nro_com_tipo_depende & vbCrLf
+                                                                strSQL += "         ,null,1)" & vbCrLf
+
+                                                                strSQL += "UPDATE [dbo].[nv_psp_clientes_alarmas_seg]" & vbCrLf
+                                                                strSQL += "         SET vigente = 0" & vbCrLf
+                                                                strSQL += " WHERE vigente = 1 and unidato_numero_alarma = " & nro_alarma & vbCrLf
+
+                                                                strSQL += "INSERT INTO [dbo].[nv_psp_clientes_alarmas_seg]" & vbCrLf
+                                                                strSQL += "         ([unidato_numero_alarma]" & vbCrLf
+                                                                strSQL += "         ,[nro_registro]" & vbCrLf
+                                                                strSQL += "         ,[nro_seg_estado]" & vbCrLf
+                                                                strSQL += "         ,[nro_registro_depende]" & vbCrLf
+                                                                strSQL += "         ,[vigente])" & vbCrLf
+                                                                strSQL += " VALUES ( " & nro_alarma & vbCrLf
+                                                                strSQL += "         ," & nro_registro & vbCrLf
+                                                                strSQL += "         ," & nro_com_tipo & vbCrLf
+                                                                strSQL += "         ," & nro_registro_depende & ",1)" & vbCrLf
+
+                                                                DBExecute(strSQL, _nvcn:=nvApp.getInstance().app_cns("UNIDATO"))
+
+
+                                                                If nro_com_tipo = 47 OrElse nro_com_tipo = 48 OrElse nro_com_tipo = 49 Then
+
+
+                                                                    strSQL = "INSERT INTO [dbo].[TPCSC_ALARMA_DETALLE]"
+                                                                    strSQL += "         ([NUMERO_ALARMA]"
+                                                                    strSQL += "         ,[SECUENCIA]"
+                                                                    strSQL += "         ,[FECHA_ALTA]"
+                                                                    strSQL += "         ,[FECHA_ENVIO_BCRA]"
+                                                                    strSQL += "         ,[ID_ESTADO]"
+                                                                    strSQL += "         ,[ID_USUARIO]"
+                                                                    strSQL += "         ,[LINK_DOCUMENTACION]"
+                                                                    strSQL += "         ,[OBSERVACIONES])"
+                                                                    strSQL += " select NUMERO_ALARMA " & vbCrLf
+                                                                    strSQL += "     ,max(isnull(SECUENCIA,0))+1" & vbCrLf
+                                                                    strSQL += "     ,getdate() as FECHA_ALTA" & vbCrLf
+                                                                    strSQL += "     ,null as FECHA_ENVIO_BCRA" & vbCrLf
+                                                                    strSQL += "     ," & id_estado_secuencia & " as ID_ESTADO" & vbCrLf
+                                                                    strSQL += "     ,'" & nvApp.getInstance().operador.login & "' as ID_USUARIO" & vbCrLf
+                                                                    strSQL += "     ,'https://" & nvApp.getInstance().server_name & "/voii/unidato/alarma_ver.aspx?numero_alarma=" & nro_alarma & "' as LINK_DOCUMENTACION" & vbCrLf
+                                                                    strSQL += "      ,'" & descripcion & "' as OBSERVACIONES" & vbCrLf
+                                                                    strSQL += " from [TPCSC_ALARMA_DETALLE] " & vbCrLf
+                                                                    strSQL += " where NUMERO_ALARMA = " & nro_alarma
+                                                                    strSQL += " group by NUMERO_ALARMA "
+
+                                                                    DBExecute(strSQL, _nvcn:=nvApp.getInstance().app_cns("UNIDATO"))
+
+                                                                End If
+
+                                                            Catch ex As Exception
+                                                                err.parse_error_script(ex)
+                                                                err.numError = -99
+                                                                err.titulo = ""
+                                                                err.debug_desc = ex.Message
+                                                                err.mensaje = "Error al procesar cambio estado UNIDATO"
+                                                                nvLog.addEvent("handler_error", "ABMRegistro_event;" & err.numError & ";" & err.debug_src & ";" & err.debug_desc)
+                                                            End Try
+                                                        End If
+
+                                                    End Sub)
+
+    nvServer.Events.AddHandler("ABMParamDef_event", Sub([event] As String, Param As trsParam)
+
+                                                        Dim err As New tError()
+
+                                                        If nvFW.nvApp.getInstance.cod_sistema.ToUpper <> "NV_VOII" Then
+                                                            Exit Sub
+                                                        End If
+
+
+                                                    End Sub)
+%>  

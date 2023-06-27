@@ -1,0 +1,78 @@
+.title {
+  /*background-color : #c9dbed; /*#C3CFD5 ---  #c9dbed*/
+  font-size        : 11pt;
+  font-family      : Arial, Helvetica, sans-serif;   
+  font-weight      : bold;
+  }
+.titleText {
+  /*color       : #c9dbed; /*#C3CFD5 ---  #c9dbed*/
+  font-size   : 11pt;   
+  font-family : Arial, Helvetica, sans-serif; 
+  font-weight : bold;
+  }
+.titleApp{
+  font-size        : 12pt;
+  font-family      : Arial, Helvetica, sans-serif;   
+  font-weight      : bold;	
+  }
+.tableHeader, .selectTableHeader { 
+  /*background-color: #c9dbed; /*#C3CFD5 ---  #c9dbed*/
+  font-size   : 10pt; 
+  font-family : Arial, Helvetica, sans-serif; 
+  font-weight : bold; 
+  }
+.tableTitle { 
+  font-size   : 10pt; 
+  font-family : Arial, Helvetica, sans-serif; 
+  font-weight : bold;  
+  }  
+.tableRow {
+  font-size   : 10pt; 
+  font-family : Arial, Helvetica, sans-serif; 
+  font-weight : normal;  
+  }
+.footerText {
+  font-size   : 8pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : normal;   
+  }
+.simpleText {
+  font-size   : 10pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : normal;  
+  }
+.simpleTextSmall {
+  font-size   : 9pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : normal;  
+  }
+.simpleTextBig  {
+  font-size   : 11pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : normal;  
+  }
+.errorText {
+  font-size       : 10pt; 
+  font-family     : Arial, Helvetica, sans-serif; 
+  font-weight     : normal;  
+  color           : white;
+  background-color: red;  
+  }
+.menu{
+  /*color:#2554C7;*/
+  color:black;
+  }
+.menu_categoria {
+  font-size   : 9pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : bold;    
+  /*color       : #2554C7;*/
+  color       :black;
+  }  
+.menu_subcategoria {
+  font-size   : 9pt;
+  font-family : Arial, Helvetica, sans-serif;   
+  font-weight : normal;  
+  /*color       : #2554C7;*/
+  color       :black;
+  } 

@@ -1,0 +1,538 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%
+
+
+    Dim modo As String = nvFW.nvUtiles.obtenerValor("modo", "")
+    Dim accion As String = nvFW.nvUtiles.obtenerValor("accion", "")
+    Dim op As nvFW.nvSecurity.tnvOperador = nvApp.operador
+    Dim err = New nvFW.tError
+
+    If (modo = "ajax_call") Then
+        If (accion = "guardar" Or accion = "eliminar") Then
+            Dim nro_com_grupo As String = nvFW.nvUtiles.obtenerValor("nro_com_grupo", "")
+            Dim nro_com_tipo As String = nvFW.nvUtiles.obtenerValor("nro_com_tipo", "")
+            Dim prioridad As String = nvFW.nvUtiles.obtenerValor("prioridad", "")
+
+            Dim cmd As New nvFW.nvDBUtiles.tnvDBCommand("sp_nv_tipos_grupos_abm", ADODB.CommandTypeEnum.adCmdStoredProc)
+
+            Dim pnro_com_grupo As ADODB.Parameter
+            pnro_com_grupo = cmd.CreateParameter("@nro_com_grupo", ADODB.DataTypeEnum.adVarChar,
+                                  ADODB.ParameterDirectionEnum.adParamInput, nro_com_grupo.Length, nro_com_grupo)
+            cmd.Parameters.Append(pnro_com_grupo)
+
+            Dim pnro_com_tipo As ADODB.Parameter
+            pnro_com_tipo = cmd.CreateParameter("@nro_com_tipo", ADODB.DataTypeEnum.adVarChar,
+                          ADODB.ParameterDirectionEnum.adParamInput, nro_com_tipo.Length, nro_com_tipo)
+            cmd.Parameters.Append(pnro_com_tipo)
+
+            Dim pprioridad As ADODB.Parameter
+            pprioridad = cmd.CreateParameter("@prioridad", ADODB.DataTypeEnum.adVarChar,
+                          ADODB.ParameterDirectionEnum.adParamInput, prioridad.Length, prioridad)
+            cmd.Parameters.Append(pprioridad)
+
+            Dim pAccion As ADODB.Parameter
+            pAccion = cmd.CreateParameter("@accion", ADODB.DataTypeEnum.adVarChar,
+                  ADODB.ParameterDirectionEnum.adParamInput, accion.Length, accion)
+            cmd.Parameters.Append(pAccion)
+
+
+            Dim rs As ADODB.Recordset = cmd.Execute()
+            Dim numError As Integer = rs.Fields.Item("numError").Value
+
+            If numError <> 0 Then
+                err.numError = rs.Fields("numError").Value
+                err.mensaje = rs.Fields("mensaje").Value
+                err.titulo = rs.Fields("titulo").Value
+                err.debug_desc = rs.Fields("debug_desc").Value
+                err.debug_src = rs.Fields("debug_src").Value
+                Stop
+
+            End If
+
+            nvFW.nvDBUtiles.DBCloseRecordset(rs)
+
+            err.response()
+        End If
+    End If
+
+    Me.contents("filtroIdTipo") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='com_id_tipo'>" +
+"<campos>nro_com_id_tipo as id, com_id_tipo as  [campo] </campos>" +
+"<filtro></filtro><orden>[campo]</orden></select></criterio>")
+    Me.contents("filtroGrupos") =
+        nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='com_grupos'>" +
+                  "<campos>*</campos>" +
+                  "<filtro></filtro></select></criterio>")
+
+    Me.contents("filtroTipos") =
+nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='com_tipos'>" +
+          "<campos>*</campos>" +
+          "<filtro></filtro></select></criterio>")
+
+    Me.contents("filtroTipoGrupos") =
+        nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verNv_tipos_grupos_rel'>" +
+                  "<campos>*</campos>" +
+                  "<filtro></filtro><orden>com_prioridad DESC</orden></select></criterio>")
+
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>NOVA Modulo Comentarios</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <script type="text/javascript" src="/FW/script/tTable.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript">
+        var tabla_grupos;
+        var tabla_tipos;
+        var grupoSeleccionado = {};
+        var tipoSeleccionado = {};
+        var radio_seleccionado ;
+        var navegador = navigator.appName;
+        var win;
+        function window_onresize() {
+            try {
+                
+                
+                body_h = $$('BODY')[0].clientHeight;
+                var divCom_tipos_grupo_h = $('divCom_tipos_grupo').getHeight();
+                var divTipoGrupoHeader_h = $('divTipoGrupoHeader').getHeight();
+                var divTiposGrupos_h = $('divTiposGrupos').getHeight();
+                var tamanio_2 = ((body_h - divCom_tipos_grupo_h - divTipoGrupoHeader_h - divTiposGrupos_h) / 2);
+                var tamanio = tamanio_2>20 ? tamanio_2 : 20;
+                $('iframeTipoGrupo').style.height = tamanio + 'px';
+                $('divComentarios').style.height = tamanio + 'px';
+                $('trTablasGrupoTipo').style.height = [(tamanio-60)>30? (tamanio-60) : 30 ]+ 'px';
+                // $('tbTablaGrupoTipo').style.height = tamanio + 'px';
+                /*if (navegador != "Microsoft Internet Explorer"){
+                    $('tabla_grupos').style.height = (tamanio - $('divCom_tipos_grupo').getHeight()) + 8 + 'px';
+                    $('tabla_tipos').style.height = (tamanio - $('divCom_tipos_grupo').getHeight()) + 8 + 'px';
+                }*/
+                
+                tabla_tipos.resize();
+                tabla_grupos.resize();
+            } catch (err) {
+
+            }
+        }
+
+        function window_onload() {
+
+            cargarTiposGrupos();
+
+            //Bloqueamos los campos si es una modificacion
+            tabla_grupos = new tTable()
+
+            //Nombre de la tabla y id de la variable
+            tabla_grupos.nombreTabla = "tabla_grupos";
+
+            //Agregamos consulta XML
+            tabla_grupos.filtroXML = nvFW.pageContents.filtroGrupos;
+            tabla_grupos.cabeceras = ["Seleccionar", "Nro Grupo", "Grupo"];
+            tabla_grupos.editable = false;
+            tabla_grupos.eliminable = false;
+            tabla_grupos.mostrarAgregar = false;
+            tabla_grupos.async = true;
+            tabla_grupos.addOnComplete(function () {
+                var radio = $('radio_grupo_' + grupoSeleccionado.nro_com_grupo);
+                
+                if (radio)
+                    radio.checked = true;
+                
+            }.bind(this))
+
+            tabla_grupos.campos = [
+                {
+                    nombreCampo: "grupo_seleccionado",
+                    width: "20%",
+                    align: "center",
+                    get_html: function (c, nombre, fila) {
+                        return '<input type="radio" id="radio_grupo_' + fila[1].valor + '"  onclick=seleccionarGrupo(' + c.fila + ','
+                            + c.columna + ') name="tabla_grupos_radiobutton" value="">'
+                    }, editable: false,ordenable:false
+                },
+                {
+                    nombreCampo: "nro_com_grupo", nro_campo_tipo: 104, enDB: false, width: "20%", nro_campo_tipo: 100
+                },
+                {
+                    nombreCampo: "com_grupo", nro_campo_tipo: 104, enDB: false, width: "60%"
+                }
+            ]
+
+            //Bloqueamos los campos si es una modificacion
+            tabla_tipos = new tTable()
+
+            //Nombre de la tabla y id de la variable
+            tabla_tipos.nombreTabla = "tabla_tipos";
+            tabla_tipos.editable = false;
+            tabla_tipos.eliminable = false;
+            tabla_tipos.mostrarAgregar = false;
+            //Agregamos consulta XML
+            tabla_tipos.filtroXML = nvFW.pageContents.filtroTipos;
+            tabla_tipos.cabeceras = ["Seleccionar", "Nro Tipo", "Tipo"];
+            tabla_tipos.addOnComplete(function () {
+                var radio = $('radio_tipo_' + tipoSeleccionado.nro_com_tipo);
+
+                if (radio)
+                    radio.checked = true;
+
+            }.bind(this))
+            tabla_tipos.async = true;
+            tabla_tipos.campos = [
+                {
+                    nombreCampo: "grupo_seleccionado",
+                    width: "20%",
+                    align: "center",
+                    enDB: false,
+
+                    get_html: function (c, nombre, fila) {
+
+                        return '<input type="radio" id="radio_tipo_' + fila[1].valor + '" onclick=seleccionarTipo(' + c.fila + ','
+                            + c.columna + ') name="tabla_tipos_radiobutton" value="">'
+                    }, editable: false, ordenable: false
+                },
+                {
+                    nombreCampo: "nro_com_tipo", nro_campo_tipo: 104, enDB: false, width: "20%", unico: true, nro_campo_tipo: 100
+                },
+                {
+                    nombreCampo: "com_tipo", nro_campo_tipo: 104, enDB: false, width: "60%"
+                }
+            ]
+            tabla_tipos.table_load_html();
+            tabla_grupos.table_load_html();
+
+            //---------------------
+            win = nvFW.getMyWindow()
+            window_onresize();
+            /*tabla_grupos.addOnComplete(function () {
+                window_onresize();
+            }.bind(this))
+            tabla_tipos.addOnComplete(function () {
+                window_onresize();
+            }.bind(this))*/
+        }
+
+        function seleccionarTipo(fila) {
+            var fila = tabla_tipos.getFila(fila);
+            tipoSeleccionado.nro_com_tipo = fila.nro_com_tipo;
+            tipoSeleccionado.com_tipo = fila.com_tipo;
+            $('tipoSeleccionado').value = fila.nro_com_tipo + ' - ' + fila.com_tipo
+            checkTipoGrupo();
+        };
+
+        function seleccionarGrupo(fila) {
+            var fila = tabla_grupos.getFila(fila);
+            grupoSeleccionado.nro_com_grupo = fila.nro_com_grupo;
+            grupoSeleccionado.com_grupo = fila.com_grupo;
+            $('grupoSeleccionado').value = fila.nro_com_grupo + ' - ' + fila.com_grupo
+            checkTipoGrupo();
+        }
+
+        function checkTipoGrupo() {
+            
+            var iframeTipoGrupo = frames.iframeTipoGrupo.document;
+            var radio = iframeTipoGrupo.getElementById('radioGrupo_' + grupoSeleccionado.nro_com_grupo + '_tipo_' + tipoSeleccionado.nro_com_tipo);
+            if (radio && !radio.checked)
+                radio.click();
+            if (!radio && radio_seleccionado)
+                radio_seleccionado.checked = false;
+
+        }
+
+        function key_Buscar() {
+            if (window.event.keyCode == 13)
+                guardar();
+        }
+
+        function guardar() {
+            var prioridad = $('com_prioridad').value;
+            if (tipoSeleccionado.nro_com_tipo && grupoSeleccionado.nro_com_grupo && prioridad) {
+                nvFW.error_ajax_request('com_tipos_grupos_abm.aspx',
+                {
+                    parameters: {
+                        modo: "ajax_call",
+                        accion: "guardar",
+                        nro_com_grupo: grupoSeleccionado.nro_com_grupo,
+                        nro_com_tipo: tipoSeleccionado.nro_com_tipo,
+                        prioridad: prioridad
+                    },
+                    onSuccess: function (err) {
+                        cargarTiposGrupos();
+
+                    }
+                });
+            } else {
+                alert("debe establecer grupo,tipo y prioridad antes de guardar la relacion.")
+            }
+        }
+
+        function abmGrupos() {
+            win_abmGrupoTipo = window.top.nvFW.createWindow({
+                className: 'alphacube',
+                url: '/fw/comentario/com_grupos_abm.aspx',
+                title: ('ABM de Grupos'),
+                minimizable: true,
+                maximizable: true,
+                draggable: true,
+                width: 400,
+                height: 300,
+                onClose: function () {
+                    tabla_grupos.refresh();
+                }
+            });
+            win_abmGrupoTipo.options.userData = {};
+
+            win_abmGrupoTipo.showCenter(true)
+        }
+
+        function abmTipos() {
+            win_abmGrupoTipo = window.top.nvFW.createWindow({
+                className: 'alphacube',
+                url: '/fw/comentario/com_tipos_abm.aspx',
+                title: ('ABM de Tipos'),
+                minimizable: true,
+                maximizable: true,
+                draggable: true,
+                width: 1300,
+                height: 350,
+                onClose: function () {
+                    tabla_tipos.refresh();
+
+                }
+            });
+            win_abmGrupoTipo.options.userData = {};
+
+            win_abmGrupoTipo.showCenter(true)
+        }
+        function nuevo() {
+
+        }
+
+        function seleccionarTipoGrupo(nro_com_grupo, nro_com_tipo, nro_prioridad) {
+
+            $("radio_tipo_" + nro_com_tipo).click()
+            //$("radio_tipo_" + nro_com_tipo).checked = "checked";
+            $("radio_grupo_" + nro_com_grupo).click()
+            //$("radio_grupo_" + nro_com_grupo).checked = "checked";
+            $("com_prioridad").value = nro_prioridad;
+            var iframeTipoGrupo = frames.iframeTipoGrupo.document;
+            radio_seleccionado = iframeTipoGrupo.getElementById('radioGrupo_' + nro_com_grupo + '_tipo_' + nro_com_tipo);
+
+        }
+
+
+        function confirmar_eliminarTipoGrupo(nro_com_grupo, nro_com_tipo, nro_prioridad, com_grupo, com_tipo) {
+            var msg = "Esta seguro que desea eliminar " + com_grupo + '/' + com_tipo + ".";
+            Dialog.confirm('<b>' + msg + '</br>'
+                           , {
+                               width: 280, className: "alphacube",
+                               onShow: function () {
+
+                               },
+                               onOk: function (win) {
+                                   eliminarTipoGrupo(nro_com_grupo, nro_com_tipo, nro_prioridad);
+                                   win.close();
+
+                               },
+                               onCancel: function (win) { win.close() },
+                               okLabel: 'Confirmar',
+                               cancelLabel: 'Cancelar'
+                           });
+        }
+
+        function eliminarTipoGrupo(nro_com_grupo, nro_com_tipo, nro_prioridad) {
+            nvFW.error_ajax_request('com_tipos_grupos_abm.aspx',
+                {
+                    parameters: {
+                        modo: "ajax_call",
+                        accion: "eliminar",
+                        nro_com_grupo: nro_com_grupo,
+                        nro_com_tipo: nro_com_tipo,
+                        prioridad: nro_prioridad
+                    },
+                    onSuccess: function (err) {
+                        cargarTiposGrupos();
+                        if (grupoSeleccionado.nro_com_grupo == nro_com_grupo && tipoSeleccionado.nro_com_tipo == nro_com_tipo) {
+                            grupoSeleccionado = {};
+                            tipoSeleccionado = {};
+                            $("radio_tipo_" + nro_com_tipo).checked = false;
+                            $("radio_grupo_" + nro_com_grupo).checked = false;
+                            $('com_prioridad').value = '';
+                            $('tipoSeleccionado').value = '';
+                            $('grupoSeleccionado').value = '';
+                        }
+                    }
+                });
+        }
+
+        function cargarTiposGrupos() {
+            var filtro = nvFW.pageContents.filtroTipoGrupos;
+
+            nvFW.bloqueo_activar($('iframeTipoGrupo'), 'cargando_tipos_grupos');
+
+            nvFW.exportarReporte({
+                filtroXML: filtro,
+                //filtroWhere: filtroWhere,
+                path_xsl: '../FW/report/comentario/com_tipos_grupos.xsl',
+                formTarget: 'iframeTipoGrupo',
+                nvFW_mantener_origen: true,
+                async: true,
+                cls_contenedor: 'iframeTipoGrupo',
+                funComplete: function (response, parseError) {
+                    nvFW.bloqueo_desactivar($('iframeTipoGrupo'), 'cargando_tipos_grupos');
+                    
+                    var iFrameTipoGrupo = frames.iframeTipoGrupo.document;
+                    var radio = iFrameTipoGrupo.getElementById('radioGrupo_' + grupoSeleccionado.nro_com_grupo + '_tipo_' + tipoSeleccionado.nro_com_tipo);
+                    if (radio){
+                        radio.checked = true;
+                        radio_seleccionado = radio;
+                    }
+                }
+            });
+        }
+    </script>
+
+</head>
+<body onload="window_onload()" onresize="window_onresize()" onkeypress="return key_Buscar()" style="overflow: auto">
+    <div id="divTipoGrupoHeader" style="width:100%"></div>
+        <script type="text/javascript">
+                //var DocumentMNG = new tDMOffLine;
+                var vTipoGrupoHeader = new tMenu('divTipoGrupoHeader', 'vTipoGrupoHeader');
+                vTipoGrupoHeader.loadImage("abm", '/FW/image/icons/abm.png')
+                Menus["vTipoGrupoHeader"] = vTipoGrupoHeader
+                Menus["vTipoGrupoHeader"].alineacion = 'centro';
+                Menus["vTipoGrupoHeader"].estilo = 'A';
+
+
+
+                Menus["vTipoGrupoHeader"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 90%;text-align:center; vertical-align:middle'>" +
+                    "<Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Relaciones TIPO/GRUPO existentes</Desc></MenuItem>")
+       
+
+
+                vTipoGrupoHeader.MostrarMenu()
+            </script>
+    <div id="diviFrameTipoGrupo"> 
+        <iframe id="iframeTipoGrupo" name="iframeTipoGrupo" style="width: 100%; height:100%;border: 0px"></iframe>
+    </div>
+    <div id="divComentarios" style=" overflow:auto;">
+         <table id="tbTablaGrupoTipo" class="tb1  scroll" style="vertical-align:top; height:100%;"> 
+                        <tr class="tbLabel" id="trTitulo">
+                            <td colspan="2" style="width:100%">
+                                ABM de relaciones TIPO/GRUPO
+                            </td>
+                        </tr>
+                        <tr id="trGrupoTipo">
+                            <td style="width: 50%">
+                                <div id="divTipos"></div>
+                                <script type="text/javascript">
+                                    //var DocumentMNG = new tDMOffLine;
+                                    var vTipos = new tMenu('divTipos', 'vTipos');
+                                    vTipos.loadImage("abm", '/FW/image/icons/abm.png')
+                                    Menus["vTipos"] = vTipos
+                                    Menus["vTipos"].alineacion = 'centro';
+                                    Menus["vTipos"].estilo = 'A';
+
+
+
+                                    Menus["vTipos"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 90%;text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Grupos</Desc></MenuItem>")
+                                    Menus["vTipos"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 10%; text-align:center; vertical-align:middle'>" +
+                                                                        "<Lib TipoLib='offLine'>DocMNG</Lib><icono>abm</icono><Desc>ABM</Desc><Acciones><Ejecutar Tipo='script'>" +
+                                                                        "<Codigo>abmGrupos()</Codigo></Ejecutar></Acciones></MenuItem>")
+
+
+                                    vTipos.MostrarMenu()
+                                </script>
+                            </td>
+                            <td>
+                                <div id="divGrupos"></div>
+                                <script type="text/javascript">
+                                    //var DocumentMNG = new tDMOffLine;
+                                    var vGrupos = new tMenu('divGrupos', 'vGrupos');
+                                    vGrupos.loadImage("abm", '/FW/image/icons/abm.png')
+                                    Menus["vGrupos"] = vGrupos
+                                    Menus["vGrupos"].alineacion = 'centro';
+                                    Menus["vGrupos"].estilo = 'A';
+
+
+
+                                    Menus["vGrupos"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 90%;text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Tipos</Desc></MenuItem>")
+
+                                    Menus["vGrupos"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 10%; text-align:center; vertical-align:middle'>" +
+                                                                        "<Lib TipoLib='offLine'>DocMNG</Lib><icono>abm</icono><Desc>ABM</Desc><Acciones><Ejecutar Tipo='script'>" +
+                                                                        "<Codigo>abmTipos()</Codigo></Ejecutar></Acciones></MenuItem>")
+
+                                    vGrupos.MostrarMenu()
+                                </script>
+                            </td>
+                        </tr>
+                        <tr id="trTablasGrupoTipo">
+                            <td style="vertical-align: top; overflow:hidden ">
+                                <div id="tabla_grupos" style="width: 100%;   background-color: white;">
+                                </div>
+                            </td>
+                            <td style="vertical-align: top; overflow:hidden">
+                                <div id="tabla_tipos" style="width: 100%; background-color: white;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+    </div>
+    <div id="divTiposGrupos"></div>
+    <script type="text/javascript">
+        //var DocumentMNG = new tDMOffLine;
+        var vTiposGrupos = new tMenu('divTiposGrupos', 'vTiposGrupos');
+        vTiposGrupos.loadImage("guardar", '/FW/image/icons/guardar.png')
+        Menus["vTiposGrupos"] = vTiposGrupos
+        Menus["vTiposGrupos"].alineacion = 'centro';
+        Menus["vTiposGrupos"].estilo = 'A';
+
+        Menus["vTiposGrupos"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 100%;text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Relacion</Desc></MenuItem>")
+        //Menus["vTiposGrupos"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 10%; text-align:center; vertical-align:middle'>" +
+            //                                  "<Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar</Desc><Acciones><Ejecutar Tipo='script'>" +
+            //                                "<Codigo>guardar()</Codigo></Ejecutar></Acciones></MenuItem>")
+
+
+        vTiposGrupos.MostrarMenu()
+    </script>
+    <div id="divCom_tipos_grupo" style="width: 100%; background-color: white">
+        <table class="tb1" style="min-height:20px">
+            <tr>
+                <td class="Tit1" style="width: 10%; text-align: right">Grupo: </td>
+                <td style="width: 20%">
+                    <input type="text" id="grupoSeleccionado" style="width: 100%" readonly /></td>
+                <td class="Tit1" style="width: 10%; text-align: right">Tipo: </td>
+                <td style="width: 20%">
+                    <input type="text" style="width: 100%" id="tipoSeleccionado" readonly /></td>
+                <td class="Tit1" style="width: 10%; text-align: right">Prioridad: </td>
+                <td style="width: 20%">
+                    <input type="number" style="width: 100%" id="com_prioridad" /></td>
+                <td style="width: 10%">
+                    <div id="divGuardar" style="width: 100%" />
+                    <script>
+                        var vButtonItems = {};
+                        vButtonItems[0] = {};
+                        vButtonItems[0]["nombre"] = "Guardar";
+                        vButtonItems[0]["etiqueta"] = "Guardar";
+                        vButtonItems[0]["imagen"] = "guardar";
+                        vButtonItems[0]["onclick"] = "return guardar()";
+
+                        var vListButtons = new tListButton(vButtonItems, 'vListButtons')
+                        vListButtons.loadImage("guardar", '/FW/image/icons/guardar.png')
+
+                        vListButtons.MostrarListButton()
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

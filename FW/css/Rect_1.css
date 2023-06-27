@@ -1,0 +1,59 @@
+      
+      .divRect {
+        margin: 0px; 
+        padding: 1px;
+        width: 30px; 
+        height: 30px; 
+        border: solid green 1px;
+        position: absolute; 
+        float: left;
+        top: 0px;
+        left: 0px 
+        
+        
+      }
+      
+      .divRect_select { 
+        /*
+        border : solid red 2px !Important;
+        padding: 0px !Important;
+        */
+        border: dashed black 1px !important; 
+        cursor: move 
+        
+      
+      }
+      
+      .divCanvas {
+        padding: 1px; 
+        width:500px; 
+        height: 300px; 
+        background-color: #FFFBE9; 
+        border: solid #749bc4 1px !Important;
+        font-family: Arial;
+        font-size: small; 
+        position: absolute; 
+        float: left;
+        
+      }
+      
+      .divCtrl {
+        padding: 1px;
+        border: solid #9F9F9F 1px;
+        font-family: Times New Roman; 
+        font-size: small; 
+        position: absolute; 
+        float: left;
+        top: 50px; 
+        left: 50px;
+        width: 150px;
+        height: 150px; 
+        background-color: White
+      }      
+        
+     .nvCtrl_dest   
+       {
+       border: solid blue 2px !Important
+       }
+    
+    

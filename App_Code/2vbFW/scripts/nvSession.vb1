@@ -1,0 +1,261 @@
+﻿Imports Microsoft.VisualBasic
+Imports nvFW.nvUtiles
+Imports nvFW.nvDBUtiles
+
+Namespace nvFW
+
+    Public Class nvSession
+
+
+        Public Shared SessionType As emunSessionType = emunSessionType.nvInterOP_session
+        'Private Shared _IDSession As String
+        'Private Shared _otherIDSession As String
+
+
+
+        Public Shared Property IDSession(Optional session As HttpSessionState = Nothing) As String
+            Get
+                If SessionType = emunSessionType.nvInterOP_session Then
+                    Try
+                        If session IsNot Nothing Then
+                            Return session.Contents("_InterOp_IDSession")
+                        End If
+                        If HttpContext.Current IsNot Nothing Then
+                            Return HttpContext.Current.Session.Contents("_InterOp_IDSession")
+                        End If
+                    Catch ex As Exception
+                        Return ""
+                    End Try
+
+                End If
+                If SessionType = emunSessionType.HTTP_session Then
+
+                    If HttpContext.Current Is Nothing Then
+                        Return Nothing
+                    End If
+
+                    If session IsNot Nothing Then
+                        Return session.SessionID
+                    End If
+                    Try
+                        If HttpContext.Current.Session IsNot Nothing Then
+                            Dim _sessionID As String = HttpContext.Current.Session.SessionID
+
+                            Return _sessionID
+                        End If
+                    Catch ex As Exception
+
+                    End Try
+
+                End If
+                Return Nothing
+            End Get
+            Set(value As String)
+                If session IsNot Nothing Then
+                    session.Contents("_InterOp_IDSession") = value
+                End If
+                If HttpContext.Current IsNot Nothing Then
+                    HttpContext.Current.Session.Contents("_InterOp_IDSession") = value
+                End If
+            End Set
+        End Property
+        'Public Shared Property IDSession As String
+        '    Get
+        '        Return nvSession.Contents("nvSessionValue").IDSession
+        '    End Get
+        '    Set(ByVal value As String)
+        '        nvSession.Contents("nvSessionValue").IDSession = value
+        '    End Set
+        'End Property
+
+
+        'Public Shared Property otherIDSession As String
+        '    Get
+        '        Return nvSession.Contents("nvSessionValue").otherIDSession
+        '    End Get
+        '    Set(ByVal value As String)
+        '        nvSession.Contents("nvSessionValue").otherIDSession = value
+        '    End Set
+        'End Property
+
+
+        Public Shared Sub ContentsRemoveAll()
+            If SessionType = emunSessionType.HTTP_session Then
+                HttpContext.Current.Session.Contents.RemoveAll()
+            Else
+                pvGetInterOPSession(IDSession).removeAllContent()
+            End If
+        End Sub
+        Public Shared Property Contents(ByVal IDContent As String, Optional Session As HttpSessionState = Nothing) As Object
+            Get
+                If SessionType = emunSessionType.HTTP_session Then
+                    Dim res As Object = Nothing
+                    Try
+                        If Session IsNot Nothing Then
+                            res = Session.Contents(IDContent)
+                        End If
+                        If HttpContext.Current IsNot Nothing AndAlso HttpContext.Current.Session IsNot Nothing Then
+                            res = HttpContext.Current.Session.Contents(IDContent)
+                        End If
+                    Catch ex4 As Exception
+                    End Try
+                    Return res
+                Else
+                    Dim _IDSession As String = IDSession(Session)
+                    If pvGetInterOPSession(_IDSession) Is Nothing Then
+                        Return Nothing
+                    Else
+                        'Dim value As Object = pvGetInterOPSession(IDSession).Contents(IDContent)
+                        'If value Is Nothing Then
+                        '    nvLog.addEvent("interOp_getContent", IDSession & "," & IDContent & ",null")
+                        'Else
+                        '    nvLog.addEvent("interOp_getContent", IDSession & "," & IDContent & "," & value.ToString())
+                        'End If
+
+                        Return pvGetInterOPSession(_IDSession).Contents(IDContent)
+                    End If
+
+                End If
+            End Get
+            Set(ByVal oContent As Object)
+                If SessionType = emunSessionType.HTTP_session Then
+                    Try
+                        If Session IsNot Nothing Then
+                            Session.Contents(IDContent) = oContent
+                        End If
+                        If HttpContext.Current IsNot Nothing Then
+                            HttpContext.Current.Session.Contents(IDContent) = oContent
+                        End If
+                    Catch ex As Exception
+                    End Try
+                Else
+                    Dim _IDSession As String = IDSession(Session)
+                    If Not pvGetInterOPSession(_IDSession) Is Nothing Then
+                        'nvLog.addEvent("interOp_setContent", IDSession & "," & IDContent & "," & oContent.ToString())
+                        'Dim IOPSession As nvInterOP.nvIOPSession =
+                        pvGetInterOPSession(_IDSession).Contents(IDContent) = oContent
+                    End If
+                End If
+            End Set
+        End Property
+
+
+        Public Shared Function InterOPStartSession(ByVal portHTTP As Integer, ByVal portHTTPs As Integer, ByVal NET_IDSession As String) As Object
+            Dim oSession As Object
+            Dim svr As Object
+            Dim Instanciador As Object
+            oSession = Nothing
+            Try
+                Instanciador = CreateObject("nvInterOP.nvInstanciador", "localhost")
+                svr = Instanciador.GetInstance()
+                oSession = svr.getStartSession(portHTTP, portHTTPs, NET_IDSession)
+            Catch ex As Exception
+
+            End Try
+
+            IDSession = oSession.idsession
+
+            Return oSession
+
+        End Function
+
+        Private Shared Function pvGetInterOPSession(ByVal IDSession As String) As Object
+            Dim oSession As Object
+            Dim svr As Object
+            Dim Instanciador As Object
+            oSession = Nothing
+            Try
+                Instanciador = CreateObject("nvInterOP.nvInstanciador", "localhost")
+                svr = Instanciador.GetInstance()
+                oSession = svr.getSession(IDSession)
+                If IDSession <> oSession.idsession Then
+                    Stop
+                End If
+            Catch ex As Exception
+
+            End Try
+            Return oSession
+        End Function
+
+        Private Shared Function pvGetInterOPServer() As Object
+            Dim svr As Object = Nothing
+            Dim Instanciador As Object
+            Try
+                Instanciador = CreateObject("nvInterOP.nvInstanciador", "localhost")
+                svr = Instanciador.GetInstance()
+            Catch ex As Exception
+
+            End Try
+            Return svr
+        End Function
+
+        Private Shared Function pvRemoveInterOPServer() As Object
+            Dim svr As Object = Nothing
+            Dim Instanciador As Object
+            Try
+                Instanciador = CreateObject("nvInterOP.nvInstanciador", "localhost")
+                Instanciador.removeInstance()
+            Catch ex As Exception
+
+            End Try
+            Return svr
+        End Function
+
+        Public Shared Function getTempKey() As String
+            Dim ret As String = ""
+            Try
+                ret = pvGetInterOPServer.getTempKey(IDSession)
+            Catch ex As Exception
+
+            End Try
+            Return ret
+        End Function
+
+
+        Public Shared Sub Abandon()
+            Abandon(HttpContext.Current.Session)
+        End Sub
+        Public Shared Sub Abandon(ByVal Session As System.Web.SessionState.HttpSessionState)
+            If SessionType = emunSessionType.nvInterOP_session Then
+                Try
+                    Dim _IDSession As String = IDSession(Session)
+                    pvGetInterOPSession(_IDSession).removeAllContent()
+                    pvGetInterOPServer().removeSession(_IDSession)
+                Catch ex As Exception
+                End Try
+            End If
+            Session.RemoveAll()
+            Session.Abandon()
+        End Sub
+
+        Public Shared Sub removeInstance()
+            pvRemoveInterOPServer()
+        End Sub
+
+    End Class
+
+    'Public Class tnvSessionValue
+    '    Public IDSession As String
+    '    Public otherIDSession As String
+    'End Class
+
+    ''' <summary>
+    ''' Existen dos formas de administrar las sesiones de usuario.
+    ''' HTTP_session: es la forma clasica que administra directamente IIS desde el objeto Session.
+    ''' nvInterOP_session: Utiliza un objeto fuera de proceso para administrar las sessiones. Esto
+    ''' permite que mas de un proceso puedan compartir el estado de sessión. Esto es requerido por
+    ''' ejemlpo en ambientes mixtos ASP y ASPX
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Enum emunSessionType
+        HTTP_session = 0
+        nvInterOP_session = 1
+    End Enum
+
+    Public Enum enumServerType As Integer
+        ASP_NET = 0
+        ASP_CLASSIC = 1
+    End Enum
+
+
+End Namespace

@@ -1,0 +1,175 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<%@ Import namespace="nvFW" %>
+<%
+
+    Dim criterio As String = nvUtiles.obtenerValor("criterio", "")
+
+    ' parametros de configuracion para los sms
+    Dim usuario As String = nvUtiles.getParametroValor("user_sms", "")
+    Dim clave As String = nvUtiles.getParametroValor("pass_sms", "")
+    Dim minsms As Integer = nvUtiles.getParametroValor("min_sms", 0)
+    Dim mails_saldo As String = nvUtiles.getParametroValor("mail_saldo", "")
+
+    Dim modoTest As Boolean = True
+    Dim XML As System.Xml.XmlDocument
+
+    Dim err As New tError
+
+    Try
+
+        XML = New System.Xml.XmlDocument
+        XML.LoadXml(criterio)
+
+        Dim oNsValidate = XML.SelectNodes("criterio/send/item")
+
+        Dim mode = XML.SelectSingleNode("criterio/send/@mode").Value
+        If (mode = "test") Then
+            modoTest = True
+        Else
+            modoTest = False
+        End If
+
+        Dim cn As ADODB.Connection = DBConectar()
+
+        Dim pos As Integer = 0
+        Dim items As trsParam = New trsParam
+        Dim res_item As trsParam = New trsParam
+        Dim res_estado As trsParam = New trsParam
+
+        Dim tipo As String = nvXMLUtiles.getNodeText(XML, "criterio/send/item/@type", "")
+        Dim identificador As String = nvXMLUtiles.getNodeText(XML, "criterio/send/item/@identificador", "") 'item.SelectSingleNode("@identificador").Value
+        Dim body = nvXMLUtiles.getNodeText(XML, "criterio/send/item/body", "")
+        Dim subject = nvXMLUtiles.getNodeText(XML, "criterio/send/item/subject", "")
+        Dim cc = nvXMLUtiles.getNodeText(XML, "criterio/send/item/@cc", "")
+        Dim cco = nvXMLUtiles.getNodeText(XML, "criterio/send/item/@cco", "")
+
+        If (tipo.ToLower = "sms") Then
+
+            Dim lowerbound As Integer = 10000
+            Dim upperbound As Integer = 99999
+            Dim randomValue = CInt(Math.Floor((upperbound - lowerbound + 1) * Rnd())) + lowerbound
+
+            Dim longitud = Len(body)
+            If (longitud <= 160) Then
+
+                Dim smsRq As nvFW.servicios.SMS.nvSmsRequest
+                smsRq = New nvFW.servicios.SMS.nvSmsRequest(usuario, clave, modotest:=modoTest)
+                smsRq.savebd = True
+                smsRq.cn = cn
+                Dim sms = smsRq.enviar(identificador, body, "")
+                If (sms.enviado) Then
+                    Dim idinterno = sms.idinterno
+                    err.numError = 0
+                    err.mensaje = "Mensaje enviado correctamente"
+                    err.params("user_message") = "Mensaje enviado correctamente"
+
+                    Dim saldo = smsRq.getSaldo()
+                    If (saldo <> -1 And saldo < minsms) Then
+
+
+                        Dim from As String = nvUtiles.getParametroValor("mail_from", "")
+                        Dim from_title As String = nvUtiles.getParametroValor("mail_from_title", "")
+                        Dim pass As String = nvUtiles.getParametroValor("mail_pwd", "")
+
+                        Dim server As String = nvUtiles.getParametroValor("mail_server", "")
+                        Dim server_port As String = nvUtiles.getParametroValor("mail_server_port", "")
+                        Dim server_ssl As String = nvUtiles.getParametroValor("mail_ssl", "")
+
+                        subject = "Informacion de saldo -  Servicio SMS"
+
+                        body += "Estimado/a " & "<br>" & "<br>"
+                        body += "Se informa mediante este mail que restan " & CStr(saldo) & " mensajes en la cuenta de sms masivos.<br><br>"
+
+                        Dim errr As tError = nvFW.nvNotify.sendMail(_from:=from, _to:=mails_saldo _
+                                                          , _port:=server_port, _ssl:=server_ssl _
+                                                          , _from_title:=from_title _
+                                                          , _subject:=subject _
+                                                          , _body:=body)
+                    End If
+                Else
+
+                    Dim detalleError As String = "Desconocido"
+                    If (smsRq.numError <> 0) Then
+                        detalleError = smsRq.descError.Replace(vbCrLf, "")
+                    End If
+
+                    'strXML = strXML & "<item type='" & tipo & "'  identificador='" & identificador & "'  estado='error'><detalle>" & detalleError & "</detalle></item>"
+                    err.numError = -99
+                    err.mensaje = detalleError
+                    err.params("user_message") = "Error al enviar mensaje. Intente más tarde."
+                End If
+            Else
+                err.numError = -99
+                err.mensaje = "El mensaje supera 160 caracteres"
+                err.params("user_message") = "Error al enviar mensaje. Intente más tarde."
+            End If
+
+        End If
+
+        If (tipo.ToLower = "mail") Then
+
+            If modoTest = True Then
+                err.numError = 0
+                err.mensaje = "El mail se enviado correctamente"
+                err.params("user_message") = "Correo enviado correctamente"
+            Else
+
+                Dim from As String = nvUtiles.getParametroValor("send_mail_from", "")
+                Dim from_title As String = nvUtiles.getParametroValor("send_mail_from_title", "")
+
+                Dim pass As String = nvUtiles.getParametroValor("send_mail_pwd", "")
+                Dim server As String = nvUtiles.getParametroValor("send_mail_server", "")
+                Dim server_port As String = nvUtiles.getParametroValor("send_mail_server_port", "")
+                Dim server_ssl As String = nvUtiles.getParametroValor("send_mail_ssl", "")
+                Dim id_send As Integer
+                Dim estado As String = "P"
+                Dim enviado As String = 0
+
+
+                Dim strsql As String = "insert into [send_request] (type,identificador,source,body,subject,momento,enviado,estado) values ('mail','" & identificador & "','" & from & "','" + body + "','" + subject + "',getdate()," & enviado & ",'" & estado & "')" & vbCrLf
+                strsql += "select @@IDENTITY as id_send"
+
+                Dim rsRes As ADODB.Recordset = nvFW.nvDBUtiles.DBExecute(strsql)
+                If rsRes.EOF = False Then
+                    id_send = rsRes.Fields("id_send").Value
+                End If
+                nvDBUtiles.DBCloseRecordset(rsRes)
+
+                err = nvFW.nvNotify.sendMail(_from:=from, _to:=identificador, _cc:=cc, _bcc:=cco, _from_title:=from_title, _subject:=subject, _body:=body, _server:=server, _port:=server_port, _ssl:=server_ssl, _pass:=pass)
+
+                If (err.numError = 0) Then
+                    err.mensaje = "El mail se enviado correctamente"
+                    err.params("user_message") = "Correo enviado correctamente"
+                    estado = "E"
+                    enviado = 1
+                Else
+                    err.params("user_message") = "Error al enviar mensaje. Intente más tarde." & vbCrLf
+                    estado = "F"
+                End If
+
+                nvFW.nvDBUtiles.DBExecute("update send_request set estado='" & estado & "',enviado=" & enviado & ",momento = getdate(),observacion = '" & err.params("user_message") & "' where id_send=" & CStr(id_send))
+
+            End If
+
+        End If
+
+        If modoTest = True Then
+            err.mensaje += " (Modo testing)"
+        End If
+
+    Catch ex As Exception
+
+        err.parse_error_script(ex)
+        err.titulo = "Error al enviar mensaje"
+        err.mensaje = "Salida por excepcion"
+        err.debug_src = "send.aspx"
+
+        err.params("user_message") = "Error al enviar mensaje. Intente más tarde."
+
+    End Try
+
+
+    err.response()
+
+
+%>

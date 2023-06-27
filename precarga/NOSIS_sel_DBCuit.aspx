@@ -1,0 +1,84 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageMutualPrecarga" %>
+<% 
+    Me.contents.Add("DBCuit", nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verDBCuit'><campos>*</campos><orden></orden><filtro><nro_docu type='igual'>%nro_docu%</nro_docu></filtro></select></criterio>"))
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Precarga - Seleccionar Vendedor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    <link href="css/cabe_precarga.css" type="text/css" rel="stylesheet" />
+    <link href="css/precarga.css" type="text/css" rel="stylesheet" />
+    <link rel="shortcut icon" href="image/icons/nv_admin.ico"/>
+    <script type="text/javascript" language='javascript' src="/FW/script/swfobject.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW.js" ></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_windows.js" ></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_BasicControls.js" ></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/tCampo_def.js" ></script>
+
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript" language="javascript">
+
+    var alert = function(msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); }
+
+    var win = nvFW.getMyWindow()
+    
+    function window_onload() {
+        //vListButtons.MostrarListButton()
+        //window_onresize()
+        var nro_docu = win.options.userData.nro_docu
+        var filtro = ''
+        var strHTML = ''
+        $('divSelPersonas').innerText = ''
+            
+        strHTML += "<table class='tb1 highlightEven highlightTROver'><tr><td class='Tit1'></td><td class='Tit1'>Nro.Doc.</td><td class='Tit1'>Sexo</td><td class='Tit1'>CUIT/CUIL</td><td class='Tit1'>Apellido y Nombres</td></tr>"
+        var rs = new tRS();
+        rs.open({ filtroXML: nvFW.pageContents["DBCuit"], params: "<criterio><params nro_docu='" + nro_docu + "' /></criterio>" })        
+        while (!rs.eof()) {
+            var cuit = rs.getdata('cuit')
+            var nombre = rs.getdata('nombre')
+            var fe_naci_str = rs.getdata('fe_naci_str')
+            var edad = rs.getdata('edad')
+            var sexo = rs.getdata('sexo')
+            var nro_docu = rs.getdata('nro_docu')
+            strHTML += '<tr onclick="return Persona_onclick(' + nro_docu + ',' + cuit + ',\'' + nombre + '\',\'' + fe_naci_str + '\',' + edad + ',\'' + sexo + '\')"><td style="cursor:pointer;text-align:center" onclick="return Persona_onclick(' + nro_docu + ',' + cuit + ',\'' + nombre + '\',\'' + fe_naci_str + '\',' + edad + ',\'' + sexo + '\')" title="Seleccionar persona"><img class="img_button_sel" src="image/seleccionar_32.png"/><td>' + rs.getdata('nro_docu') + '</td><td>' + rs.getdata('sexo') + '</td>'
+            strHTML += "<td>" + rs.getdata('cuit') + "</td><td>" + rs.getdata('nombre') + "</td></tr>"
+            rs.movenext()
+        }
+        strHTML += "</table>"
+        $('divSelPersonas').insert({ bottom: strHTML })
+    }
+
+    function Persona_onclick(nro_docu,cuit,nombre,fe_naci_str,edad,sexo) {
+        var res = {}
+        res['nro_docu'] = nro_docu
+        res['cuit'] = cuit
+        res['nombre'] = nombre
+        res['fe_naci_str'] = fe_naci_str
+        res['edad'] = edad
+        res['sexo'] = sexo
+      win.options.userData = { res: res }
+      win.close()
+    }
+
+    function window_onresize() {
+          /*try {
+              var dif = Prototype.Browser.IE ? 5 : 2
+              body_height = $$('body')[0].getHeight()
+              cab_height = $('tbFiltro').getHeight()
+
+              $('iframe_vendedores').setStyle({ 'height': body_height - cab_height - dif })
+          }
+          catch (e) { }*/
+    }
+
+</script>
+</head>
+<body onload="return window_onload()" onresize="window_onresize()" style="height:100%; overflow:auto" >
+<div id="divSelPersonas"></div>
+     
+</body>
+</html>

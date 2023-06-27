@@ -1,0 +1,325 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<%@ Import Namespace="nvFW" %>
+<%
+
+    'var nro_entidad = obtenerValor("nro_entidad", '')
+    'var id_tipo = obtenerValor("id_tipo", '')
+    'var nro_com_id_tipo = obtenerValor("nro_com_id_tipo", '')
+    'var nro_registro = obtenerValor("nro_registro", '')
+    'var depende_nro_com_tipo = obtenerValor("nro_com_tipo", '')
+    'var collapsed_fck = obtenerValor("collapsed_fck", '')
+
+    Dim vista As String = "ver_cire_com_detalle"
+    Dim modo = nvUtiles.obtenerValor("modo", "")       ' VA:'Modo Vista Vacia'  A:'Modo Alta'
+    If (modo = "") Then
+        modo = "VA"
+    End If
+
+
+
+    If (modo.ToUpper = "VA") Then
+
+        Dim rs = nvDBUtiles.DBExecute("select top 1 * from sys.all_views where name = 'ver_cire_com_detalle_id_tipo'")
+        If Not (rs.eof) Then
+            vista = "ver_cire_com_detalle_id_tipo"
+        End If
+    End If
+
+    Me.contents("filtro_vista_movil") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='" + vista + "'><campos>nro_com_tipo as [id], desc_com_estado as [campo]</campos><orden>[campo]</orden><filtro></filtro></select></criterio>")
+    Me.contents("filtro_verRegustri_padres") = nvFW.nvXMLSQL.encXMLSQL("<criterio><procedure CommandText='dbo.rm_verRegistro_padres'><parametros><select><filtro></filtro></select></parametros></procedure></criterio>")
+    Me.contents("filtro_com_tipos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='com_tipos'><campos>nro_com_tipo, nombre_asp</campos><orden></orden><filtro></filtro></select></criterio>")
+
+    If (modo.ToUpper <> "VA") Then
+        Dim Err As New nvFW.tError()
+        Try
+            Dim strSQL = ""
+            Dim strXML = HttpUtility.UrlDecode(nvUtiles.obtenerValor("strXML", ""))
+
+            Dim Cmd As New ADODB.Command
+            Cmd.ActiveConnection = nvDBUtiles.DBConectar()
+            Cmd.CommandType = 4
+            Cmd.CommandTimeout = 1500
+            Cmd.CommandText = "nv_comentario_alta"
+
+            Dim pstrXML = Cmd.CreateParameter("strXML", 201, 1, strXML.Length, strXML)
+            Cmd.Parameters.Append(pstrXML)
+            Dim rs = Cmd.Execute()
+            Dim nro_entidad = rs.Fields("nro_entidad").Value
+            Dim id_tipo = rs.Fields("id_tipo").Value
+            Err.params.Add("nro_entidad", nro_entidad)
+            Err.params.Add("id_tipo", id_tipo)
+            rs.Close()
+            Err.numError = 0
+            Err.mensaje = ""
+
+        Catch ex As Exception
+            Err.parse_error_script(ex)
+            Err.titulo = "Error al guardar la transferencia"
+            Err.mensaje = "No se pudo relizar el guardado." & vbCrLf & Err.mensaje
+            Err.debug_src = "ABMRegistro.aspx"
+        End Try
+
+        Err.response()
+
+    End If
+
+
+%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Alta Comentarios</title>
+        <link href="/fw/css/base.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="/fw/script/nvFW.js"></script>
+        <script type="text/javascript" src="/fw/script/nvFW_BasicControls.js"></script>
+        <script type="text/javascript" src="/fw/script/nvFW_windows.js"></script>
+        <script type="text/javascript" src="/fw/script/tCampo_def.js"></script>
+        <% = Me.getHeadInit()%>
+
+        <script type="text/javascript">
+
+            var alert = function(msg) {
+                Dialog.alert(msg, {className: "alphacube", width: 300, height: 100, okLabel: "cerrar"});
+            }
+
+            var win
+            var fecha_hoy
+            
+            var nro_entidad = null
+            var id_tipo = null
+            var nro_com_id_tipo = null
+            var nro_registro_origen = null
+            var nro_com_tipo_origen = null
+            var nro_com_estado_origen = null
+            var nro_com_estado = null
+            var collapsed_fck = null
+            var nro_com_grupo = null
+
+            var vButtonItems = new Array();
+
+            vButtonItems[0] = new Array();
+            vButtonItems[0]["nombre"] = "Guardar";
+            vButtonItems[0]["etiqueta"] = "Guardar Comentario";
+            vButtonItems[0]["imagen"] = "guardar";
+            vButtonItems[0]["onclick"] = "return Guardar_comentario()";
+
+            var vListButton = new tListButton(vButtonItems, 'vListButton');
+        
+            vListButton.loadImage("guardar", '/fw/image/comentario/guardar.png')
+
+            function window_onload() {
+                iniciarGlobales()
+             
+                vListButton.MostrarListButton()
+                fecha_hoy = FechaToSTR(new Date(), 1)
+                $('fecha_comentario').insert({bottom: fecha_hoy})
+                
+                cargarTiposDeComentarios()
+                cargarHistorialComentarios()
+            }
+            
+            function iniciarGlobales() {
+                // obtenemos los parámetros del dialog
+               
+                win = nvFW.getMyWindow();
+                var Parametros = win.options.userData
+                
+                nro_entidad = Parametros["nro_entidad"];
+                id_tipo = Parametros["id_tipo"];
+                nro_com_id_tipo = Parametros["nro_com_id_tipo"];
+                nro_registro_origen = Parametros["nro_registro_origen"];
+                nro_com_tipo_origen = Parametros["nro_com_tipo_origen"];
+                nro_com_estado_origen = Parametros["nro_com_estado_origen"];
+                nro_com_estado = Parametros["nro_com_estado"];
+                collapsed_fck = Parametros["collapsed_fck"]
+                nro_com_grupo = Parametros["nro_com_grupo"]
+            }
+
+            function cargarTiposDeComentarios() {
+               // debugger
+                var filtro = "<nro_com_id_tipo type='igual'>" + nro_com_id_tipo + "</nro_com_id_tipo>"
+                //var filtro = ""
+                
+                if(!nro_com_tipo_origen)
+                    filtro += "<nro_com_tipo_origen type='isnull' />"
+                else
+                    filtro += "<nro_com_tipo_origen type='igual'>" + nro_com_tipo_origen + "</nro_com_tipo_origen>"
+                
+                if(!nro_com_estado_origen)
+                    filtro += "<nro_com_estado_origen type='isnull' />"
+                else
+                    filtro += "<nro_com_estado_origen type='igual'>" + nro_com_estado_origen + "</nro_com_estado_origen>"
+                
+                filtro = nvFW.pageContents.filtro_vista_movil;
+    
+                campos_defs.add('nro_com_tipo', {
+                    nro_campo_tipo: 1,
+                    target: 'td_nro_com_tipo',
+                    enDB: false,
+                    filtroXML: filtro,
+                    filtroWhere: filtro,
+                    filtroWhere: "<nro_com_tipo type='igual'>%campo_value%</nro_com_tipo>",
+                    onchange: cargarPaginaComentario
+                });
+
+                var rs = new tRS()
+                rs.open(campos_defs.items['nro_com_tipo']['filtroXML'])
+                if (!rs.eof())
+                    campos_defs.set_value('nro_com_tipo', rs.getdata("id"))
+            }
+
+            // carga el historial de comentarios del cual deriva el nuevo comentario
+            function cargarHistorialComentarios() {
+                if (!nro_registro_origen)
+                    return
+                
+                nvFW.exportarReporte({
+                    filtroXML: nvFW.pageContents.filtro_verRegustri_padres,
+                    filtroWhere: "<nro_registro type=\"in\">" + nro_registro_origen + "</nro_registro>",
+                    path_xsl: "//report//comentario//verCom_registro//verRegistro_historial_comentarios.xsl",
+                    formTarget: 'iframe_historial_com',   
+                    nvFW_mantener_origen: false,
+                    bloq_contenedor: $('iframe_historial_com'),
+                    cls_contenedor: 'iframe_historial_com'
+                })
+            }
+            
+            //carga en "iframe_comentario" la página de alta de comentario que corresponda
+            function cargarPaginaComentario() {
+                // verificamos que se haya seleccionado un item del 'select'
+                if (!campos_defs.value('nro_com_tipo'))
+                    return;
+
+                var rs = new tRS()
+                rs.open(nvFW.pageContents.filtro_com_tipos, "", campos_defs.filtroWhere('nro_com_tipo'))
+                if (!rs.eof()) {
+                
+                    var asp = rs.getdata("nombre_asp");
+                    if (asp == undefined || asp == 'cargar_comentario_activo.asp') {
+                        $('iframe_comentario').hide();
+                        $('default_comment').show();
+                    } else {
+                        var pagina_asp = asp.toString();
+                        //cargamos la página asociada al comentario en el iframe "iframe_comentario"
+                        $('iframe_comentario').src = pagina_asp;
+                        $('iframe_comentario').show();
+                        $('default_comment').hide();
+                    }
+                }
+            }
+
+            function Guardar_comentario() {
+                var FCK = FCKeditorAPI.GetInstance('comentario')
+                var comentario = FCK.GetData("")
+                if ((comentario == "") || (comentario == "(Ingrese aquí su comentario)")) {
+                    alert("Debe especificar un comentario válido")
+                    return
+                }
+
+                if ($('nro_com_tipo').value == "") {
+                    alert("Debe seleccionar un tipo de comentario")
+                    return
+                }
+
+                var xmldato = ""
+                xmldato = "<comentario "
+                xmldato += "nro_entidad='" + nro_entidad + "' "
+                xmldato += "id_tipo='" + id_tipo + "' "
+                xmldato += "nro_com_id_tipo='" + nro_com_id_tipo + "' "
+                xmldato += "nro_com_tipo='" + campos_defs.get_value('nro_com_tipo') + "' "
+                xmldato += "fecha='" + fecha_hoy + "' "
+                xmldato += "nro_registro_depende='" + nro_registro_origen + "' "
+                xmldato += ">"
+                xmldato += "<descripcion><![CDATA[" + comentario + "]]></descripcion>"
+                xmldato += "</comentario>"
+                
+                nvFW.error_ajax_request('/FW/comentario/ABMRegistro.aspx', {
+                    parameters: {
+                        modo: 'A',
+                        strXML: escape(xmldato)
+                    },
+                    onSuccess: function(err, transport) {
+                        $('nro_entidad').value = err.params['nro_entidad']
+                        $('id_tipo').value = err.params['id_tipo']
+                        window.top.Windows.getFocusedWindow().returnValue = err.params['nro_entidad']
+                        window.setTimeout('Cerrar_Ventanas()', 2000)
+                    },
+                    onFailure: function(err, transport) {
+                        //debugger
+                    }
+                })
+            }
+
+            function Cerrar_Ventanas() {
+                window.top.Windows.getFocusedWindow().close()
+            }
+
+        </script>
+    </head>
+    <body onload="return window_onload()" style="width:100%;height:100%;overflow:hidden">
+        <div id="divMenuABMRegistro"></div>
+        <form action="" name="frmRegComentario" style="width:100%;height:100%;overflow:hidden">
+            <input type="hidden" name="nro_entidad" id="nro_entidad"/>
+            <input type="hidden" name="id_tipo" id="id_tipo"/>
+            <table class="tb1">
+                <tr class="tbLabel"><td><b>Historial</b></td></tr>
+                <tr>
+                    <td>
+                        <div id="divHistorial_comentarios_depende_de" style="WIDTH: 100%; HEIGHT: 110px; DISPLAY: inline">
+                            <iframe name="iframe_historial_com" style="WIDTH: 100%; HEIGHT: 150px" src="enBlanco.htm" frameborder="0"></iframe>
+                        </div>        
+                    </td>
+                </tr>
+            </table>
+            <table class="tb1">
+                <tr class="tbLabel">
+                    <td colspan='4'><b>Nuevo registro de comentario</b></td>
+                </tr>
+                <tr class="tbLabel">
+                    <td style="width:30%">Fecha</td>
+                    <td style="width:30%">Operador</td>
+                    <td>Tipo de comentario</td>
+                </tr>        
+                <tr>
+                    <td style="text-align:center"><span id="fecha_comentario"></span></td>
+                    <td><% = nvApp.operador.nombre_operador.toUpper%></td>
+                    <td id="td_nro_com_tipo"></td>
+                </tr>
+            </table>
+            <table id="default_comment" class="tb1" cellspacing="0" cellpadding="0" style="WIDTH: 100%">
+                <tr class="tbLabel">
+                    <td colspan="3"><b>Comentario:</b></td>
+                </tr>
+                <tr>
+                    <td class="Tit1" style="text-align:center" colspan="3">
+                        <div id="editor" style="width: 100%;top:0; margin: 0px; padding: 0px; height: 200px;">
+                            <script type="text/javascript">
+                                var sBasePath = '/FW/script/fckeditor/';
+                                var oFCKeditor = new FCKeditor('comentario');
+                                if (nvFW.getMyWindow().options.userData["collapsed_fck"]) {
+                                    oFCKeditor.Config.ToolbarStartExpanded = true;
+                                }
+                                oFCKeditor.ToolbarSet = 'Comentarios' ;
+                                oFCKeditor.BasePath = sBasePath;
+                                oFCKeditor.Height = '100%';
+                                oFCKeditor.Value = '';
+                                oFCKeditor.Create();
+                            </script>         
+                        </div> 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="width:30%">&nbsp;</td>
+                    <td><div id="divGuardar"></div></td>
+                    <td style="width:30%">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+            </table>
+            <iframe name="iframe_comentario" id="iframe_comentario" frameborder="0" src="enBlanco.htm" style="width: 100%;height: 270px;"></iframe>
+        </form>
+    </body>
+</html>

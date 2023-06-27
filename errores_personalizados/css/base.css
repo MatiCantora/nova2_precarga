@@ -1,0 +1,238 @@
+BODY
+{
+    BACKGROUND-POSITION: center center;
+    FONT-SIZE: 12px;
+    BORDER: 0px;
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    PADDING-TOP: 0px;
+    BACKGROUND-COLOR: #FFFFFF;
+    SCROLLBAR-ARROW-COLOR: #4169E1;
+    SCROLLBAR-BASE-COLOR: #C3D3DA   
+
+}
+DIV
+{
+    MARGIN: 0px;
+    PADDING: 0px;
+    BORDER: 0px	
+}
+
+.tb1
+{
+    WIDTH: 100%;
+    BACKGROUND-COLOR: lightyellow;
+    VERTICAL-ALIGN: super
+}
+
+
+.tb1 TR TD
+{
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR:  BlanchedAlmond;
+    FONT-FAMILY: Arial;
+    VERTICAL-ALIGN: top
+}
+
+.tb1_over
+{
+    width: 100%;
+    background-color: lightyellow;
+    vertical-align: super;
+    color: #3300CC;
+}
+
+
+.tb1_over TR TD
+{
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR:  BlanchedAlmond;
+    FONT-FAMILY: Arial;
+    VERTICAL-ALIGN: top
+    
+}
+
+.tb1_sel
+{
+    width: 100%;
+    background-color: lightyellow;
+    vertical-align: super;
+    color: #ff0033;
+}
+
+
+.tb1_sel TD TR
+{
+    width: 100%;
+    background-color: BlanchedAlmond;
+    vertical-align: super;
+}
+
+.tbLabel TD
+{
+    BORDER: solid gray 1px !Important;
+    MARGIN: 0px !Important;
+    PADDING: 0px !Important;
+    FONT-FAMILY: 'Times New Roman' !Important;
+    FONT-SIZE: 12px !Important;
+    FONT-WEIGHT: bolder;
+    BACKGROUND-COLOR: silver !Important;
+    TEXT-ALIGN: center
+}
+
+.tbLabel0 TD
+{
+    MARGIN: 0px !Important;
+    PADDING: 0px !Important;
+    FONT-FAMILY: 'Times New Roman' !Important;
+    FONT-WEIGHT: bolder;
+    COLOR: white;
+    BACKGROUND-COLOR: dimgray !Important;
+    TEXT-ALIGN: center
+}
+
+
+.tbLabel1 TD
+{
+    FONT-WEIGHT: bolder;
+    border-left: solid lightyellow 1px !Important;
+    border-right: solid lightyellow 1px !Important;
+    COLOR: white;
+    BACKGROUND-COLOR: dimgray;
+    TEXT-ALIGN: center
+}
+
+.tbFondo
+{
+    WIDTH: 100%;
+    BORDER-LEFT: solid lightyellow 2px;
+    BORDER-BOTTOM: solid lightyellow 2px !Important;
+    BORDER-RIGHT: solid lightyellow 2px !Important;
+
+}
+
+.tbFondo1
+{
+    WIDTH: 100%;
+    BORDER-LEFT: 2px solid Gray;
+    BORDER-BOTTOM: 2px solid Gray;
+    BORDER-RIGHT: 2px solid Gray;
+    border-top: 2px solid Gray;
+}
+
+.tb_O
+{
+    BORDER: 0px;
+    PADDING: 0px;
+    MARGIN: 0px;
+    MARGIN: 0px;
+    WIDTH: 100%;
+    FONT-SIZE: 12px;
+    BACKGROUND-COLOR: #C3D3DA
+    
+}
+
+.tb_O tr
+{
+   BORDER: 0px;
+   PADDING: 0px;
+   MARGIN: 0px
+}
+.tb_O tr td 
+{
+   BORDER: 0px;
+   PADDING: 0px;
+   MARGIN: 0px
+}
+
+.tbLabel_O 
+{
+HEIGHT: 17px;
+BACKGROUND-IMAGE: url(../image/mnuSvr/bg_mnuNormal.jpg)
+
+}
+
+.tbLabel0_O 
+{
+HEIGHT: 24	px;
+BACKGROUND-IMAGE: url(../image/mnuSvr/bg_mnuNormal.jpg)
+
+}
+.tbLabel_O TD
+{   FONT-SIZE: 12px !Important;
+    FONT-WEIGHT: bolder;
+    WHITE-SPACE: nowrap;
+    TEXT-ALIGN: center
+}
+.tbLabel0_O TD
+{
+    FONT-WEIGHT: bolder;
+    TEXT-ALIGN: center
+}
+
+
+
+.Tit1
+{
+    BACKGROUND-COLOR: silver !Important;
+    FONT-FAMILY: 'Times New Roman' !Important;
+    FONT-WEIGHT: bolder;
+}
+
+.Valor_num
+{
+    WIDTH: 80px; 
+    TEXT-ALIGN: right; 
+    FONT-WEIGHT: bolder;
+    BORDER: solid silver 1px
+}
+
+
+
+A:link,A:active 
+{
+
+    FONT-FAMILY: 'Times New Roman';
+    FONT-SIZE: 12px;
+    FONT-WEIGHT: bolder;   
+    COLOR: black;
+    TEXT-DECORATION: none
+}
+
+A:visited
+{
+    FONT-FAMILY: 'Times New Roman';
+    FONT-SIZE: 12px;
+    FONT-WEIGHT: bolder;   
+    COLOR: gray;
+    TEXT-DECORATION: none
+}
+
+A:hover
+{
+   TEXT-DECORATION: underline
+}
+
+INPUT
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: Arial
+}
+SELECT
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: Arial
+}
+FORM
+{
+    LEFT: 0px;
+    FLOAT: left;
+    POSITION: relative;
+    TOP: 0px;
+    BORDER: 0px;
+    MARGIN: 0px;
+    PADDING: 0px
+}
+

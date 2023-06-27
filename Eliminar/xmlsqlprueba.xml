@@ -1,0 +1,6 @@
+<criterio>
+	<select vista='estado'>
+		<campos>estado, descripcion</campos>
+		<filtro></filtro>
+	</select>
+</criterio>

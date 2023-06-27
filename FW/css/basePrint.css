@@ -1,0 +1,35 @@
+@media print
+{
+BODY
+{
+    FONT-SIZE: x-small
+}
+
+IMPUT
+{
+    FONT-SIZE: x-small
+}
+.tb1
+{
+    FONT-SIZE: xx-small    
+
+}
+.tbLabel
+{
+FONT-SIZE: xx-small
+}
+.tbLabel TD
+{
+    FONT-SIZE: xx-small;
+    BORDER-BOTTOM: 1px solid
+ 
+
+}
+.tbLabel0 TD
+{
+    FONT-SIZE: x-small
+}
+
+
+
+}

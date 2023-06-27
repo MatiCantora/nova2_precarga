@@ -1,0 +1,36 @@
+HTML {
+	height: 100%; 
+	vertical-align: top;
+}
+BODY {
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	vertical-align: top;
+}
+#user_name {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	color: #183884;
+	font-weight: bold;
+	vertical-align: bottom;
+}
+#user_sucursal {
+	font-size: 0.7em;
+}
+#data_user {
+	color: #183884;
+	font: 12px Arial, Helvetica, sans-serif;
+}
+.img_button {
+	height: 24px;
+	width: 24px;
+	cursor: pointer;
+}
+#tb_body_td_move {
+	background-color: #a2a2a2;
+}
+#tb_body {
+	border-top: solid #a2a2a2 2px;
+}

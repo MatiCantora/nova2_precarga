@@ -1,0 +1,67 @@
+ .hqTB
+    {
+    width: 100%;
+    margin-top: 2px !Important;
+    }
+    
+  .hqTR_Arbol
+    {
+    cursor: hand;
+    cursor: pointer;
+    }
+      
+  .hqCELL_Arbol
+    {
+   
+    }
+    
+  .hqCELL_Hijos
+    {
+    }  
+    
+  .hqSPAN_Hijos
+    {
+    font-size: 10px !important;
+    font-family:'tahoma';
+    color: blue
+    }
+
+.hqInputCheck 
+   {
+    margin: 0px;
+    margin-left: 5px;
+    padding: 0px;
+   }
+
+.hqSpanImg 
+     {
+     float: left; 
+     display:block; 
+     cursor: default; 
+     width: 16px; 
+     height: 15px; 
+     background-repeat: no-repeat;
+     margin-left: 5px
+     }
+
+.hqSpanTxt 
+   {
+    padding-left: 5px;
+   }
+  .hqCELL_TXT_MO
+    {
+    text-decoration: underline !Important
+    }
+  .hqCELL_TXT_MU
+    {
+    width: 100%;
+    font: 13px Arial, Helvetica, sans-serif !important;
+    white-space:nowrap
+    }  
+
+  .hqRec_sel
+    {
+    color: blue
+    }
+    
+  

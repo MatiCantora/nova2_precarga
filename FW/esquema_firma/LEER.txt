@@ -1,0 +1,12 @@
+
+Para poner en funcionamiento:
+
+
+1 - mergear el archivos entidad_consultar.aspx de esta carpeta, con el disponible en fw/funciones/entidad_consultar.aspx.   
+
+
+2 - mergear el archivo entidad_abm.aspx de esta carpeta, con el disponible en /fw/entidades/entidad_abm.aspx
+
+
+3 - se debe iniciar en la pagina seleccion_entidad_circuito.aspx para crear un circuito de firma
+

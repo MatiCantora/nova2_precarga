@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<resultado>
+    <MenuItems>
+        <MenuItem id="10">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>editar_lapiz</icono>
+            <Desc></Desc>
+            <Acciones>
+                 <Ejecutar Tipo="script">
+                     <codigo>editar_referencia(nro_ref)</codigo>
+                 </Ejecutar>
+            </Acciones>
+        </MenuItem>
+        <MenuItem id="20">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>favorito_si</icono>
+            <Desc></Desc>
+            <Acciones>
+                 <Ejecutar Tipo="script">
+                     <codigo>suscripcion_referencia(-1 * nro_ref)</codigo>
+                 </Ejecutar>
+            </Acciones>
+        </MenuItem>
+        <MenuItem id="21">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>favorito_no</icono>
+            <Desc></Desc>
+            <Acciones>
+                 <Ejecutar Tipo="script">
+                     <codigo>suscripcion_referencia(nro_ref)</codigo>
+                 </Ejecutar>
+            </Acciones>
+        </MenuItem>
+		    <MenuItem id="30">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>pixel_transparente</icono>
+            <Desc>Exportar</Desc>
+            <MenuItems>
+                <MenuItem id="32">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>pdf</icono>
+                    <Desc>Vista actual</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>ref_impresion_pdf(nro_ref, "resumen")</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="34">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>pdf</icono>
+                    <Desc>Completa</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>ref_impresion_pdf(nro_ref, "detalle")</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem id="35">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>pixel_transparente</icono>
+            <Desc>Imprimir</Desc>
+            <MenuItems>
+                <MenuItem id="31">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>application_xml</icono>
+                    <Desc>Vista actual</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>ref_impresion(nro_ref)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="33">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>application_xml</icono>
+                    <Desc>Completa</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>ref_impresion_detalle(nro_ref)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem id="40">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>pixel_transparente</icono>
+            <Desc>Opciones</Desc>
+            <MenuItems>
+                <MenuItem id="41">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>Permisos</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>permiso_referencia(nro_ref)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="42">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>version</icono>
+                    <Desc>Versiones</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>versiones_onclick(nro_ref)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="43">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>content</icono>
+                    <Desc>Contenido</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>contenido_onclick()</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+				        <MenuItem id="44">
+					        <Lib TipoLib="offLine">DocMNG</Lib>
+					        <icono>eliminar</icono>
+					        <Desc>Eliminar</Desc>
+					        <Acciones>
+						        <Ejecutar Tipo="script">
+							        <codigo>referencia_eliminar(nro_ref)</codigo>
+						        </Ejecutar>
+					        </Acciones>
+				        </MenuItem>
+            </MenuItems>
+        </MenuItem>
+    </MenuItems>
+</resultado>

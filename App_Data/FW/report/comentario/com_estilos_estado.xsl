@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882"
+				xmlns:rs='urn:schemas-microsoft-com:rowset'
+				xmlns:z='#RowsetSchema'
+				xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+				xmlns:foo="http://www.broadbase.com/foo" extension-element-prefixes="msxsl" exclude-result-prefixes="foo"
+				xmlns:user="urn:vb-scripts">
+
+	<xsl:include href="xsl_includes\js_formato.xsl"  />
+	<xsl:output method="html" version="4.01" encoding="Latin-1" omit-xml-declaration="yes" />
+
+	<xsl:template match="/">
+		<html>
+			<head>
+
+				<title> ABM de Tipos </title>
+				<link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+				<script type="text/javascript" src="/FW/script/nvFW.js"></script>
+				<script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+				<script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+				<script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+				<script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+
+				<script language="javascript" type="text/javascript">
+					var mantener_origen = '<xsl:value-of select="xml/mantener_origen"/>'
+					campos_head.id_exp_origen = '<xsl:value-of select="xml/id_exp_origen"/>'
+					campos_head.cacheID = '<xsl:value-of select="xml/params/@cacheID"/>'
+					campos_head.cacheControl = '<xsl:value-of select="xml/params/@cacheControl"/>'
+					campos_head.recordcount = <xsl:value-of select="xml/params/@recordcount"/>
+					campos_head.PageCount = <xsl:value-of select="xml/params/@PageCount"/>
+					campos_head.PageSize = <xsl:value-of select="xml/params/@PageSize"/>
+					campos_head.AbsolutePage = <xsl:value-of select="xml/params/@AbsolutePage"/>
+					campos_head.orden = '<xsl:value-of select="xml/params/@orden"/>'
+
+					if (mantener_origen == '0')
+					campos_head.nvFW = window.parent.nvFW
+
+				</script>
+
+			</head>
+			<script>
+					<![CDATA[
+			function window_onload() {
+              window_onresize();
+              
+			}
+            
+            function window_onresize() {
+				var body = $$("BODY")[0]
+				var altoDiv = body.clientHeight - 50
+				$("divDetalles").setStyle({height: altoDiv + "px" })
+
+				campos_head.resize("tbCabecera", "tbDetalles")
+            }
+           
+						]]>
+			</script>
+
+			<body onload="window_onload()" onresize="window_onresize()" style="width: 100%; height: 100%; overflow: hidden">
+				<!--CABECERA-->
+				<table class="tb1" id="tbCabecera">
+					<tr class="tbLabel">
+						<td style='width: 20%; text-align: center; nowrap: true'>
+							<script>campos_head.agregar('Estado', false,'nro_com_estado')</script>
+						</td>
+						
+						<td style='width: 65%; text-align: center; nowrap: true'>
+							<script>campos_head.agregar('Estilo', false,'style')</script>
+						</td>
+						
+						<td style='width: 7%; text-align: center; nowrap: true' >
+							Editar
+						</td>
+						
+						<td style='width: 7%; text-align: center; nowrap: true'>
+							Eliminar
+						</td>
+					
+					</tr>
+				</table>
+
+				<!--DATOS-->
+				<div id='divDetalles' style='width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden'>
+					<table class="tb1 highlightOdd highlightTROver layout_fixed" id="tbDetalles">
+						<xsl:apply-templates select="xml/rs:data/z:row" mode="row1" />
+					</table>
+				</div>
+
+			</body>
+		</html>
+	</xsl:template>
+
+	<xsl:template match="z:row" mode="row1">
+		<tr class="dataRow">
+			<td style="width:20%; text-align:left">
+				<xsl:value-of select="@com_estado" />
+			</td>
+			<td style="width:65%; text-align: left;">
+				<xsl:value-of select="@style" />
+			</td>
+			<td style="width:7%; text-align: center">
+				<img style="cursor: pointer" src="/FW/image/icons/editar.png">
+					<xsl:attribute name="onclick">parent.estilo_estado_ABM(<xsl:value-of select="@nro_com_tipo" />, <xsl:value-of select="@nro_com_estado" />)</xsl:attribute>
+				</img>
+			</td>
+			<td style="width:7%; text-align: center">
+				<img style="cursor: pointer" src="/FW/image/icons/eliminar.png">
+					<xsl:attribute name="onclick">parent.eliminar_estilo(<xsl:value-of select="@nro_com_tipo" />, <xsl:value-of select="@nro_com_estado" />)</xsl:attribute>
+				</img>
+			</td>
+		</tr>
+	</xsl:template>
+</xsl:stylesheet>

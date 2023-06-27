@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="initial-scale=1">
+    <title>Precarga - Seleccionar Vendedor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    <link href="css/cabe_precarga.css" type="text/css" rel="stylesheet" />
+    <link href="css/precarga.css" type="text/css" rel="stylesheet" />
+    <link rel="shortcut icon" href="image/icons/nv_admin.ico" />
+    <script type="text/javascript" language='javascript' src="/FW/script/swfobject.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" language='javascript' src="/FW/script/tCampo_def.js"></script>
+
+    <script type='text/javascript' language='javascript' id='nvPageBase_HeadInit' name='nvPageBase_HeadInit'>
+var obj = window;
+if (!!nvFW)
+  obj = nvFW;
+  obj.pageContents = {
+"filtroXML_vendedores":'<enc><![CDATA[fD/ypVyWgqJRmq092713YmvrVKyyymkeaLWAsSHpw3A5immnF71j3UwirDiPNnK23hVpzUHoL9RIgDmiU465dybAFGME+XXxAQQEzMGdIMlPlqOj4ccvUQ8VhKR0F/RtPz+e2LdpEEMBFdSfF1ii+VQjk0wsznBrVacAsEKiR5VZHJmKB+8vWMFSbBWnuVMfO0cyZjRi/JSDE2tJZE9m08WikqUPAz2jdzxQsao8LkMV0pR2dI+OjroitDVk6ur68VI9+IApLNjOrCMavyyx97HAAAmTcKj9RdZTc3Mqs3JKr6Moois7Cybd96ohnCOke5mFKLz8gnTsgyu+nAmJtQ==]]></enc>'
+,"estructura":'<enc><![CDATA[fD/ypVyWgqJRmq092713YoDMN74zc2g60Re6zhNA6SdAXhuduGB3SkMtC5NeVOmfoQPoQAU9CI0U5j9Z7ZARrjDu+VDHal979RjNstyDkXCpvvSUZ45nlYSLQYJbmgBrA53nwhlpDEADEe+D74UXfMO41ggjIfyTHFaebNhKnu57xFjXEjPmr8t1new2BynNrvdN5ggC1pPwnVzEtPJDYk0swsO+PxkfHPfSMSfETJ0=]]></enc>'
+,"permisos_precarga":65535
+};
+
+obj.permiso_grupos = {};
+
+    </script>
+
+    <script type='text/javascript' language='javascript' id='nvPageAdmin_HeadInit' name='nvPageAdmin_HeadInit'>
+var nro_operador = '114'
+var login = 'jmolivera'
+var sucursal_defecto = 'Sta Fe - Oficina'
+var app_cod_sistema = 'nv_mutualprecarga'
+var cfg_server_name = 'dev2.redmutual.com.ar'
+var UID = 'jmolivera'
+    </script>
+
+    <style type="text/css">
+        .filtro {
+            -moz-border-radius: 0.33em;
+            box-shadow: 0 0 1px #f4f4f4;
+            text-align: left;
+            height: 21px;
+            width: 50%;
+            margin-bottom: 0.66em;
+        }
+
+            .filtro div {
+                border-radius: 0.33em;
+                height: 1.5em;
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                flex-direction: column;
+                padding: 0px 0.35em 0px 0.35em;
+            }
+
+        @media screen and (max-width: 580px) {
+            .filtro {
+                width: 100%
+            }
+        }
+    </style>
+    <script type="text/javascript" language="javascript">
+
+    var alert = function(msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); }
+
+    var vButtonItems = {}
+    vButtonItems[0] = {}
+    vButtonItems[0]["nombre"] = "Aceptar";
+    vButtonItems[0]["etiqueta"] = "Buscar";
+    vButtonItems[0]["imagen"] = "";
+    vButtonItems[0]["onclick"] = "return Buscar()";
+
+    var vListButtons = new tListButton(vButtonItems, 'vListButtons');
+
+    var win = nvFW.getMyWindow()
+    var res = {}
+    var BodyWidth = 0
+    var dependientes = ''
+    var permisos_precarga = nvFW.pageContents["permisos_precarga"]
+
+    function window_onload() {
+        vListButtons.MostrarListButton()
+        //CargarEstructuras()
+        document.getElementById('strVendedor').focus()
+        window_onresize()
+    }
+
+    function Buscar() {
+        var filtroWhere = ''
+
+        if ($('strVendedor').value != '')
+            filtroWhere += "<vendedor type='like'>%" + $('strVendedor').value + "%</vendedor>"
+
+        if ($('nro_docu_vend').value != '')
+            filtroWhere += "<nro_docu type='igual'>" + $('nro_docu_vend').value + "</nro_docu>"
+
+        if ($('nro_estructura').value != '')
+            filtroWhere += "<nro_estructura type='igual'>" + $('nro_estructura').value + "</nro_estructura>"
+
+        if (((permisos_precarga & 256) > 0) && (dependientes != ''))
+            filtroWhere += "<nro_vendedor type='in'>" + dependientes + "</nro_vendedor>"
+
+        if (filtroWhere != "") {
+            nvFW.exportarReporte({
+                filtroXML: nvFW.pageContents.filtroXML_vendedores,
+                filtroWhere: "<criterio><select><filtro>" + filtroWhere + "</filtro></select></criterio>",
+                path_xsl: 'report\\verSelVendedor\\HTML_sel_vendedor.xsl',
+                formTarget: 'iframe_vendedores',
+                async: true,
+                bloq_contenedor: $(document.documentElement),
+                bloq_msg: 'Realizando búsqueda...',
+                nvFW_mantener_origen: true
+            })
+        }
+        else {
+            alert('Por favor, seleccione un criterio de búsqueda.')
+            return
+        }
+
+
+    }
+
+    function CargarEstructuras() {
+        $('cbEstructura').insert(new Element('option', { value: '' }).update(''))
+        var rs = new tRS();
+        //rs.open("<criterio><select vista='vend_estructura'><campos>nro_estructura,estructura</campos><filtro><fe_baja type='isnull'/></filtro><orden></orden></select></criterio>")
+        rs.open({filtroXML: nvFW.pageContents["estructura"]})
+        while (!rs.eof())
+        {
+            $('cbEstructura').insert(new Element('option', { value: rs.getdata('nro_estructura') }).update(rs.getdata('estructura')))
+            rs.movenext()
+        }
+    }
+
+    function selVendedor(nro_vendedor, vendedor, cod_prov,provincia,postal_real,nro_estructura) {
+      var res = new Array()
+      res["nro_vendedor"] = nro_vendedor
+      res["vendedor"] = vendedor
+      res["cod_prov"] = cod_prov
+      res["provincia"] = provincia
+      res["postal_real"] = postal_real
+      res["nro_estructura"] = nro_estructura
+      //alert(nro_estructura)
+      win.options.userData = {res: res}
+      win.close()
+    }
+
+    function window_onresize() {
+        try {
+              var dif = Prototype.Browser.IE ? 5 : 2
+              body_height = $$('body')[0].getHeight()
+              cab_height = $('tbFiltro').getHeight()
+              $('iframe_vendedores').setStyle({ height: body_height - cab_height - dif + 'px' })
+
+          }
+          catch (e) { }
+    }
+
+    function strVendedor_onkeypress(e)
+    {
+        key = Prototype.Browser.IE ? event.keyCode : e.which
+        if (key == 13)
+                Buscar()
+    }
+
+
+    function enter_onkeypress(e) {
+        key = Prototype.Browser.IE ? e.keyCode : e.which
+        if (key == 13)
+            Buscar()
+    }
+
+
+    function documVendedor_onIntro(){
+        if (event.keyCode == 13) {
+             Buscar()
+        }
+    }
+
+    </script>
+</head>
+<body onload="return window_onload()" onresize="window_onresize()" style="width: 100%; height: 100%; overflow: hidden">
+
+
+    <table id="tbFiltro" class="tb1" style="width: 100%">
+        <tr>
+            <td>
+                <div>
+                    <div class="filtro" style="float: left;">
+                        <div class='Tit2' style="width: 35%; float: left;">Vendedor:</div>
+                        <div style="width: 65%; float: left">
+                            <input style="width: 100%" name="strVendedor" id="strVendedor" onkeypress="return strVendedor_onkeypress(event)" />
+                        </div>
+                    </div>
+                    <div class="filtro" style="float: left;">
+                        <div class='Tit2' style="width: 35%; float: left;white-space: nowrap;">Nº documento:</div>
+                        <div style="width: 65%; float: left">
+                            <input style="width: 100%" type="text" name="nro_docu_vend" id="nro_docu_vend" onkeypress="return documVendedor_onIntro(event) || valDigito(event)" maxlength="10" />
+                        </div>
+                    </div>
+                    <div class="filtro" style="float: left; ">
+                        <div class='Tit2' style="width: 35%; float: left; ">Estructura:</div>
+                        <div style="width: 65%; float: left">
+                            <script type="text/javascript">campos_defs.add('nro_estructura', { enDB: true })</script>
+                        </div>
+                    </div>
+                    <div class="filtro" style="float: left;">
+                        <div style="width: 100%; text-align: center">
+                            <div id="divAceptar"></div>
+                        </div>
+                        <!--<select id="cbEstructura" style="width:100%"></select>-->
+                        <!--<td><script type="text/javascript">campos_defs.add('nro_estructura', { permite_codigo: false, cacheControl: nvFW, despliega: 'abajo' })</script></td>-->
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <iframe name="iframe_vendedores" id="iframe_vendedores" style="width: 100%;   overflow: auto;" frameborder="0" src=""></iframe>
+
+</body>
+</html>

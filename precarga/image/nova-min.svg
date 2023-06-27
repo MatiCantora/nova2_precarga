@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="716.3617021006771" height="230.42553189060925" enable-background="new 0 0 841.89 335.983" xml:space="defautl" preserveAspectRatio="none" style=""><rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none" stroke="none" style="" class=""/>
+
+<g class="currentLayer" style=""><title>Layer 1</title><g id="svg_1" class="">
+
+	<defs transform="translate(-6.382978916168213,-4.255319118499756) translate(-56.914894104003906,-67.55319213867188) ">
+    <filter id="filtros">
+             <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="gausiano">
+             </feGaussianBlur>
+             <feOffset in="gausiano" dx="6" dy="6" result="offsetfiltro">
+             </feOffset>
+             <feMerge>
+               <feMergeNode in="offsetfiltro"/>
+               <feMergeNode in="SourceGraphic"/>
+             </feMerge>             
+           </filter>
+     <radialGradient id="radial" gradientUnits="objectBoundingBox" cx="80%" cy="45%" r="40%">
+    <stop stop-color="#FFFFFF" offset="0"/><stop stop-color="red" offset="1"/>
+    </radialGradient>
+     <radialGradient id="radialGray" gradientUnits="objectBoundingBox" cx="70%" cy="13%" r="22%">
+    <stop stop-color="#FFFFFF" offset="0"/><stop stop-color="gray" offset="1"/>
+    </radialGradient>
+    
+         <radialGradient id="dx1" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    	<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#514C4C" offset="1"/>     			
+    	<animate id="dxanimation1" attributeName="cx" begin="0s;dxanimation3.end+5s" from="0%" to="100%" dur="1s" repeatCount="1"/>
+    	</radialGradient>
+    		<radialGradient id="dx2" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    			<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#514C4C" offset="1"/>     			
+    			<animate id="dxanimation2" attributeName="cx" begin="dxanimation1.end-600ms" from="0%" to="100%" dur="1s" repeatCount="1"/>
+    		</radialGradient>
+    		<radialGradient id="dx3" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    			<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#514C4C" offset="1"/>     			
+    			<animate id="dxanimation3" attributeName="cx" begin="dxanimation2.end-600ms" from="0%" to="100%" dur="1s" repeatCount="1"/>
+    		</radialGradient>
+<!--<fill-opacity id="opacity1">
+    <animate   attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0s" />    
+</fill-opacity>
+<fill-opacity id="opacity2">
+     <animate   attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" begin="0s" />
+ </fill-opacity>-->
+ <animate id="opacity1" attributeName="fill-opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0s" fill="freeze"/>    
+ <animate id="opacity2" attributeName="fill-opacity" values="1;0;1" dur="2s" repeatCount="indefinite" begin="0s" fill="freeze"/>
+    </defs>
+
+	<circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#radial)" cx="280.09613943099976" cy="96.18349313735962" r="43.176998138427734" filter="url(#filtros)" id="svg_2"/>
+	
+<!--Primer conjunto de bolas-->
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="3" transform="rotate(248 280.0961608886718,96.18349456787111) " opacity="0" id="svg_3">		 
+		<animate id="bl9" attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+2s"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="4" transform="rotate(231 280.0961608886719,96.18349456787112) " opacity="0" id="svg_4">
+	<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1900ms"/>    		 
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="5" transform="rotate(214 280.0961608886719,96.18349456787107) " opacity="0" id="svg_5">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1600ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="8" transform="rotate(197 280.0961608886719,96.18349456787108) " opacity="0" id="svg_6">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1300ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="10" transform="rotate(180 280.0961608886719,96.1834945678711) " opacity="0" id="svg_7">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1100ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="8" transform="rotate(163 280.0961608886719,96.18349456787107) " opacity="0" id="svg_8">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+900ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="5" transform="rotate(146 280.0961608886719,96.18349456787107) " opacity="0" id="svg_9">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+600ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="4" transform="rotate(129 280.09616088867193,96.18349456787111) " opacity="0" id="svg_10">
+		<animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+300ms"/>    
+	</circle>
+	<circle fill="gray" cx="377.09613943099976" cy="96.18349313735962" r="3" transform="rotate(112 280.0961608886719,96.18349456787112) " opacity="0" id="svg_11">
+		<animate id="bl1" attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="0s;bl9.end+300ms"/>    
+	</circle>
+
+
+<!--segundo conjunto de bolas-->
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="3" transform="rotate(-77 280.0961608886719,96.18349456787111) " opacity="0" id="svg_12">		 
+		<animate id="al8" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1800ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="4" transform="rotate(-90 280.09616088867193,96.18349456787108) " opacity="0" id="svg_13">		 
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1600ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="5" transform="rotate(-103 280.0961608886719,96.18349456787111) " opacity="0" id="svg_14">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1300ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="8" transform="rotate(-119 280.0961608886718,96.18349456787108) " opacity="0" id="svg_15">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1100ms"/>    
+	</circle>	
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="8" transform="rotate(-135 280.0961608886719,96.1834945678711) " opacity="0" id="svg_16">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+900ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="5" transform="rotate(-151 280.0961608886719,96.1834945678711) " opacity="0" id="svg_17">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+600ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="4" transform="rotate(-164 280.09616088867193,96.18349456787108) " opacity="0" id="svg_18">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+300ms"/>    
+	</circle>
+	<circle fill="gray" cx="362.09613943099976" cy="96.18349313735962" r="3" transform="rotate(-180 280.0961608886719,96.1834945678711) " opacity="0" id="svg_19">
+		<animate id="al1" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="0s;al8.end+300ms"/>    
+	</circle>
+
+	<!--tercer conjunto de bolas-->
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="3" opacity="0" id="svg_20">		 
+		<animate id="cl1" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="0s;cl8.end+300ms"/>   
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="4" transform="rotate(15 280.0961608886717,96.1834945678711) " opacity="0" id="svg_21">		 
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+300ms"/> 
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="5" transform="rotate(30 280.09616088867193,96.18349456787108) " opacity="0" id="svg_22">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+600ms"/>    
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="8" transform="rotate(45 280.09616088867193,96.18349456787107) " opacity="0" id="svg_23">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+900ms"/>     
+	</circle>	
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="8" transform="rotate(60 280.0961608886718,96.1834945678711) " opacity="0" id="svg_24">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1100ms"/>   
+				
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="5" transform="rotate(75 280.0961608886719,96.18349456787111) " opacity="0" id="svg_25">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1300ms"/>   
+				
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="4" transform="rotate(90 280.09616088867193,96.18349456787112) " opacity="0" id="svg_26">
+		<animate attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1600ms"/>    
+		
+	</circle>
+	<circle fill="gray" cx="356.7021269798279" cy="96.18349313735962" r="3" transform="rotate(105 280.0961608886719,96.1834945678711) " opacity="0" id="svg_27">
+		
+		<animate id="cl8" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1800ms"/>    
+	</circle>
+
+	<path d="M150.00912697982787,53.50348874282837 h-12.904 c-1.6840000000000004,0 -3.048,1.3130000000000002 -3.048,2.933 v2.734 v53.655 l-80.583,-57.628 c0,0 -1.649,-1.605 -3.75,-1.6670000000000005 s-34.213,0 -34.213,0 s-0.2840000000000001,40.057 -0.03700000000000001,40.043 v42.189 c0,1.6190000000000002 1.365,2.934 3.048,2.934 h12.904 c1.6840000000000004,0 3.049,-1.314 3.049,-2.934 v-42.65 v-8.399000000000001 v-9.018 l37.249,29.583 c0.07400000000000002,0.06400000000000003 0.16100000000000006,0.137 0.26,0.21900000000000006 c4.792,3.979 37.974,28.664 41.24,31.031 c3.333,2.416 4.417,2.334 4.417,2.334 s25.668,0 25.918,0 c0.011000000000000006,0 0,-0.06800000000000003 -0.020000000000000007,-0.16600000000000006 h6.472 c1.6840000000000004,0 3.049,-1.314 3.049,-2.934 v-79.327 C153.05812697982788,54.81648874282837 151.6931269798279,53.50348874282837 150.00912697982787,53.50348874282837 z" filter="url(#filtros)" fill="url(#dx1)" id="svg_28"/>
+	<path d="M390.7491269798279,75.16648874282836 l41.96,58.802 c0,0 3.102,4.221 5.674,4.574 c0.925,0.127 14.612,0.15800000000000006 14.612,0.15800000000000006 s3.142,-0.7070000000000002 5.338,-2.902 c2.196,-2.197 28.187,-38.803 28.187,-38.803 l27.089,-38.618 c0,0 1.6460000000000004,-2.197 1.098,-3.661 c0,0 -0.10900000000000003,-1.186 -2.15,-1.186 s-9.916,0 -9.916,0 s-2.567,-0.7000000000000002 -9.317,8.8 s-5.683,7.95 -5.683,7.95 l-33.834,46.582 l-36.499,-50.665 l-6.417,-8.834 c0,0 -2.5,-4.083 -10.417,-4.027 c-5.08,-0.10200000000000002 -18.111,-0.24300000000000005 -21.646,-0.11900000000000004 c-1.063,0.0010000000000000005 -1.8050000000000002,1.355 -0.805,3.98 S390.7491269798279,75.16648874282836 390.7491269798279,75.16648874282836 z" filter="url(#filtros)" fill="url(#dx2)" id="svg_29"/>
+	<path d="M699.4501269798279,134.67348874282837 c-1,-2.625 -12.727,-17.971 -12.727,-17.971 l-41.96,-58.8 c0,0 -3.102,-4.223 -5.674,-4.5760000000000005 c-0.925,-0.127 -14.612,-0.15800000000000006 -14.612,-0.15800000000000006 s-3.142,0.7070000000000002 -5.338,2.904 c-2.196,2.195 -28.187,38.802 -28.187,38.802 l-27.089,38.619 c0,0 -1.6460000000000004,2.195 -1.098,3.66 c0,0 0.10900000000000003,1.186 2.15,1.186 s9.916,0 9.916,0 s2.567,0.6990000000000004 9.317,-8.801 c2.198,-3.094 3.563,-5.01 4.41,-6.195 h69.928 l1.6780000000000004,2.33 l6.417,8.832 c0,0 2.5,4.084 10.416,4.027 c5.081,0.10200000000000002 18.112,0.24400000000000005 21.646,0.11900000000000004 C699.7081269798279,138.65148874282838 700.4501269798279,137.29848874282837 699.4501269798279,134.67348874282837 zM601.7501269798279,105.18148874282838 l21.917,-30.175 l21.737000000000002,30.175 H601.7501269798279 z" filter="url(#filtros)" fill="url(#dx3)" id="svg_30"/>
+		<text y="204.19148874282837" x="366.7021269798279" fill="gray" font-size="80" font-family="helvetica" font-weight="bold" opacity="1" id="svg_31">            
+            precarga
+	    </text>
+</g></g></svg>

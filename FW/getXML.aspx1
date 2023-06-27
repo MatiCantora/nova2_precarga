@@ -1,0 +1,366 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" enableSessionState="ReadOnly"  %>
+<%@ Import namespace="nvFW" %>
+<%@ Import Namespace="nvFW.nvTransferencia" %>
+<%
+    Dim accion As String = nvUtiles.obtenerValor({"accion", "action"}, "")
+
+    Dim criterio As String
+
+    Dim XML As System.Xml.XmlDocument
+    Dim strXML As String = ""
+    Dim st As New ADODB.Stream
+    Dim Err As tError
+    Dim oXMLLog As System.Xml.XmlDocument
+    Dim log As String = nvUtiles.obtenerValor("nvLog", "")
+    If log <> "" Then '<nvlog><event id_log_evento='' params='' moment='begin' /><event id_log_evento='' params='' moment='end' /></nvLog>
+        Try
+            oXMLLog = New System.Xml.XmlDocument
+            oXMLLog.LoadXml(log)
+            Dim nodes As System.Xml.XmlNodeList = oXMLLog.SelectNodes("nvLog/event[@moment='begin']")
+            For Each node As System.Xml.XmlNode In nodes
+                nvLog.addEvent(node.Attributes("id_log_evento").Value, node.Attributes("params").Value)
+            Next
+        Catch ex As Exception
+            oXMLLog = Nothing
+        End Try
+
+    End If
+
+    Dim logTrack As String = nvLog.getNewLogTrack()
+    Dim Stopwatch As System.Diagnostics.Stopwatch = System.Diagnostics.Stopwatch.StartNew()
+
+    Select Case accion.ToLower()
+
+        Case "getbpmfile"
+
+            Dim objError As tError = New tError()
+            objError.debug_src = "getXML.aspx::runbpm"
+            objError.salida_tipo = "estado"
+            Dim Transf As New nvFW.nvTransferencia.tTransfererncia
+
+            Dim async As Boolean = nvUtiles.obtenerValor("async", "").ToLower = "true"
+            Dim id_transferencia As Integer = nvUtiles.obtenerValor("id_transferencia", 1021, nvConvertUtiles.DataTypes.int)
+            Dim xml_param As String = nvUtiles.obtenerValor("xml_param", "")
+            Dim xml_det_opcional As String = nvUtiles.obtenerValor("xml_det_opcional", "")
+            Dim xml_comentario As String = nvUtiles.obtenerValor("xml_comentario", "")
+            Dim include_file As Boolean = nvUtiles.obtenerValor("include_file", "false") = "true"
+            Dim include_file_format As String = nvUtiles.obtenerValor("include_file_format", "xml")
+
+            'Cargar transferencia
+            objError = Transf.cargar(id_transferencia, xml_param, xml_det_opcional)
+            If objError.numError <> 0 Then
+                Transf.error_limpiar_archivos()
+                objError.response()
+            End If
+
+            Server.ScriptTimeout = Transf.timeout
+
+            If Transf.tiene_requeridos_pendientes Then
+                objError.numError = 12002
+                objError.titulo = "Existen parámetros requeridos que no se están suministrandos"
+                Transf.error_limpiar_archivos()
+                objError.response()
+            End If
+
+
+            If Transf.transf_version = "2.0" Then
+                If async Then
+
+                    Transf.id_transf_log = Transf.new_id_transf_log()
+
+                    Dim async_thread As System.Threading.Thread = New System.Threading.Thread(Sub(psp As Object)
+
+                                                                                                  nvFW.nvApp._nvApp_ThreadStatic = psp("nvApp")
+                                                                                                  psp("Transf").ejecutar()
+
+                                                                                                  Try
+                                                                                                      nvTransfUtiles.transfRunThread.Remove(psp("Transf").id_transf_log)
+                                                                                                  Catch ex As Exception
+                                                                                                  End Try
+
+                                                                                              End Sub)
+
+                    nvFW.nvTransferencia.nvTransfUtiles.transfRunThread.Add(Transf.id_transf_log, async_thread)
+
+                    Dim ps As New Dictionary(Of String, Object)
+                    ps.Add("Transf", Transf)
+                    ps.Add("nvApp", nvApp)
+
+                    async_thread.Start(ps)
+                    objError.params("id_transf_log") = Transf.id_transf_log
+                    strXML = objError.get_error_xml()
+
+                Else
+                    'Ejecutar Transferencia
+                    objError = Transf.ejecutar()
+                    'Setear el formato de salida
+                    objError = Transf.getErrorResumen_xml(include_file:=include_file, include_file_format:=include_file_format)
+                    strXML = objError.get_error_xml()
+
+                End If
+
+            End If
+
+
+
+            '    'Leer parametros de getXML. Por ejemplo que hacer con los targets include_file=true include_file_format = xml | binario
+
+        '    'leerparametros de transferencia
+        '    'Ejecutar transferencia. Si error, sale con el error
+        '    'Tengo el super_xml
+        '    'Armar un tError con varios params. 1)Id_transf_Log  2) Los de errores 3) todos los targets 4) incluis los datos de los archivos
+
+
+
+        Case "getxml", "getxml_json", "getterror"
+
+            Dim VistaGuardada As String
+            Dim criterio_where As String
+            Dim criterio_params As String
+
+            '/*****************************************************************************/
+            ' La accion "campo_def_getrs" permite recuperar la consulta de un campo_def
+            '/****************************************************************************/
+
+
+            criterio = nvUtiles.obtenerValor({"criterio", "filtroXML"}, "")
+            VistaGuardada = nvUtiles.obtenerValor({"vg", "vistaGuardada"}, "")
+            criterio_where = nvUtiles.obtenerValor({"criterio_where", "filtroWhere"}, "")
+            criterio_params = nvUtiles.obtenerValor("params", "")
+
+
+            Dim arParam As trsParam = New trsParam
+            arParam("SQL") = ""
+            arParam("timeout") = 0
+            arParam("objError") = Nothing
+            arParam("logTrack") = logTrack
+
+            'Ajusta las variables criterio y criterio_where en función de vistaguardada y los parámetros
+            Err = nvXMLSQL.setFiltroXML(criterio, criterio_where, VistaGuardada, criterio_params)
+            If Err.numError <> 0 Then
+                Err.response()
+            End If
+
+            Dim rs As ADODB.Recordset = nvXMLSQL.XMLtoRecordset(criterio, criterio_where, arParam)
+
+            If rs Is Nothing Then
+                If Not arParam("objError") Is Nothing Then
+                    Err = arParam("objError")
+                Else
+                    Err = New tError
+                    Err.numError = 1006
+                    Err.titulo = "Error en la consulta"
+                    Err.mensaje = "La consulta no genera datos"
+                    Err.debug_src = "nvGetXML::getxml"
+                    Err.debug_desc = "El recordset viene viene nulo" & vbCrLf & arParam("SQL")
+                End If
+                Err.response()
+            End If
+
+            'Si es un recordset comun o un campo con el XML
+            If (rs.Fields(0).Name = "forxml_data") And accion.ToLower() = "getxml" Then
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(rs.Fields("forxml_data").Value)
+                strXML = XML.OuterXml
+            Else
+                Select Case accion.ToLower()
+                    Case "getxml"
+                        'Concertir el RS a XML
+                        XML = nvXMLSQL.RecordsetToXML(rs, arParam)
+                    Case "getterror"
+                        Dim errRes As tError = nvXMLSQL.RecordsetTotError(rs, arParam)
+                        Stopwatch.Stop()
+                        Dim ts2 As TimeSpan = Stopwatch.Elapsed
+                        nvLog.addEvent("rd_getXML", logTrack & ";;" & ts2.TotalMilliseconds & ";" & accion & ";" & criterio)
+                        errRes.response()
+                    Case Else 'getxml_json
+                        XML = nvXMLSQL.RecordsetToXMLJson(rs, arParam)
+
+                End Select
+
+                If XML Is Nothing Then
+                    If Not arParam("objError") Is Nothing Then
+                        Err = arParam("objError")
+                    Else
+                        Err = New tError
+                        Err.numError = 1006
+                        Err.titulo = "Error en la transformación XML"
+                        Err.mensaje = ""
+                        Err.debug_src = "nvGetXML::getxml"
+                        Err.debug_desc = ""
+                    End If
+                    Err.response()
+                End If
+                strXML = XML.OuterXml
+            End If
+            nvDBUtiles.DBCloseRecordset(rs)
+
+
+
+        Case "nvlog_update"
+            Dim e As New tError
+            Try
+                nvLog.close()
+                nvLog.init()
+
+            Catch ex As Exception
+                e.parse_error_script(ex)
+                e.mensaje = "Error al actualizar la información de logs"
+            End Try
+            strXML = e.get_error_xml()
+
+            'Case "nvpage_contentsinfo"
+
+        Case "db_declare_cn"
+            Dim cod_servidor As String = nvUtiles.obtenerValor("cod_servidor", "")
+            Dim cod_sistema As String = nvUtiles.obtenerValor("cod_sistema", "")
+            Dim cod_ss_cn As String = nvUtiles.obtenerValor("cod_ss_cn", "")
+            Dim cn_name As String = nvUtiles.obtenerValor("cn_name", "")
+            Dim er As New tError
+            Dim strSQL As String = "select * from verNv_servidor_sistema_cn where cod_ss_cn = '" & cod_ss_cn & "' and cod_servidor = '" & cod_servidor & "' and cod_sistema = '" & cod_sistema & "'"
+            Dim rs As ADODB.Recordset = nvDBUtiles.DBOpenRecordset(strSQL)
+            If Not rs.EOF Then
+                Dim nvApp As tnvApp = nvFW.nvApp.getInstance()
+                Dim newCN As New tDBConection
+                newCN.cn_string = rs.Fields("cn_string").Value
+                newCN.cn_nombre = rs.Fields("cn_nombre").Value
+                newCN.id_cn_tipo = rs.Fields("id_cn_tipo").Value
+                newCN.cn_tipo = rs.Fields("cn_tipo").Value
+                newCN.excaslogin = False
+                newCN.cn_default = rs.Fields("cn_default").Value
+                nvApp.app_cns.Remove(cn_name)
+                nvApp.app_cns.Add(cn_name, newCN)
+            Else
+                er.numError = "103"
+                er.titulo = "Error en la acción"
+                er.mensaje = "No existe la conexión solicitada"
+            End If
+            strXML = er.get_error_xml()
+
+        Case "db_remove_cn"
+            Dim cn_name As String = nvUtiles.obtenerValor("cn_name", "")
+            Dim er As New tError
+            Dim nvApp As tnvApp = nvFW.nvApp.getInstance()
+            nvApp.app_cns.Remove(cn_name)
+            strXML = er.get_error_xml()
+
+        Case "get_plantillas"
+
+            criterio = nvUtiles.obtenerValor("criterio", "")
+            Dim objXML As New System.Xml.XmlDocument
+            strXML = "<xml xmlns:s='uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882' xmlns:dt='uuid:C2F41010-65B3-11d1-A29F-00AA00C14882' xmlns:rs='urn:schemas-microsoft-com:rowset' xmlns:z='#RowsetSchema'>"
+            objXML.LoadXml(criterio)
+
+            Dim vista As String = nvXMLUtiles.getAttribute_path(objXML, "criterio/select/@vista", "")
+
+            Dim path_rel As New List(Of String)
+            Dim nvApp As tnvApp = nvFW.nvApp.getInstance()
+            path_rel.Add(nvApp.path_rel)
+            path_rel.Add("FW")
+
+            strXML += "<rs:data>"
+            Dim direc As String = ""
+            For Each rel In path_rel
+                direc = nvServer.appl_physical_path & "App_Data\" & rel & "\report\" & vista
+                If (System.IO.Directory.Exists(direc)) Then
+                    Dim ext As String = ""
+                    For Each filename As String In System.IO.Directory.GetFiles(direc)
+                        Dim ext1 As String = System.IO.Path.GetExtension(filename)
+                        If (ext1 = ".xsl") Then
+                            strXML += "<z:row name='" + System.IO.Path.GetFileNameWithoutExtension(filename) + "' path='" + System.IO.Path.GetFullPath(filename) + "'  path_xsl='" + System.IO.Path.GetFullPath(filename).Substring(System.IO.Path.GetFullPath(filename).IndexOf("\report\")) + "'/>"
+                        End If
+                    Next
+                End If
+            Next
+            strXML += "</rs:data>"
+            strXML += "</xml>"
+
+        Case "get_reportes"
+
+            criterio = nvUtiles.obtenerValor("criterio", "")
+            Dim objXML As New System.Xml.XmlDocument
+            strXML = "<xml xmlns:s='uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882' xmlns:dt='uuid:C2F41010-65B3-11d1-A29F-00AA00C14882' xmlns:rs='urn:schemas-microsoft-com:rowset' xmlns:z='#RowsetSchema'>"
+            objXML.LoadXml(criterio)
+
+            Dim vista As String = nvXMLUtiles.getAttribute_path(objXML, "criterio/select/@vista", "")
+
+            Dim path_rel As New List(Of String)
+            Dim nvApp As tnvApp = nvFW.nvApp.getInstance()
+            path_rel.Add(nvApp.path_rel)
+            path_rel.Add("FW")
+
+            strXML += "<rs:data>"
+            Dim direc As String = ""
+            For Each rel In path_rel
+                direc = nvServer.appl_physical_path & "App_Data\" & rel & "\report\" & vista
+                If (System.IO.Directory.Exists(direc)) Then
+                    Dim ext As String = ""
+                    For Each filename As String In System.IO.Directory.GetFiles(direc)
+                        Dim ext1 As String = System.IO.Path.GetExtension(filename)
+                        If (ext1 = ".rpt") Then
+                            strXML += "<z:row name='" + System.IO.Path.GetFileNameWithoutExtension(filename) + "' path='" + System.IO.Path.GetFullPath(filename) + "' path_reporte='" + System.IO.Path.GetFullPath(filename).Substring(System.IO.Path.GetFullPath(filename).IndexOf("\report\")) + "'/>"
+                        End If
+                    Next
+                End If
+            Next
+            strXML += "</rs:data>"
+            strXML += "</xml>"
+
+        Case "get_hex"
+
+            Dim e As New tError
+            Try
+                Stop
+                criterio = nvUtiles.obtenerValor("criterio", "")
+                strXML = "<xml xmlns:s='uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882' xmlns:dt='uuid:C2F41010-65B3-11d1-A29F-00AA00C14882' xmlns:rs='urn:schemas-microsoft-com:rowset' xmlns:z='#RowsetSchema'>"
+                strXML += "<rs:data>"
+                strXML += "<z:row "
+                strXML += "hex='"
+                strXML += Convert.ToBase64String(nvConvertUtiles.StringToBytes(criterio))
+                strXML += "'></z:row>"
+                strXML += "</rs:data>"
+                strXML += "</xml>"
+
+            Catch ex As Exception
+                e.parse_error_script(ex)
+                e.mensaje = "Error al actualizar la información de logs"
+                strXML = e.get_error_xml()
+            End Try
+
+        Case Else
+            Dim e As New nvFW.tError
+            e.numError = 1001
+            e.titulo = "Error en la consulta"
+            e.comentario = "La acción es deconocida"
+            e.debug_src = "getXML"
+            e.debug_desc = "accion='" & accion & "'; criterio='" & criterio & "'"
+            e.response()
+    End Select
+
+    nvXMLUtiles.responseXML(Response, strXML)
+    Stopwatch.Stop()
+    Dim ts As TimeSpan = Stopwatch.Elapsed
+    nvLog.addEvent("rd_getXML", logTrack & ";;" & ts.TotalMilliseconds & ";" & accion & ";" & criterio)
+    If Not oXMLLog Is Nothing Then
+        Try
+            oXMLLog = New System.Xml.XmlDocument
+            oXMLLog.LoadXml(log)
+            Dim nodes As System.Xml.XmlNodeList = oXMLLog.SelectNodes("nvLog/event[@moment='end']")
+            For Each node As System.Xml.XmlNode In nodes
+                nvLog.addEvent(node.Attributes("id_log_evento").Value, logTrack & ";" & ts.TotalMilliseconds.ToString("00") & ";" & node.Attributes("params").Value)
+            Next
+        Catch ex As Exception
+        End Try
+    End If
+    Response.End()
+
+    'Response.Expires = -1
+    'Response.ContentType = "text/xml"
+    'Response.Charset = "ISO-8859-1" '"UTF-8"
+    'strXML = "<?xml version='1.0' encoding='ISO-8859-1'?>" + strXML
+    'Dim buffer() As Byte = Encoding.GetEncoding("iso-8859-1").GetBytes(strXML)
+    ''Response.Write(strXML)
+    'Response.BinaryWrite(buffer)
+    'Response.Flush()
+
+%>

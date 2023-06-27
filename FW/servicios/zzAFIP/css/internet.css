@@ -1,0 +1,41 @@
+.title {
+  background-color : #c9dbed;
+  }
+.titleText {
+  color       : #c9dbed;
+  }
+.tableHeader { 
+  background-color: #c9dbed;
+  }
+.rowMenu {
+  height: 600px;  
+  }
+ .subtitle {
+  font-weight:bold;
+  text-decoration:none;
+  background-color:#E6E8F4;
+  margin-bottom: 7px;
+  }  
+.button {
+  font-size:11px;
+  FONT-WEIGHT: bold;
+  font-family:Arial, Helvetica, sans-serif;
+  color : white;
+  background:#65A6EA url(../images/botonFondoAzul.jpg) top left;
+  text-align: center;
+  height: 22px;
+  border:1px solid #fef2e5;
+  }
+.botonera-out-largo {
+  font-size:11px;
+  FONT-WEIGHT: bold;
+  font-family:Arial, Helvetica, sans-serif;
+  color : white;
+  background:#65A6EA url(../images/botonFondoAzul.jpg) top left;
+  text-align: center;
+  height: 22px;
+  border:1px solid #fef2e5;
+  }  
+.selectTableHeader { 
+  background-color: #99FF99;
+  }

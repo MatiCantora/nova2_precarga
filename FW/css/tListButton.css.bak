@@ -1,0 +1,74 @@
+.btnTB_O
+{
+    width: 100% !important;
+    height: 24px !important;	
+    white-space: nowrap !important;
+     
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    
+
+}
+
+.btnNormal_O
+{
+    font: 14px Tahoma, Verdana, Segoe, sans-serif !important; 
+    /*font-weight: bold !important;*/
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+    /*BACKGROUND-IMAGE: url(/FW/image/tListButton/bg_btnNormal.gif);*/
+    background-color: #DDDDDD !important;
+    text-align: center !important;
+    cursor: hand !important;
+    cursor: pointer !important;
+    border: solid #D0D0D0 2px !important;
+    vertical-align: middle;
+
+     -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+     box-shadow: 0 0 1px #f4f4f4;
+}
+.btnOnOver_O
+{
+    font: 14px Tahoma, Verdana, Segoe, sans-serif !important; 
+    /*font-weight: bold !important;*/
+    border-right: 1px !important;
+    padding-right: 4px !important;
+    border-top: 1px !important;
+    padding-left: 4px !important;
+    text-align: center !important;
+    background-color: #DDDDDD !important;
+    /*BACKGROUND-IMAGE: url(/FW/image/tListButton/bg_btnOnOver.gif);*/
+    cursor: hand !important;
+    cursor: pointer !important;
+    border: solid #B0B0B0 2px !important;
+
+     -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+     box-shadow: 0 0 1px #f4f4f4;
+}
+
+.btnBegin_O
+{
+  /*width: 15px;
+  BACKGROUND-IMAGE: url(/FW/image/tListButton/bg_btnBegin.gif)*/
+}
+
+.btnEnd_O
+{
+  /*width: 15px;
+  BACKGROUND-IMAGE: url(/FW/image/tListButton/bg_btnEnd.gif)*/
+}
+
+@media screen and (max-device-width: 580px) {
+    .btnTB_O {
+        height: 28px !important;
+    }
+    
+    .btnNormal_O {
+        border-radius: 140px;
+    }
+}   

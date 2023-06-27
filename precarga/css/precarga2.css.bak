@@ -1,0 +1,170 @@
+﻿
+#divSelTrabajo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#contBuscar {
+    width: 250px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#div_contenedor {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    /*background-color: white;*/
+}
+
+#divVendedorLeft {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/*@media (min-device-width: 767px) {
+    #img_Menu {
+        display: none;
+    }
+}*/
+
+body {
+    position: absolute;
+    overflow-y: auto;
+    background-color: var(--fondo);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: var(--azul);
+}
+
+.box-product, .box-product2 {
+    box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+    border-radius: 1.3em;
+    padding: 1em;
+    width: 50%;
+    gap: 1.2em;
+}
+
+.box-product {
+    background: #FFFFFF;
+    /*margin: 2% 0%;*/
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-product2 {
+    border: 2px solid #194693;
+    overflow: visible;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+}
+
+.box-content {
+    padding-top: 1.5%;
+    /*background-color: var(--fondo);*/
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    gap: 1.2em;
+}
+
+#divBtnCobro, #divBtnOferta, .btn-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*background-color: var(--fondo);*/
+    text-align: center;
+}
+
+.box-cda {
+    border-radius: 1.3em;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 50%;
+    padding: 1em 3.5em;
+}
+
+/*'APROBADO':*/
+.cdaV {
+    border: 2px solid #5BA44B;
+    color: #5BA44B;
+}
+
+/*'OBSERVADO': 'MANUAL':*/
+.cdaAS {
+    border: 2px solid #E46D00;
+    color: #E46D00;
+}
+
+/*'RECHAZADO': 'RECHAZAR':*/
+.cdaR {
+    border: 2px solid #B70000;
+    color: #B70000;
+}
+
+#divPropuestaMaxima, #divDisponible, #divCTotales {
+    text-align: center;
+    width: 50%;
+}
+
+#divDisponible, #divcTotlaMora, #divcCuotaLiberada, #divcSaldoCancelar {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+#divPropuestaMaxima {
+    color: black;
+}
+
+#divMaxPlan {
+    font-size: 2.2em;
+    font-weight: bold;
+}
+
+.tableFixHead th {
+    background-color: white;
+}
+
+@media only screen and (max-width: 768px) {
+    .box-cda, #divDisponible, #divPropuestaMaxima, #divCTotales, .box-product2, .box-product {
+        width: 90%;
+    }
+}
+
+input[type=number], input[type=text], input[type=date] {
+    box-sizing: border-box;
+    width: 250px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1.5px solid var(--azul);
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 1.05em;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 2px;
+    color: var(--azul);
+}
+
+input::placeholder {
+    color: var(--celeste);
+    text-align: left;
+}

@@ -1,0 +1,250 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+<%@ Import namespace="nvFW" %>
+<%
+    Dim accion As String = nvUtiles.obtenerValor({"accion","a"}, "")
+    Dim criterio As String = nvUtiles.obtenerValor("criterio", "")
+
+    Dim XML As System.Xml.XmlDocument
+    Dim strXML As String = ""
+    Dim st As New ADODB.Stream
+    Dim Err As New tError
+
+    Dim logTrack As String = nvLog.getNewLogTrack()
+    Dim Stopwatch As System.Diagnostics.Stopwatch = System.Diagnostics.Stopwatch.StartNew()
+
+    Select Case accion.ToLower
+        Case "sac_identidad"
+
+            Dim nro_docu As Integer
+            Dim nro_entidad As Integer
+            Dim CDA As Integer
+            Dim sexo As String = ""
+            Dim razonsocial As String = ""
+
+            Try
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+
+                nro_docu = nvXMLUtiles.getNodeText(XML, "criterio/nro_docu", 0)
+                razonsocial = nvXMLUtiles.getNodeText(XML, "criterio/razonsocial", 0)
+                sexo = nvXMLUtiles.getNodeText(XML, "criterio/sexo", 0)
+                nro_entidad = nvXMLUtiles.getNodeText(XML, "criterio/nro_entidad", 0)
+                CDA = nvXMLUtiles.getNodeText(XML, "criterio/CDA", 0)
+
+            Catch ex As Exception
+            End Try
+
+            strXML = nvFW.servicios.nvNOSIS.SAC_identidadBase(nro_docu, razonsocial, sexo, CDA, nro_entidad:=nro_entidad)
+
+
+        Case "sac_get_token"
+            Try
+                'Stop
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+                Dim cda As Integer = XML.SelectSingleNode("criterio/cda").InnerText
+                strXML = nvFW.servicios.nvNOSIS.SAC_get_token(cda:=cda)
+            Catch ex As Exception
+
+            End Try
+
+        Case "sac_deshabilitar"
+            Try
+
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+                Dim id_consulta As Integer = XML.SelectSingleNode("criterio/id_consulta").InnerText
+                strXML = nvFW.servicios.nvNOSIS.SAC_deshabilitar(id_consulta)
+            Catch ex As Exception
+
+            End Try
+
+        Case "sac_informe"
+            Dim nro_vendedor As Integer
+            Dim nro_banco As Integer
+            Dim nro_entidad As Integer
+            Dim CDA As Integer
+            Dim cuit As String
+            Dim tipo_informe As String
+            Dim actualizarFuentes As Boolean = False
+            Dim reintentos As Integer = 0
+            Dim sexo As String = ""
+            Dim razonsocial As String = ""
+            Dim forzar_consulta As Boolean = False
+            Try
+
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+                cuit = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/cuit", 0)
+                nro_entidad = nvXMLUtiles.getNodeText(XML, "criterio/nro_entidad", 0)
+                CDA = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/CDA", 0)
+                tipo_informe = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/tipo_informe", "sac_informe")
+                actualizarFuentes = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/actualizarFuentes", "true") = "true"
+                reintentos = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/reintentos", 0)
+                razonsocial = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/razonsocial", 0)
+                sexo = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/sexo", 0)
+                forzar_consulta = nvFW.nvXMLUtiles.getNodeText(XML, "criterio/forzar_consulta", False)
+
+                If (actualizarFuentes = True) Then
+
+                    Dim filtroCDA As String = ""
+                    If CDA <> 0 Then filtroCDA = " AND CDA = " & CDA.ToString
+                    Dim strSQL As String = "Select count(*) as registros from verNosis_consulta where accion = 'sac_informe' and criterio = '" & cuit & "' and terminado = 1 and activo = 1 " & filtroCDA
+                    Dim rsRes As ADODB.Recordset = nvDBUtiles.DBOpenRecordset(strSQL)
+                    If rsRes.Fields("registros").Value = 0 Then
+                        strXML = nvFW.servicios.nvNOSIS.SAC_Actualizar_fuentes_externasBase(cuit, CDA:=CDA, NOSIS_UID:=0, NOSIS_PWD:=0, logTrack:=logTrack)
+                        XML = New System.Xml.XmlDocument
+                        XML.LoadXml(strXML)
+                        If XML.SelectSingleNode("/Respuesta/@TodoOk").Value.ToString.ToUpper = "NO" Then
+                            If reintentos > 0 Then
+                                Exit Select
+                            End If
+                        Else
+                            actualizarFuentes = False
+                        End If
+                    End If
+
+                End If
+
+                If (tipo_informe = "sac_informe") Then
+                    strXML = nvFW.servicios.nvNOSIS.SAC_informeBase(cuit, razonsocial, sexo, CDA, nro_entidad:=nro_entidad, logTrack:=logTrack, actualizarFuentes:=actualizarFuentes, forzar_consulta:=forzar_consulta)
+                Else
+                    strXML = nvFW.servicios.nvNOSIS.SAC_informe_variable(cuit, nro_vendedor, nro_banco, CDA:=CDA, logTrack:=logTrack, actualizarFuentes:=actualizarFuentes)
+                End If
+
+            Catch ex As Exception
+
+            End Try
+
+        Case "sac_val_fuentes"
+            Try
+
+                Dim nro_banco As String = ""
+                Dim nro_entidad As String = ""
+                Dim CDA As String = ""
+                Dim cuit As String = ""
+                Err.params("respuesta") = ""
+
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+
+                cuit = XML.SelectSingleNode("criterio/cuit").InnerText
+                CDA = XML.SelectSingleNode("criterio/CDA").InnerText
+
+                Dim documento As String = nvUtiles.obtenerValor("cuit", "")
+                Dim url As String = nvUtiles.obtenerValor("url", "")
+
+                strXML = nvFW.servicios.nvNOSIS.SAC_get_token(CDA)
+
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(strXML)
+
+                url = XML.SelectSingleNode("resultado/url").InnerText
+
+                ' Crear instancia de NOSIS fuentes; setar URL y TimeOUT
+                'Dim nvNosisFuentes As New nvFW.servicios.tnvNosisFuentes
+                'nvNosisFuentes.URL = url
+                'nvNosisFuentes.timeOut = 20
+                'Dim respuesta = nvNosisFuentes.ActualizarFuentesNosis(cuit)
+
+                Dim NOSIS_UID As String = ""
+                Dim NOSIS_PWD As String = ""
+                Dim login_prod As String() = nvFW.nvUtiles.getParametroValor("NOSIS_LOGIN_PROD").ToUpper.Split(",")
+                If login_prod.Contains(nvFW.nvApp.getInstance().operador.login.ToUpper) Then
+                    NOSIS_UID = nvFW.nvUtiles.getParametroValor("NOSIS_UID_OK_VAR_PROD")
+                    NOSIS_PWD = nvFW.nvUtiles.getParametroValor("NOSIS_PWD_OK_VAR_PROD")
+                Else
+                    NOSIS_UID = nvFW.nvUtiles.getParametroValor("NOSIS_UID_OK_VAR_CONT") '"62231"
+                    NOSIS_PWD = nvFW.nvUtiles.getParametroValor("NOSIS_PWD_OK_VAR_CONT") '"117898"
+                End If
+                Dim NOSIS_FUENTES_EXTERNAS_OK As String = "1" 'nvFW.nvUtiles.getParametroValor("FUENTES_EXTERNAS_OK")
+
+                Dim nvNosisFuentes As New nvFW.servicios.tnvNosisFuentes
+                nvNosisFuentes.timeOut = 10
+                Dim res As String = nvNosisFuentes.ActualizarFuentesNosis_version2(NOSIS_UID, NOSIS_PWD, cuit, fuentes:=NOSIS_FUENTES_EXTERNAS_OK, CDA:=CDA)
+                Dim arrRes As String() = res.Split(",")
+
+                Dim respuesta As String = arrRes(0)
+                'NroConsultaFuentes = arrRes(1)
+
+
+                Err.numError = 0
+                Err.titulo = ""
+                Err.mensaje = ""
+
+                If (respuesta <> 1) Then
+                    Err.numError = 99
+                    Err.titulo = "Error al actualizar las fuentes externas."
+                    Err.mensaje = "Intente Nuevamente."
+                End If
+                Err.params("respuesta") = respuesta
+
+            Catch ex As Exception
+                Err.parse_error_script(ex)
+                Err.titulo = "Error al actualizar las fuentes externas"
+                Err.mensaje = "Salida por excepcion"
+            End Try
+
+            strXML = Err.get_error_xml()
+
+        Case "sac_html_guardar"
+
+            Try
+                Dim id_tipo As String = ""
+                Dim nro_archivo_id_tipo As String = ""
+                Dim cuit As String = ""
+                Dim cda As String = ""
+                Dim razonsocial As String = ""
+                Dim sexo As String = ""
+                Dim novedades As String = ""
+                Dim NroConsulta As Integer = 0
+
+                XML = New System.Xml.XmlDocument
+                XML.LoadXml(criterio)
+
+                id_tipo = nvXMLUtiles.getNodeText(XML, "criterio/id_tipo", "")
+                nro_archivo_id_tipo = nvXMLUtiles.getNodeText(XML, "criterio/nro_archivo_id_tipo", "")
+                cuit = nvXMLUtiles.getNodeText(XML, "criterio/cuit", "")
+                cda = nvXMLUtiles.getNodeText(XML, "criterio/cda", "")
+                razonsocial = nvXMLUtiles.getNodeText(XML, "criterio/razonsocial", "")
+                sexo = nvXMLUtiles.getNodeText(XML, "criterio/sexo", "")
+
+                strXML = nvFW.servicios.nvNOSIS.SAC_informeBase(cuit:=cuit, razonsocial:=razonsocial, sexo:=sexo, CDA:=cda)
+                XML.LoadXml(strXML)
+                NroConsulta = nvXMLUtiles.getNodeText(XML, "/Respuesta/Consulta/Resultado/NroConsulta", 0)
+
+                Err = nvFW.servicios.nvNosisUtiles.SAC_informe_guardar_html(id_tipo:=id_tipo, nro_archivo_id_tipo:=nro_archivo_id_tipo, archivo_descripcion:="%NOSIS%", nro_consulta:=NroConsulta)
+                If Err.numError = 0 Then
+                    Dim oNode As System.Xml.XmlNode = XML.CreateNode(System.Xml.XmlNodeType.Element, "URL", "")
+                    oNode.InnerText = Err.params("link")
+                    XML.SelectSingleNode("/Respuesta/Consulta/Resultado").AppendChild(oNode)
+                    strXML = XML.OuterXml
+                Else
+                    strXML = Err.mensaje 'Err.get_error_xml()
+                End If
+
+            Catch ex As Exception
+                Err.parse_error_script(ex)
+                Err.titulo = "Error al adjuntar informe Nosis."
+                Err.mensaje = "Salida por excepcion"
+            End Try
+
+    End Select
+
+    nvXMLUtiles.responseXML(Response, strXML)
+    Stopwatch.Stop()
+    Dim ts As TimeSpan = Stopwatch.Elapsed
+    nvLog.addEvent("nosis_getXML", logTrack & ";;" & ts.TotalMilliseconds & ";" & accion & ";" & criterio)
+    'nvLog.addEvent("rd_getXML", logTrack & ";;" & ts.TotalMilliseconds & ";" & accion & ";" & criterio)
+    Response.End()
+
+    'Response.Expires = -1
+    'Response.ContentType = "text/xml"
+    'Response.Charset = "ISO-8859-1" '"UTF-8"
+    'strXML = "<?xml version='1.0' encoding='ISO-8859-1'?>" + strXML
+    'Dim buffer() As Byte = Encoding.GetEncoding("iso-8859-1").GetBytes(strXML)
+    ''Response.Write(strXML)
+    'Response.BinaryWrite(buffer)
+    'Response.Flush()
+
+%>

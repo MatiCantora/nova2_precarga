@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="841.89px" height="335.983px" viewBox="0 0 841.89 335.983" enable-background="new 0 0 841.89 335.983"
+	 xml:space="defautl" preserveAspectRatio="none">
+<g>
+
+	<defs>
+    <filter id="filtros">
+             <feGaussianBlur in="SourceAlpha"
+                             stdDeviation="2"
+                             result="gausiano">
+             </feGaussianBlur>
+             <feOffset in="gausiano"
+                       dx="6"
+                       dy="6"
+                       result="offsetfiltro">
+             </feOffset>
+             <feMerge>
+               <feMergeNode in="offsetfiltro"></feMergeNode>
+               <feMergeNode in="SourceGraphic"></feMergeNode>
+             </feMerge>             
+           </filter>
+     <radialGradient id="radial" gradientUnits="objectBoundingBox" cx="80%" cy="45%" r="40%">
+    <stop stop-color="#FFFFFF" offset="0"/><stop stop-color="red" offset="1"/>
+    </radialGradient>
+     <radialGradient id="radialGray" gradientUnits="objectBoundingBox" cx="70%" cy="13%" r="22%">
+    <stop stop-color="#FFFFFF" offset="0"/><stop stop-color="gray" offset="1"/>
+    </radialGradient>
+    
+         <radialGradient  id="dx1" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    	<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#000000" offset="1"/>     			
+    	<animate   id="dxanimation1" attributeName="cx"  begin="0s;dxanimation3.end+5s" from="0%" to="100%" dur="1s" repeatCount="1" />
+    	</radialGradient>
+    		<radialGradient  id="dx2" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    			<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#000000" offset="1"/>     			
+    			<animate  id="dxanimation2" attributeName="cx"  begin="dxanimation1.end-600ms" from="0%" to="100%" dur="1s" repeatCount="1" />
+    		</radialGradient>
+    		<radialGradient  id="dx3" gradientUnits="userSpaceOnUse" cx="-50%" cy="50%" r="25%">
+    			<stop stop-color="#FFFFFF" offset="0"/><stop stop-color="#000000" offset="1"/>     			
+    			<animate  id="dxanimation3"  attributeName="cx"  begin="dxanimation2.end-600ms" from="0%" to="100%" dur="1s" repeatCount="1" />
+    		</radialGradient>
+<!--<fill-opacity id="opacity1">
+    <animate   attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0s" />    
+</fill-opacity>
+<fill-opacity id="opacity2">
+     <animate   attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" begin="0s" />
+ </fill-opacity>-->
+ <animate  id="opacity1"  attributeName="fill-opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0s" fill="freeze" />    
+ <animate  id="opacity2" attributeName="fill-opacity" values="1;0;1" dur="2s" repeatCount="indefinite" begin="0s" fill="freeze" />
+    </defs>
+
+	<circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#radial)" cx="343.394" cy="167.992" r="43.177" filter="url(#filtros)" />
+	
+<!--Primer conjunto de bolas-->
+	<circle  fill="gray" cx="440.394" cy="167.992" r="3"  transform="rotate(248 343.394 167.992)" opacity="0" >		 
+		<animate id="bl9"  attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+2s" />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="4" transform="rotate(231 343.394 167.992)"  opacity="0">
+	<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1900ms"/>    		 
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="5" transform="rotate(214 343.394 167.992)" opacity="0" >
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1600ms"  />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="8" transform="rotate(197 343.394 167.992)"  opacity="0" >
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1300ms" />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="10" transform="rotate(180 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+1100ms"  />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="8" transform="rotate(163 343.394 167.992)" opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+900ms"   />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="5" transform="rotate(146 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+600ms"  />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="4" transform="rotate(129 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="bl1.begin+300ms"  />    
+	</circle>
+	<circle  fill="gray" cx="440.394" cy="167.992" r="3" transform="rotate(112 343.394 167.992)" opacity="0">
+		<animate id="bl1"  attributeName="opacity" values="0;1;0" dur="2s" repeatCount="1" begin="0s;bl9.end+300ms" />    
+	</circle>
+
+
+<!--segundo conjunto de bolas-->
+	<circle  fill="gray" cx="425.394" cy="167.992" r="3"  transform="rotate(-77 343.394 167.992)"  opacity="0">		 
+		<animate  id="al8" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1800ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="4" transform="rotate(-90 343.394 167.992)"  opacity="0">		 
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1600ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="5" transform="rotate(-103 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1300ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="8" transform="rotate(-119 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+1100ms" />    
+	</circle>	
+	<circle  fill="gray" cx="425.394" cy="167.992" r="8" transform="rotate(-135 343.394 167.992)" opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+900ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="5" transform="rotate(-151 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+600ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="4" transform="rotate(-164 343.394 167.992)" opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="al1.begin+300ms" />    
+	</circle>
+	<circle  fill="gray" cx="425.394" cy="167.992" r="3" transform="rotate(-180 343.394 167.992)" opacity="0">
+		<animate id="al1" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="0s;al8.end+300ms" />    
+	</circle>
+
+	<!--tercer conjunto de bolas-->
+	<circle  fill="gray" cx="420" cy="167.992" r="3"  transform="rotate(0 343.394 167.992)"  opacity="0" >		 
+		<animate id="cl1" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="0s;cl8.end+300ms" />   
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="4" transform="rotate(15 343.394 167.992)"  opacity="0">		 
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+300ms" /> 
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="5" transform="rotate(30 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+600ms" />    
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="8" transform="rotate(45 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+900ms" />     
+	</circle>	
+	<circle  fill="gray" cx="420" cy="167.992" r="8" transform="rotate(60 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1100ms" />   
+				
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="5" transform="rotate(75 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1300ms" />   
+				
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="4" transform="rotate(90 343.394 167.992)"  opacity="0">
+		<animate   attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1600ms" />    
+		
+	</circle>
+	<circle  fill="gray" cx="420" cy="167.992" r="3" transform="rotate(105 343.394 167.992)"  opacity="0">
+		
+		<animate  id="cl8" attributeName="opacity" values="0;1;0" dur="1500ms" repeatCount="1" begin="cl1.begin+1800ms" />    
+	</circle>
+
+	<path d="M213.307,125.312h-12.904c-1.684,0-3.048,1.313-3.048,2.933v2.734v53.655l-80.583-57.628c0,0-1.649-1.605-3.75-1.667
+		s-34.213,0-34.213,0s-0.284,40.057-0.037,40.043v42.189c0,1.619,1.365,2.934,3.048,2.934h12.904c1.684,0,3.049-1.314,3.049-2.934
+		v-42.65v-8.399v-9.018l37.249,29.583c0.074,0.064,0.161,0.137,0.26,0.219c4.792,3.979,37.974,28.664,41.24,31.031
+		c3.333,2.416,4.417,2.334,4.417,2.334s25.668,0,25.918,0c0.011,0,0-0.068-0.02-0.166h6.472c1.684,0,3.049-1.314,3.049-2.934
+		v-79.327C216.356,126.625,214.991,125.312,213.307,125.312z" filter="url(#filtros)" fill="url(#dx1)" />
+	<path d="M454.047,146.975l41.96,58.802c0,0,3.102,4.221,5.674,4.574c0.925,0.127,14.612,0.158,14.612,0.158
+		s3.142-0.707,5.338-2.902c2.196-2.197,28.187-38.803,28.187-38.803l27.089-38.618c0,0,1.646-2.197,1.098-3.661
+		c0,0-0.109-1.186-2.15-1.186s-9.916,0-9.916,0s-2.567-0.7-9.317,8.8s-5.683,7.95-5.683,7.95l-33.834,46.582l-36.499-50.665
+		l-6.417-8.834c0,0-2.5-4.083-10.417-4.027c-5.08-0.102-18.111-0.243-21.646-0.119c-1.063,0.001-1.805,1.355-0.805,3.98
+		S454.047,146.975,454.047,146.975z" filter="url(#filtros)" fill="url(#dx2)"/>
+	<path d="M762.748,206.482c-1-2.625-12.727-17.971-12.727-17.971l-41.96-58.8c0,0-3.102-4.223-5.674-4.576
+		c-0.925-0.127-14.612-0.158-14.612-0.158s-3.142,0.707-5.338,2.904c-2.196,2.195-28.187,38.802-28.187,38.802l-27.089,38.619
+		c0,0-1.646,2.195-1.098,3.66c0,0,0.109,1.186,2.15,1.186s9.916,0,9.916,0s2.567,0.699,9.317-8.801
+		c2.198-3.094,3.563-5.01,4.41-6.195h69.928l1.678,2.33l6.417,8.832c0,0,2.5,4.084,10.416,4.027
+		c5.081,0.102,18.112,0.244,21.646,0.119C763.006,210.46,763.748,209.107,762.748,206.482z M665.048,176.99l21.917-30.175
+		l21.737,30.175H665.048z" filter="url(#filtros)" fill="url(#dx3)"/>
+		<text y="276" x="481"  fill="#2E2E2E" font-size="74" font-family="helvetica"  opacity="1" filter="url(#filtros)">            
+            mutuales
+	    </text>
+</g>
+</svg>

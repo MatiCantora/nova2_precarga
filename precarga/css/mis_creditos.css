@@ -1,0 +1,258 @@
+/*@font-face {
+    font-family: 'Lato';
+    src: url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+}*/
+
+:root {
+    --verde: #006837;
+    --gris: #4d4d4d;
+    --azul: #194693;
+    --azul_claro: #19469380;
+    --blanco: #ffffff;
+    --fondo: #1946930D;
+    --celeste: #42C1EF;
+    --verde: #5BA44B;
+    --anaranjado: #E46D00;
+    --gris_claro: #949494;
+    --negro: #464646;
+/*    --tipografia-lato: 'Lato';*/
+}
+
+body {
+    
+    background-color: var(--blanco);
+    color: var(--azul);
+}
+
+.conteinerCreditos {
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+}
+
+#filtro_creditos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#filtro_creditos2 {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#filtroFecha {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 50vw;
+    min-width: 350px;
+}
+
+#div_fecha {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 10px 0px 10px;
+    border-radius: 5px;
+    border: solid 2px var(--azul);
+    
+}
+
+#div_fecha input[type=button] {
+    border-radius: 0px;
+    margin: 0px;
+    text-align: center;
+    cursor: pointer;
+    background-color: var(--blanco);
+    color: var(--azul)
+}
+
+#btnFe60 {
+    border-right: solid 0.2px var(--azul);
+    border-left: solid 0.2px var(--azul);
+}
+
+#div_fecha input[type=button]:hover {
+    background-color: var(--azul_claro);
+    color: var(--blanco);
+}
+
+.btnFe_selected {
+    background-color: var(--azul_claro) !important;
+    color: var(--blanco) !important;
+}
+
+
+#divCrFiltroLeft {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50vw;
+    min-width: 350px;
+    margin: 10px;
+}
+
+
+
+#lista_grupos {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 50vw;
+    min-width: 350px;
+    height: 70%;
+}
+
+#propuestas {
+    border: solid var(--azul) 1px;
+}
+
+#a_solucionar {
+    border: solid var(--anaranjado) 1px;
+}
+
+#en_proceso {
+    border: solid var(--gris_claro) 1px;
+}
+
+#pagados {
+    border: solid #42C1EF 1px;
+}
+
+.styleGrupos {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 16px;
+    width: 100%;
+    height: calc(60%/4);
+    margin: 5px;
+    padding: 5px;
+}
+
+.styloEstado {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100%;
+    padding: 0px;
+}
+
+.styloTitulo {
+    font-size: 1.25em;
+    font-weight:bolder;
+    color: var(--negro);
+}
+
+.styloSubitulo {
+    color: var(--negro);
+}
+
+.btnVer {
+    width: 66px;
+    border: none;
+    background-color: var(--fondo);
+    cursor: pointer;
+    border-radius: 28px;
+}
+
+.cantidad {
+    font-size: 1.50em;
+    width: 10%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px
+}
+
+
+#lista_creditos {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#iframe_cr {
+    width: 100%;
+    height: 95%;            
+}
+
+#divfiltrar {
+    height: 5%;
+    width: 100%;
+    margin-left: 125%;
+}
+
+#body_iframe_cr {
+    overflow: hidden;
+}
+
+#div_lst_creditos {
+    width:100%; 
+    overflow:auto;
+    position:relative;
+    height: 90%;
+    border: solid 1px var(--azul);
+}
+
+#div_lst_creditos table {
+    height: 100%;
+
+}
+
+#div_lst_creditos table tr {
+    height: 70px;
+    border-radius: 9px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.div_paginador {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+}
+
+#div_limpiar {
+    height: 10%;
+}
+
+.div_paginador input[type=button] {
+    padding-bottom: 0em;
+    padding-top: 0em;
+}
+
+@media screen and (max-width: 449px) {
+    .conteinerCreditos {
+            width: 99%;
+            height: 90%;
+    }
+
+
+    #lista_creditos {
+        width: 100%;
+    }
+}
+

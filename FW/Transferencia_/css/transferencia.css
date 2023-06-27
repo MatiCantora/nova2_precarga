@@ -1,0 +1,610 @@
+.skiptranslate {
+    display: none;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.dialog, .overlay_alphacube {
+    /*z-index: 30000 !important;*/
+}
+/**********************************/
+.tb1.menu td,
+.tb1.menu tr.tbLabel td,
+.tb1.menu th {
+    padding: 0px 2px;
+}
+/**********************************/
+.divCtrl.NULO {
+    font-family: arial;
+    font-size: 9pt;
+    width: 148px;
+    background-color: #E8E8E4 !important;
+    border-color: #777777 !important;
+    -moz-opacity: 0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    zoom: 1; /* hasLayout for IE6 and IE7 */
+}
+
+#container {
+    border: solid #749bc4 1px !Important;
+    position: absolute;
+    top: 44px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    margin: -1px 0 0 -2px;
+    overflow: auto;
+    background: #FFFFFF;
+}
+
+.divCtrl.message,
+.divCtrl.gateway,
+.divCtrl.event,
+.divCtrl.timer {
+    border: none;
+    background: none;
+}
+
+.divCtrl {
+    padding: 0;
+}
+
+    .divCtrl.SP {
+        border-color: #AA6666;
+        background-color: #FFEEEE;
+    }
+
+    .divCtrl.EXP {
+        border-color: #6666AA;
+        background-color: #EEEEFF;
+    }
+
+    .divCtrl.INF {
+        border-color: #66AA66;
+        background-color: #EEFFEE;
+    }
+
+    .divCtrl.DTS {
+        border-color: #AAAA66;
+        background-color: #FFFFEE;
+    }
+
+    .divCtrl.SCR {
+        border-color: #AA66AA;
+        background-color: #FFEEFF;
+    }
+
+    .divCtrl.XLS {
+        border-color: #66AA66;
+        background-color: #EEFFEE;
+    }
+
+    .divCtrl.EQV {
+        border-color: #AA5566; /*#AD2128*/
+        background-color: #FFCCD7;
+    }
+
+    .divCtrl.NOS {
+        border-color: #AA66AA;
+        background-color: #FFEEFF;
+    }
+
+    .divCtrl.SSR {
+        border-color: #AAAA66;
+        background-color: #FFFFEE;
+    }
+
+    .divCtrl.SSS {
+        border-color: #0062CE;
+        background-color: #D2E8FF; /*#0062CE;*/
+    }
+
+    .divCtrl.SSC {
+        border-color: #0062CE;
+        background-color: #D2E8FF;
+    }
+
+    .divCtrl.TRA {
+        border-color: #EEA466;
+        background-color: #FDF0D7;
+    }
+
+    .divCtrl.SEG {
+        border-color: #3EBD92;
+        background-color: #EEFFEE;
+    }
+
+    .divCtrl .content {
+        font-family: arial;
+        font-size: 9pt;
+        width: 100%;
+    }
+
+        .divCtrl .content .icon {
+            width: 16px;
+            height: 16px;
+            padding-left: 3px;
+        }
+
+        .divCtrl .content .type {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .divCtrl .content .actions {
+            text-align: right;
+        }
+
+            .divCtrl .content .actions table {
+                float: right;
+            }
+
+                .divCtrl .content .actions table td {
+                    width: 16px;
+                    height: 16px;
+                    cursor: hand;
+                    cursor: pointer;
+                }
+
+    .divCtrl .title {
+        text-align: center;
+        font-size: 11px;
+        font-family: Helvetica, Arial;
+    }
+
+    .divCtrl .content .title {
+        padding: 5px 3px;
+        line-height: 100%;
+    }
+
+    .divCtrl .title .icon {
+        width: 16px;
+        height: 16px;
+        background: #f00;
+        position: absolute;
+        top: 0px;
+        display: none;
+    }
+
+    .divCtrl .title:hover .icon {
+        display: block;
+    }
+
+    .divCtrl .title .icon.move.left {
+        left: 4px;
+        background: url('/FW/image/transferencia/arrow_left.png');
+    }
+
+    .divCtrl .title .icon.move.right {
+        right: 5px;
+        background: url('/FW/image/transferencia/arrow_right.png');
+    }
+
+    .divCtrl .title .icon.erase {
+        right: 22px;
+        background: url('/FW/image/tnvRect/delete.png');
+    }
+
+    .divCtrl .title .icon.edit {
+        right: 39px;
+        background: url('/FW/image/icons/editar.png');
+    }
+
+    .divCtrl.message,
+    .divCtrl.gateway,
+    .divCtrl.event,
+    .divCtrl.timer {
+        text-align: center;
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+        .divCtrl.message .title,
+        .divCtrl.gateway .title,
+        .divCtrl.event .title,
+        .divCtrl.timer .title {
+            display: inline-block;
+            position: absolute;
+            width: 160px;
+            margin-top: 2px;
+            border: none;
+        }
+
+        .divCtrl.gateway .title {
+            margin-left: -100px;
+            margin-top: 42px;
+        }
+
+        .divCtrl.event .title,
+        .divCtrl.timer .title {
+            margin-left: -95px;
+            margin-top: 32px;
+        }
+
+.selectedWrapper.message,
+.selectedWrapper.gateway,
+.selectedWrapper.event,
+.selectedWrapper.timer {
+    border-radius: 40px;
+}
+/************************************/
+.divCtrl.pool,
+.divCtrl.lane {
+    border: none;
+    position: relative;
+    border-radius: 0 0 0 0;
+    background: none;
+    height: 100%;
+    border-right: 1px solid #000000;
+    white-space: nowrap;
+    /*display: none;*/
+}
+
+.divCtrl.pool {
+    margin: 5px;
+    border-top: 2px solid #000000;
+    border-right: 2px solid #000000;
+    border-left: 2px solid #000000;
+}
+
+    .divCtrl.pool .resizer,
+    .divCtrl.pool .divCtrl.lane .resizer {
+        width: 5px;
+        cursor: e-resize;
+        right: 0;
+        margin-top: -17px;
+        position: absolute;
+        height: 100%;
+    }
+
+    .divCtrl.pool .resizer {
+        width: 12px;
+        margin-top: -18px;
+        right: -7px;
+    }
+
+    .divCtrl.pool .divCtrl.lane .resizer {
+        right: 0;
+    }
+
+        .divCtrl.pool .resizer:hover,
+        .divCtrl.pool .divCtrl.lane .resizer:hover {
+            background: rgb(200, 200, 255);
+            background: rgba(170, 170, 238, 0.5);
+        }
+
+    .divCtrl.pool .resizer:hover {
+        background: rgb(255, 200, 200);
+        background: rgba(238, 170, 170, 0.5);
+    }
+
+    .divCtrl.pool span.title,
+    .divCtrl.pool .divCtrl.lane span.title {
+        width: 100%;
+        display: block;
+        text-align: center;
+        cursor: pointer;
+        border-bottom: 1px solid #000000;
+        padding: 1px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        background: none;
+    }
+
+        .divCtrl.pool span.title:hover,
+        .divCtrl.pool .divCtrl.lane span.title:hover {
+            background: #EEEEEE;
+        }
+
+    .divCtrl.pool span.title {
+        border-bottom: 2px solid #000000;
+    }
+
+        .divCtrl.pool span.title .text {
+            display: inline-block;
+            width: 100%;
+        }
+
+    .divCtrl.pool .part,
+    .divCtrl.lane .part {
+        width: 48%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+    }
+
+        .divCtrl.pool .part:hover .arrow,
+        .divCtrl.lane .part:hover .arrow {
+            display: block;
+        }
+
+        .divCtrl.pool .part.left:hover,
+        .divCtrl.lane .part.left:hover {
+            border-left: 5px solid #000000;
+        }
+
+        .divCtrl.pool .part.right:hover,
+        .divCtrl.lane .part.right:hover {
+            border-right: 5px solid #000000;
+        }
+
+    .divCtrl.pool .divCtrl.lane .part .arrow {
+        margin: 100px 1px;
+    }
+
+    .divCtrl.pool .part .arrow {
+        display: none;
+        margin: 100px 6px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .divCtrl.pool .part.left .arrow,
+    .divCtrl.lane .part.left .arrow {
+        float: left;
+        background: url('/FW/image/transferencia/arrow_left.png');
+    }
+
+    .divCtrl.pool .part.right .arrow,
+    .divCtrl.lane .part.right .arrow {
+        float: right;
+        background: url('/FW/image/transferencia/arrow_right.png');
+    }
+
+    .divCtrl.pool .divCtrl.lane .part.left {
+        left: -3px;
+    }
+
+    .divCtrl.pool .divCtrl.lane .part.right {
+        right: -3px;
+    }
+
+    .divCtrl.pool .part.left {
+        left: -9px;
+    }
+
+    .divCtrl.pool .part.right {
+        right: -9px;
+    }
+
+.divCtrl.paste {
+    border-radius: 0;
+    border: 1px solid #BBBBBB;
+    background: #EEEEEE;
+    /* opacity:0.5 !important;
+                z-index:1 !important;*/
+}
+
+    .divCtrl.paste .border {
+        border: 2px solid #000000;
+        border-right: none;
+        width: 16px;
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        left: -1px;
+    }
+
+    .divCtrl.paste .contenn {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .divCtrl.paste .text {
+        font-size: 11px;
+        /*height: 100%;*/
+        overflow: hidden;
+        padding-left: 5px;
+        /*white-space: pre-wrap;*/
+        line-height: 12px;
+    }
+
+.divCtrl.annotation {
+    border-radius: 0;
+    border: 1px solid #BBBBBB;
+    background: #EEEEEE;
+    /* opacity:0.5 !important;
+                z-index:1 !important;*/
+}
+
+    .divCtrl.annotation .border {
+        border: 2px solid #000000;
+        border-right: none;
+        width: 16px;
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        left: -1px;
+    }
+
+    .divCtrl.annotation .contenn {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .divCtrl.annotation .text {
+        font-size: 11px;
+        /*height: 100%;*/
+        overflow: hidden;
+        padding-left: 5px;
+        /*white-space: pre-wrap;*/
+        line-height: 12px;
+    }
+
+.divCanvas .marker {
+    height: 100%;
+    position: absolute;
+    border: 1px dashed #000000;
+}
+
+    .divCanvas .marker.poolMarker {
+        width: 300px;
+        background: #FF9999;
+    }
+
+    .divCanvas .marker.laneMarker {
+        width: 150px;
+        background: #9999FF;
+    }
+/***lineas******************/
+.divCanvas .arrow.segment {
+    position: absolute;
+    display: inline-block;
+    background: #000000;
+    overflow: visible;
+    margin: 0px auto;
+}
+
+    .divCanvas .arrow.segment.error {
+        position: absolute;
+        display: inline-block;
+        background: #f00;
+        overflow: visible;
+        margin: 0px auto;
+    }
+
+    .divCanvas .arrow.segment.warning {
+        position: absolute;
+        display: inline-block;
+        background: orange;
+        overflow: visible;
+        margin: 0px auto;
+    }
+
+    .divCanvas .arrow.segment.default {
+        position: absolute;
+        display: inline-block;
+        background: black;
+        overflow: visible;
+        margin: 0px auto;
+    }
+
+    .divCanvas .arrow.segment.output_false {
+        position: absolute;
+        display: inline-block;
+        background: #DD4800;
+        overflow: visible;
+        margin: 0px auto;
+    }
+
+    .divCanvas .arrow.segment.annotation {
+        background: url('/FW/image/transferencia/dashed.png');
+    }
+/***botonera******************/
+#divTablero {
+    width: 100%;
+}
+
+    #divTablero img {
+        margin: 0px;
+        position: relative;
+        top: -2px;
+    }
+
+    #divTablero div.tablero {
+        overflow: hidden;
+        width: 100%;
+        float: left;
+        height: 18px;
+        border-top: 1px solid white;
+        border-bottom: 1px solid white;
+        background: white;
+    }
+
+        #divTablero div.tablero:hover {
+            border-top: 1px solid #AAAAFF;
+            border-bottom: 1px solid #AAAAFF;
+            background: #CCCCFF;
+        }
+
+    #divTablero div.separator {
+        clear: both;
+        padding: 1px 3px;
+        background: white;
+    }
+
+        #divTablero div.separator hr {
+            padding: 0;
+            margin: 0;
+        }
+
+    #divTablero table tr td.btnBegin_O {
+        display: none;
+    }
+
+    #divTablero table tr td.btnNormal_O,
+    #divTablero table tr td.btnOnOver_O {
+        background: white;
+        font-size: 11px;
+        text-align: left !important;
+        /* padding: 3px;*/
+        font-weight: normal;
+        vertical-align: top;
+        line-height: 12px;
+    }
+
+        #divTablero table tr td.btnNormal_O:hover,
+        #divTablero table tr td.btnOnOver_O:hover {
+            background: #CCCCFF;
+        }
+
+    #divTablero table tr td.btnEnd_O {
+        display: none;
+    }
+
+.alphacube_content {
+    overflow: hidden;
+    border: 1px solid #777777;
+}
+
+    .alphacube_content .alphacube_content {
+        border: none;
+    }
+
+.divTablero.alphacube_minimize {
+    right: 6px;
+}
+/**** menu ****/
+.mnuTB_B td.mnuCELL_Normal_B {
+    padding: 0px;
+}
+
+.mnuTB_B td.mnuCELL_OnOver_B {
+    background: #C0C0C0;
+    color: #FFFFFF;
+    cursor: pointer;
+    cursor: hand;
+}
+
+tr.submnuTR_B td {
+    cursor: pointer;
+    padding: 0 0px;
+    min-width: 100px;
+    height: 24px;
+    background: #FFFFFF;
+    border: 1px #C0C0C0 solid !important;
+    /*   -moz-border-radius: 0.33em;
+                -webkit-border-radius: 0.33em;
+                 border-radius: 0.33em;*/
+}
+
+    tr.submnuTR_B td:hover {
+        background: #C0C0C0;
+        cursor: hand;
+        cursor: pointer;
+    }

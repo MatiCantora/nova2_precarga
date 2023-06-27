@@ -1,0 +1,149 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageVOIInterfaces" %>
+<%
+    Dim e As New tError()
+
+    Try
+        Dim tipo_docu As Integer = nvUtiles.obtenerValor("tipo_docu")
+        Dim nro_docu As Double = nvUtiles.obtenerValor("nro_docu")
+        Dim datosTicket As Dictionary(Of String, Object) = Nothing
+        Dim strComentario As String
+
+        Try
+            datosTicket = nvUtiles.obtenerValor("datosTicket")
+        Catch ex As Exception
+
+        End Try
+
+        If datosTicket Is Nothing Then
+            strComentario = ""
+        Else
+            Dim trsComentario As New trsParam(datosTicket)
+            strComentario = trsComentario.toJSON().Replace("'", """")
+        End If
+
+        Select Case strComentario
+            Case <> ""
+                Dim nro_ticket_trx As String = nvUtiles.obtenerValor("tipo_trx")
+                If nro_ticket_trx Is Nothing Then
+                    e.numError = -1
+                    e.mensaje = "Faltó un dato necesario."
+                    e.debug_src = "Guardado Ticket Link"
+                    nvSession.Abandon()
+                    e.response()
+                End If
+
+                Dim strSQL As String = "insert into cliente_mb_tickets (tipo_docu, nro_docu, nro_ticket_trx, comentario, fecha_alta) values (" & tipo_docu & "," & nro_docu & ", '" & nro_ticket_trx & "', '" & strComentario & "', GETDATE() )"
+                nvFW.nvDBUtiles.DBExecute(strSQL)
+                Dim id_inserted As Integer = nvFW.nvDBUtiles.DBExecute("select IDENT_CURRENT('cliente_mb_tickets') as id").Fields("id").Value
+
+                strSQL = "Select callback FROM API_clientes_cuentas_cfg WHERE nrodoc='" & nro_docu & "' and tipdoc=" & tipo_docu & " and es_psp=1"
+                Dim rsCliente As ADODB.Recordset = nvFW.nvDBUtiles.DBOpenRecordset(strSQL)
+
+                If Not rsCliente.EOF Then
+                    Try
+                        Dim req As New nvHTTPRequest
+                        req.url = rsCliente.Fields("callback").Value
+                        req.Method = "POST"
+                        req.ContentType = "application/json"
+                        req.Body = strComentario
+
+                        Dim res As String = req.getResponseText()
+                        Dim estado As String = ""
+
+                        If (res Is Nothing OrElse res = String.Empty) AndAlso Not req.response_error Is Nothing Then
+                            e.params("response_error") = True
+                            res = New IO.StreamReader(req.response_error.GetResponseStream()).ReadToEnd()
+                            estado = "Error"
+                        Else
+                            estado = "Enviado"
+                        End If
+
+                        strSQL = "insert into API_clientes_mb_tickets (nro_cliente_ticket, estado, intentos, fecha_ultimo_envio, last_response) values (" & id_inserted & ",'" & estado & "', 1, GETDATE(), '" & res.Replace("'", "") & "')"
+                        nvFW.nvDBUtiles.DBExecute(strSQL)
+                        e.mensaje = "Operación realizada exitosamente."
+
+                    Catch ex As Exception
+                        e.numError = -90
+                        e.titulo = "Error"
+                        e.mensaje = "Ocurrió una excepción no controlada."
+                        e.debug_desc = ex.Message
+                        e.debug_src = "MB/cliente/ticket.aspx"
+                    End Try
+
+                Else
+                    e.numError = -1
+                    e.titulo = "Operación incompleta."
+                    e.mensaje = "No se encontró el PSP."
+                    e.debug_src = "MB/cliente/ticket.aspx"
+                End If
+                rsCliente.Close()
+
+            Case Else
+                Dim fecha_desde As String = nvUtiles.obtenerValor("fecha_desde", "")
+                Dim fecha_hasta As String = nvUtiles.obtenerValor("fecha_hasta", "")
+                Dim filtroWhere As String = nvUtiles.obtenerValor("filtroWhere", "")
+                Dim filtroWhereTmp As String = ""
+                Dim counter As Integer = 0
+
+                If fecha_desde <> "" Then
+                    counter = counter + 1
+                    filtroWhereTmp &= "<fecha_alta type='mas'> convert(datetime, '" & fecha_desde & "')</fecha_alta>"
+                End If
+
+                If fecha_hasta <> "" Then
+                    counter = counter + 1
+                    filtroWhereTmp &= "<fecha_alta type='menor'> convert(datetime, '" & fecha_hasta & "')</fecha_alta>"
+                End If
+
+                If filtroWhere <> "" Then
+                    counter = counter + 1
+                    filtroWhereTmp &= filtroWhere
+                End If
+
+                If counter > 1 Then
+                    filtroWhereTmp = "<AND>" & filtroWhereTmp & "</AND>"
+                End If
+
+                Dim strSQL As String = "<criterio><select vista='cliente_mb_tickets'><campos>nro_cliente_ticket, comentario</campos><filtro>" & filtroWhereTmp & "</filtro></select></criterio>"
+                Dim rs As ADODB.Recordset = nvFW.nvXMLSQL.XMLtoRecordset(strSQL)
+
+                Dim params_json As String = "{"
+
+                While rs.EOF = False
+                    params_json &= "'ticket" & rs.Fields("nro_cliente_ticket").Value & "': "
+                    params_json &= rs.Fields("comentario").Value & ","
+                    rs.MoveNext()
+                End While
+
+                If params_json <> "{" Then
+                    params_json = params_json.Remove(params_json.Length - 1)
+                End If
+                params_json &= "}"
+
+                If params_json <> "{}" Then
+                    'Deserializar el JSON a un object
+                    Dim serializer As New System.Web.Script.Serialization.JavaScriptSerializer
+                    Dim objResp As Dictionary(Of String, Object) = serializer.Deserialize(Of Dictionary(Of String, Object))(params_json)
+                    Dim trsResp As New trsParam(objResp)
+                    e.params("movimientos") = trsResp
+                    e.mensaje = "Se encontraron los siguientes registros asociados"
+                Else
+                    e.mensaje = "No se encontraron registros asociados"
+                End If
+
+                nvDBUtiles.DBCloseRecordset(rs)
+                e.titulo = "Consulta hecha con éxito."
+
+        End Select
+
+    Catch ex As Exception
+        e.numError = -99
+        e.mensaje = "Ocurrió una excepción no controlada."
+        e.debug_desc = ex.Message
+        e.debug_src = "MB/cliente/ticket.aspx"
+    End Try
+
+    nvSession.Abandon()
+    e.response()
+
+%>

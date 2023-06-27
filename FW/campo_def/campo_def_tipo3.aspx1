@@ -1,0 +1,214 @@
+<%@ Page Language="VB" AutoEventWireup="false"  Inherits="nvFW.nvPages.nvPageFW" %>
+<%@ Import Namespace="nvFW" %>
+<%@ Import Namespace="nvFW.nvUtiles" %>
+<%
+    'Dim campo_def As String = obtenerValor("campo_def", "")
+    'Dim campo_def_value As String = obtenerValor("campo_def_value", "")
+    'Dim campo_desc = obtenerValor("campo_desc", "")
+%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Campo Def Tipo 3</title>
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="/FW/script/nvFW.js" ></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js" ></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js" ></script>
+    <script type="text/javascript" src="/FW/script/tcampo_def.js"></script>
+
+    <% = Me.getHeadInit()%>
+    
+    <style type="text/css">
+    input[type="button"]:hover {cursor:hand; cursor:pointer;}
+    </style>
+
+    <script type="text/javascript" language="javascript">
+<!--
+//var alert = function(msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); } 
+
+var win = nvFW.getMyWindow()
+var oCampo_def
+function window_onload() 
+{
+ nvFW.enterToTab = false
+ oCampo_def = win.options.parameters.campo_def
+ win.cancelado = true //por defecto si cierra la ventana
+ win.campo_def_value = ""
+ win.campo_desc = ""
+ 
+ //Si viene con un valor cargado asignarlo
+ var cb = $('cbLista')
+ if (oCampo_def.input_hidden.value != '')
+   {
+   cb.options.length = 0
+   cb.options.length++
+   cb.options[cb.options.length-1].value = oCampo_def.input_hidden.value
+   cb.options[cb.options.length-1].text = oCampo_def.input_text.value
+   }
+ cb.selectedIndex = 0
+ 
+ try
+   {
+   $('txt_buscar').focus()
+   }
+ catch(e){}  
+   
+}
+
+
+function buscar()
+{
+var filtroWhere = ""
+var cadena = $('txt_buscar').value
+var codigo = $('cod_buscar').value
+
+if (cadena == "" && codigo == "")
+  {
+  nvFW.alert("No hay valores de busqueda cargados",{width:370})
+  return
+  }
+  
+if (cadena != "" && cadena.length < 3) 
+  {
+  nvFW.alert("El texto ingresado tiene menos de 3 caracteres",{width:370})
+  return
+  }
+  
+var campo_desc = oCampo_def.campo_desc  
+var campo_codigo = oCampo_def.campo_codigo  
+if (cadena != "")
+  filtroWhere = "<" + campo_desc + " type='like'>%" + cadena + "%</" + campo_desc + ">"
+else
+  filtroWhere = "<" + campo_codigo + " type='igual'>" + codigo + "</" + campo_codigo + ">"
+
+$('cbLista').length = 0
+var objCb = $('cbLista')
+contros_disabled()
+xml_format = oCampo_def.json ? 'rs_xml_json' : 'rs_xml'
+cacheControl = oCampo_def.cacheControl
+filtroXML = oCampo_def.filtroXML
+vistaGuardada = oCampo_def.vistaGuardada
+cargar_cbCodigo(objCb, '', 'id', 'campo', filtroWhere, '', 1, 1, filtroXML, true, function(){contros_enabled()}, function(){contros_enabled()}, xml_format, cacheControl, vistaGuardada)
+
+}
+
+function contros_disabled()
+  {
+  $("txt_buscar").disabled = true
+  $("cod_buscar").disabled = true
+  $("btnBuscar").disabled = true
+  $("btnOK").disabled = true
+  }
+  
+function contros_enabled()
+  {
+  $("txt_buscar").disabled = false
+  $("cod_buscar").disabled = false
+  $("btnBuscar").disabled = false
+  $("btnOK").disabled = false
+  }  
+
+function txt_buscar_onkeypress(e)
+{
+ var key = Prototype.Browser.IE ? event.keyCode : e.which
+ if (key == 13)
+   buscar()
+}
+function cancelar()
+  {
+  win.close()
+  }
+
+function aceptar()
+  {
+  var cb = $('cbLista')
+  win.cancelado = false
+  win.campo_def_value =  cb.options[cb.selectedIndex].value
+  win.campo_desc = cb.options[cb.selectedIndex].text
+  win.close()
+  }
+
+function limpiar()
+{
+  $('cbLista').options.length = 0
+  win.campo_def_value = ''
+  win.campo_desc = ''
+  // limpiar campos de busqueda
+  $('txt_buscar').value = ""
+  $('cod_buscar').value = ""
+  win.close()
+}
+
+function cbLista_ondblclick() 
+{
+aceptar()
+}
+
+function cbLista_onkeypress(e) 
+{
+var key = !!e.srcElement ? event.keyCode : e.which
+if (key == 13)
+  aceptar()
+}
+
+/*function Div_Actualizar_show()
+ {
+  var div = $("Div_Actualizar")
+  var cb = $("tbRes")
+  div.clonePosition(cb)
+  div.show()
+  div.innerHTML=''
+  var HTML = "<table style='width:100%;height:100%'><tr><td style='text-align:center;vertical-align:middle'><img id='img_spinner' alt='' src='../../meridiano/image/icons/spinner.gif'/></table>"
+  div.insert({top:HTML})
+  div.setOpacity(0.5)
+ }*/
+
+//-->
+    </script>
+
+</head>
+<body onload="return window_onload()" style="width:100%; height: 100%; overflow: hidden; background-color: #FFFFFF;">
+  
+    <table class="tb1">
+        <tr class="tbLabel">
+            <td colspan="3">Seleccionar</td>
+        </tr>
+        <tr class="tbLabel0">
+            <td style="width: 70%">Descripción</td>
+            <td style="width: 15%">&nbsp;Código&nbsp;</td>
+            <td style="width: 15%">&nbsp;</td>
+        </tr>
+        <tr>
+            <td style="width: 70%">
+                <input type="text" id="txt_buscar" style="width: 100%" onkeypress="return txt_buscar_onkeypress(event)" onfocus="$('cod_buscar').value = ''" />
+            </td>
+            <td style="width: 15%">
+                <input type="text" id="cod_buscar" style="width: 100%" onkeypress="return txt_buscar_onkeypress(event)" onfocus="$('txt_buscar').value = ''" />
+            </td>
+            <td style="width: 15%">
+                <input type="button" id="btnBuscar" value="Buscar" style="width: 100%" onclick="return buscar()" />
+            </td>
+        </tr>
+    </table>
+    <table class="tb1">
+        <tr>
+            <td style="width: 100%" colspan="3">
+                <select id='cbLista' style="width: 100%" size="10" ondblclick="return cbLista_ondblclick()"
+                    onkeypress="return cbLista_onkeypress(event)">
+                    <option value=""></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 33.3333%">
+                <input type="button" id="btnOK" style="width: 100%" value="OK" onclick="return aceptar()" />
+            </td>
+            <td style="width: 33.3333%">
+                <input type="button" id="btnCancelar" style="width: 100%" value="Cancelar" onclick="return cancelar()" />
+            </td>
+            <td style="width: 33.3333%">
+                <input type="button" id="btnlimpiar" style="width: 100%" value="Limpiar" onclick="return limpiar()" />
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

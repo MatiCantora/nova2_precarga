@@ -1,0 +1,71 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageVOIInterfaces" %>
+<%
+
+    Dim e As New tError()
+    Try
+        Dim datosTicket As Dictionary(Of String, Object) = Nothing
+        Dim strComentario As String
+
+        Try
+            datosTicket = nvUtiles.obtenerValor("datosTicket")
+        Catch ex As Exception
+
+        End Try
+
+        If datosTicket Is Nothing Then
+            strComentario = ""
+        Else
+            Dim trsComentario As New trsParam(datosTicket)
+            strComentario = trsComentario.toJSON().Replace("'", """")
+        End If
+
+        Dim tipo_docu As Integer = nvUtiles.obtenerValor("tipo_docu")
+        Dim nro_docu As Double = nvUtiles.obtenerValor("nro_docu")
+        Dim nro_ticket_trx As String = nvUtiles.obtenerValor("tipo_trx")
+
+        Select Case strComentario
+            Case <> ""
+                Dim strSQL As String = "insert into cliente_mb_tickets (tipo_docu, nro_docu, nro_ticket_trx, comentario) values (" & tipo_docu & "," & nro_docu & ", '" & nro_ticket_trx & "', '" & strComentario & "')"
+                nvFW.nvDBUtiles.DBExecute(strSQL)
+                e.mensaje = "Ticket guardado con éxito."
+
+            Case Else
+                Dim rs As ADODB.Recordset = nvFW.nvDBUtiles.DBOpenRecordset("SELECT nro_cliente_ticket, comentario FROM cliente_mb_tickets where tipo_docu=" & tipo_docu & " and nro_docu=" & nro_docu & " and nro_ticket_trx='" & nro_ticket_trx & "'")
+                Dim params_json As String = "{"
+
+                While rs.EOF = False
+                    params_json &= "'ticket" & rs.Fields("nro_cliente_ticket").Value & "': "
+                    params_json &= rs.Fields("comentario").Value & ","
+                    rs.MoveNext()
+                End While
+
+                params_json = params_json.Remove(params_json.Length - 1)
+                params_json &= "}"
+
+                'Deserializar el JSON a un object
+                Dim serializer As New System.Web.Script.Serialization.JavaScriptSerializer
+                Dim objResp As Dictionary(Of String, Object) = serializer.Deserialize(Of Dictionary(Of String, Object))(params_json)
+                Dim trsResp As New trsParam(objResp)
+
+                nvDBUtiles.DBCloseRecordset(rs)
+                e.mensaje = "Consulta hecha con éxito."
+                e.params("movimientos") = trsResp
+
+        End Select
+
+        e.numError = 0
+
+    Catch ex As Exception
+
+        e.numError = -99
+        e.mensaje = "Ocurrió una excepción no controlada."
+        e.debug_desc = ex.Message
+        e.debug_src = "Guardado y Consulta Ticket Link"
+
+    End Try
+
+
+    nvSession.Abandon()
+    e.response()
+
+%>

@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<resultado>
+    <MenuItems>
+        <MenuItem id="10">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>inicio</icono>
+            <Desc>Inicio</Desc>
+            <Acciones>
+                <Ejecutar Tipo="link">
+                    <Target>_top</Target>
+                    <URL>default.aspx</URL>
+                </Ejecutar>
+            </Acciones>
+        </MenuItem>
+<MenuItem id="20">
+      <Lib TipoLib="offLine">DocMNG</Lib>
+      <icono>reporte</icono>
+      <Desc>Solicitudes</Desc>
+      <Acciones>
+        <Ejecutar Tipo="script">
+          <codigo>abrir_ventana_emergente('/voii/solicitudes/solicitud_seleccion.aspx', 'Solicitudes', 'permisos_solicitudes', 1, 500, 1200)</codigo>
+        </Ejecutar>
+      </Acciones>
+    </MenuItem>
+        <MenuItem id="30">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>procesos</icono>
+            <Desc>Procesos y Tareas</Desc>
+            <Acciones>
+               <Ejecutar Tipo="script">
+                  <codigo>abrir_ventana_emergente('/fw/transferencia/procesos_tareas_consultar.aspx','Procesos y Tareas','permisos_procesos_tareas',1,500,1000, true, true, true, true, false)</codigo>
+               </Ejecutar>
+            </Acciones>
+        </MenuItem>
+        <MenuItem id="40">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>herramientas</icono>
+            <Desc>Configuración</Desc>
+            <MenuItems>
+                 <MenuItem id="41">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>buscar</icono>
+                    <Desc>Campos Defs</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/FW/campo_def/campos_def_listar.aspx', 'Listado de Campos Defs', 'permisos_web', 1, 600, 1024, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="42">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Comentarios  - Definición</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/comentario/com_reg_def_abm.aspx', 'Definición de comentario', 'permisos_herramientas', 3, 600, 1024, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="43">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Comentarios - Relación Grupo/Tipo</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/comentario/com_tipos_grupos_abm.aspx', 'Relacion Grupo/Tipo', 'permisos_herramientas', 3, 600, 1024, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="44">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>circuito</icono>
+                    <Desc>Comentarios - Circuitos</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/comentario/cire_circuito_abm.aspx', 'ABM Circuitos', 'permisos_herramientas', 3, 600, 1024, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="45">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Parámetros - Asignación</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx?accion=asignar','Parámetros -  Asignación','permisos_parametros',2,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="46">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Parámetros - ABM Esquema</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/parametros/parametros_nodos_modulo.aspx','Parámetros - Esquema de Parámetros','permisos_parametros',1,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="47">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>Seguridad - ABM Esquema Permisos</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/security/permiso_nodos_tree.aspx','Seguridad - Esquema de Permisos','permisos_seguridad',2,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="48">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>parametros</icono>
+                    <Desc>Control COELSA</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('ws_coelsa.aspx', 'WebService COELSA', 'permisos_herramientas', 3, 270, 600, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem id="50">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>seguridad</icono>
+            <Desc>Seguridad</Desc>
+            <MenuItems>
+                <MenuItem id="51">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>Cambiar Contraseña</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>window.top.abrir_ventana_emergente('/FW/security/operador_pwd_cambiar.aspx','Seguridad - Cambiar Contraseña','permisos_seguridad',1,180,500, true, false, true, false, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="52">
+				 <Lib TipoLib="offLine">DocMNG</Lib>
+				  <icono>permiso</icono>
+				  <Desc>Operadores</Desc>
+				  <Acciones>
+					<Ejecutar Tipo="script">
+					  <codigo>abrir_ventana_emergente('/FW/security/operador_consultar.aspx?vista=O','Seguridad - Accesos operadores','permisos_seguridad',1,500,1000)</codigo>
+					</Ejecutar>
+				  </Acciones>
+				</MenuItem>
+				 <MenuItem id="53">
+				  <Lib TipoLib="offLine">DocMNG</Lib>
+				  <icono>permiso</icono>
+				  <Desc>Perfiles</Desc>
+				  <Acciones>
+					<Ejecutar Tipo="script">
+					  <codigo>abrir_ventana_emergente('/FW/security/operador_consultar.aspx?vista=P','Seguridad - Accesos perfiles','permisos_seguridad',1,500,1000)</codigo>
+					</Ejecutar>
+				  </Acciones>
+				</MenuItem>
+                <MenuItem id="54">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>permiso</icono>
+                    <Desc>Permisos</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/security/permiso_abm.aspx?vista=arbol','Esquema de Permisos','permisos_seguridad',2,600,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem id="60">
+            <Lib TipoLib="offLine">DocMNG</Lib>
+            <icono>bpm</icono>
+            <Desc>BPM</Desc>
+            <MenuItems>
+                <MenuItem id="62">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>procesos</icono>
+                    <Desc>Transferencias ABM</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/transferencia/transferencia_abm.aspx','Procesos y Tareas','permisos_transferencia',1,500,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+                <MenuItem id="63">
+                    <Lib TipoLib="offLine">DocMNG</Lib>
+                    <icono>buscar</icono>
+                    <Desc>Seguimiento</Desc>
+                    <Acciones>
+                        <Ejecutar Tipo="script">
+                            <codigo>abrir_ventana_emergente('/fw/transferencia/transf_seguimiento.aspx','Seguimiento','permisos_transferencia_seguimiento',4,500,1000, true, true, true, true, false)</codigo>
+                        </Ejecutar>
+                    </Acciones>
+                </MenuItem>
+            </MenuItems>
+        </MenuItem>       
+    </MenuItems>
+</resultado>

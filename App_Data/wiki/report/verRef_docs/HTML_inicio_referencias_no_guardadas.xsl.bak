@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882"
+				xmlns:rs='urn:schemas-microsoft-com:rowset'
+				xmlns:z='#RowsetSchema'
+				xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+				xmlns:fn="http://www.w3.org/2005/xpath-functions"
+                xmlns:foo="http://www.broadbase.com/foo" extension-element-prefixes="msxsl" exclude-result-prefixes="foo">
+    
+    <xsl:output method="html" version="1.0" encoding="ISO-8859-1" omit-xml-declaration="yes"/>
+    
+    <msxsl:script language="javascript" implements-prefix="foo">
+        <![CDATA[
+        ]]>
+    </msxsl:script>
+    
+    <xsl:template match="/">
+    <html>
+        <head>
+            <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+            <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+            <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+            <script type="text/javascript">
+              
+              alert("la pucha") 
+              
+                function verRefEditar(nro_ref, id_ref_auto)
+                {
+                    if (nro_ref != 0)
+                    {
+                        window.top.showRef = nro_ref;
+                        window.top.editRef = nro_ref;
+                        window.top.editAutoguardadaRef = false;
+                    }
+                    else if (id_ref_auto != 0)
+                        {
+                            window.top.showRef = 0;
+                            window.top.editRef = 0;
+                            window.top.editAutoguardadaRef = id_ref_auto;
+                        }
+
+                    window.top.ref_no_guardada = true;
+                    window.top.$$('iframe[name="menu_left"]')[0].contentWindow.referencia();
+                    close();
+                }
+                
+                function close()
+                {
+                    if (window.top.winSusc)
+                    {
+                        window.top.winSusc.close();
+                    }
+                }
+                
+                function eliminarNoGuardadas(id_ref_auto) 
+                {
+                debugger
+                    window.top.nvFW.confirm('¿Desea eliminar el autoguardado de la referencia?', {
+                        width: 300,
+                        onOk: function(win) {
+                            
+                            var rs = new tRS();
+                            var qry = '<criterio>';
+                            qry += '    <procedure CommandText="dbo.rm_ref_autoguardado_baja" CommantTimeOut="1500">';
+                            qry += '        <parametros>';
+                            qry += '            <id_ref_auto DataType="int">' + id_ref_auto + '</id_ref_auto>';
+                            qry += '        </parametros>';
+                            qry += '    </procedure>';
+                            qry += '</criterio>';
+                                    
+                            rs.open(qry);
+                            
+                            if (rs.eof())
+                            {
+                                alert('Ocurrio un error intente nuevamente');
+                            }
+                            
+                            win.close();
+                            window.top.nvFW.exportarReporte(window.top.winSusc._options);
+                        },
+                        onCancel: function(win) {
+                            win.close();
+                        }
+                    });
+                }
+            </script>
+        </head>
+        <body style="background-color: #FFFFFF; width:100%;height:100%;overflow: hidden">
+            <table class="tb1 highlight inicio last_modified highlightTROver">
+                <xsl:apply-templates select="xml/rs:data/z:row" mode="tipo" />
+            </table>
+        </body>
+    </html>
+    </xsl:template>
+    
+    <xsl:template match="z:row" mode="tipo">
+        <tr style="cursor: pointer;">
+            <td>
+                <xsl:attribute name="onclick">javascript:verRefEditar('<xsl:value-of select="@nro_ref"/>', '<xsl:value-of select="@id_ref_auto"/>')</xsl:attribute>
+                <xsl:value-of select="@nro_ref"/>
+            </td>
+            <td style="width: 80%;color: blue;">
+                <xsl:attribute name="onclick">javascript:verRefEditar('<xsl:value-of select="@nro_ref"/>', '<xsl:value-of select="@id_ref_auto"/>')</xsl:attribute>
+                <xsl:if test="@referencia != ''">
+                    <xsl:value-of select="@referencia"/>
+                </xsl:if>
+                <xsl:if test="@referencia = ''">
+                    (Sin título)
+                </xsl:if>
+            </td>
+            <td>
+                <xsl:value-of select="@fecha"/>
+            </td>
+            <td>
+                <xsl:value-of select="@hora"/>
+            </td>
+            <td>
+                <xsl:attribute name="onclick">javascript:eliminarNoGuardadas(<xsl:value-of select="@id_ref_auto"/>)</xsl:attribute>
+                <img src="/FW/image/icons/eliminar.png" title="Eliminar"/>
+            </td>
+        </tr>
+    </xsl:template>
+</xsl:stylesheet>

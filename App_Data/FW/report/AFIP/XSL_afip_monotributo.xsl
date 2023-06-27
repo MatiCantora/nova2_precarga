@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+              xmlns ="http://www.somedomainename.com"
+              xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:ns2="http://a5.soap.ws.server.puc.sr/"
+			       	xmlns:foo="http://www.broadbase.com/foo" exclude-result-prefixes="soap ns2"
+              xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+              xmlns:Extension="urn:Extension">
+	
+	<xsl:output method="text" />
+
+  <msxsl:script implements-prefix="Extension" language="vb">
+    <![CDATA[
+      function formatFecha(fechaHora as string, format as string) as string
+      
+         Dim cultureinfo As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-US")
+         Dim fechaHoraDate As DateTime = DateTime.Parse(fechaHora, cultureinfo)
+        
+        return fechaHoraDate.ToString(format)
+      
+      end function
+      
+      function fechaHasta(fechaHora as string) as string
+      
+         Dim cultureinfo As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-US")
+         Dim fechaHoraDate As DateTime = DateTime.Parse(fechaHora, cultureinfo)
+        
+        return fechaHoraDate.AddMonths(1).AddDays(-1).ToString("yyyy/MM/ddTHH:mm:ss")
+      
+      end function
+      
+    ]]>
+  </msxsl:script>
+    
+  <xsl:template match="/">
+
+      <HTML>
+      <HEAD>
+        <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+        <META http-equiv="Pragma" content="no-cache" />
+        <META http-equiv="Expires" content="-1" />
+
+        <META http-equiv="Cache-Control" content="no-cache" />
+        <META http-equiv="Cache-Control" content="must-revalidate" />
+        <META http-equiv="Cache-Control" content="proxy-revalidate" />
+
+        <link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/estilo.css" />
+        <link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/estilo_base.css" />
+        <link REL="stylesheet" TYPE="text/css" HREF="/fw/servicios/afip/css/internet.css" />
+        <link rel="stylesheet" type="text/css" href="/fw/servicios/afip/css/estilosGenericosParaConstancias.css" />
+
+        <style type="text/css">
+          td {
+          border-width: 0px;
+          }
+        </style>
+        <TITLE>Formulario de Impresi&#243;n de Constancia de Monotributo</TITLE>
+      </HEAD>
+      <BODY>
+        <FORM>
+          <INPUT type="hidden" name="response" value="constancia-sin-error"/>
+        </FORM>
+
+        <style type="text/css">
+          @media print {
+          #printpagetoolbar {
+          display :  none;
+          }
+          }
+        </style>
+
+        <TABLE border="0" cellPadding="0" cellSpacing="0" rules="groups" width="100%">
+          <TR>
+
+            <TD width="40px" rowspan="0" ALIGN="CENTER" valign="middle">
+              <table>
+                <tr>
+                  <td valign="middle" height="105px">
+                    <IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="middle" height="105px">
+                    <IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="middle" height="105px">
+                    <IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="middle" height="105px">
+                    <IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="middle" height="105px">
+                    <IMG src="/fw/servicios/afip/images/l_afip.png" style="margin-left: 1px; margin-right: 5px; visibility: hidden;"/>
+                  </td>
+                </tr>
+              </table>
+            </TD>
+
+            <TD valign="top" align="center" width="100%">
+
+              <TABLE  width="100%" ALIGN="CENTER">
+                <tr>
+                  <TD>&#160;</TD>
+                </tr>
+                <TR>
+                  <TD ALIGN="LEFT">
+                    <BR/>
+                    <IMG src="/fw/servicios/afip/images/afipsolo.png"/>
+                  </TD>
+                </TR>
+                <TR>
+                  <TD ALIGN="CENTER">
+                    <BR/>
+                    <b>
+                      <FONT face="Arial" SIZE="6">CONSTANCIA DE OPCIÓN</FONT>
+                    </b>
+                    <BR/>
+                    <b>
+                      <FONT face="Arial" SIZE="4">Régimen Simplificado para Pequeños Contribuyentes</FONT>
+                    </b>
+                  </TD>
+                </TR>
+                <tr>
+                  <TD>&#160;</TD>
+                </tr>
+                <tr>
+                  <TD>&#160;</TD>
+                </tr>
+                <tr>
+                  <TD>&#160;</TD>
+                </tr>
+
+                <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosGenerales" mode="datosGenerales"/>
+
+                <tr>
+                  <TD>&#160;</TD>
+                </tr>
+
+                <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosMonotributo/impuesto" mode="impuesto"/>
+
+                <TR ALIGN="LEFT">
+                  <TD ALIGN="CENTER">
+                    <TABLE width="100%">
+
+                      <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosMonotributo/categoriaMonotributo" mode="categoriaMonotributo"/>
+                      
+                       <tr>
+                        <TD>
+                          <HR/>
+                        </TD>
+                      </tr>
+                      <tr>
+                        <td>&#160;</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <table>
+
+                            <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosMonotributo/actividadMonotributista" mode="actividad"/>
+                            
+                            <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosRegimenGeneral/impuesto" mode="Rimpuesto"/>   
+                            
+                            <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/datosMonotributo/regimen" mode="regimen"/>
+                          
+                          </table>
+
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <TD>
+                          <FONT face="Arial" SIZE="2"> </FONT>
+                        </TD>
+                      </tr>
+
+                      <tr>
+                        <TD>&#160;</TD>
+                      </tr>
+                      <xsl:apply-templates select="soap:Envelope/soap:Body/ns2:getPersonaResponse/personaReturn/metadata" mode="metadata"/>
+                    </TABLE>
+                  </TD>
+
+                  <TD width="40px" rowspan="0" ALIGN="CENTER" valign="middle">
+                    <table>
+                      <tr>
+                        <td align="right" valign="middle" height="105px">
+                          <IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right" valign="middle" height="105px">
+                          <IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right" valign="middle" height="105px">
+                          <IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right" valign="middle" height="105px">
+                          <IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right" valign="middle" height="105px">
+                          <IMG src="/fw/servicios/afip/images/r_afip.png" style="margin-left: 5px; margin-right: 1px; visibility: hidden;"/>
+                        </td>
+                      </tr>
+                    </table>
+                  </TD>
+                </TR>
+
+                <TR>
+                  <TD colspan="3" ALIGN="CENTER">
+                    <BR/>
+                    <table width="100%" style="display: none;">
+                      <tr>
+                        <td>&#160;</td>
+                        <td width="592px">
+                          <table width="100%">
+                            <tr>
+                              <td width="20%" align="center">
+                                <IMG src="/fw/servicios/afip/images/h_afip.png"/>
+                              </td>
+                              <td width="20%" align="center">
+                                <IMG src="/fw/servicios/afip/images/h_afip.png"/>
+                              </td>
+                              <td width="20%" align="center">
+                                <IMG src="/fw/servicios/afip/images/h_afip.png"/>
+                              </td>
+                              <td width="20%" align="center">
+                                <IMG src="/fw/servicios/afip/images/h_afip.png"/>
+                              </td>
+                              <td width="20%" align="center">
+                                <IMG src="/fw/servicios/afip/images/h_afip.png"/>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td>&#160;</td>
+                      </tr>
+                    </table>
+                  </TD>
+                </TR>
+              </TABLE>
+            </TD>
+          </TR>
+        </TABLE>
+          <TABLE  width="100%">
+            <TR>
+              <TD>
+                <FONT face="Arial" SIZE="1">
+                  Los datos contenidos en la presente constancia deberán ser validados por el receptor de la misma en la página institucional de AFIP <a href="http://www.afip.gob.ar" target="_blank" rel="noopener noreferrer">
+                    <u>http://www.afip.gob.ar</u>
+                  </a>.
+                </FONT>
+              </TD>
+            </TR>
+          </TABLE>
+        </BODY>
+    </HTML>
+</xsl:template>
+  
+<xsl:template match="ns2:getPersonaResponse/personaReturn/datosGenerales" mode="datosGenerales">
+
+  <TR>
+    <TD>
+      <TABLE border="1" cellPadding="0" cellSpacing="0" rules="groups" ALIGN="LEFT" width="100%">
+        <TR>
+          <TD>
+            <b>
+              <FONT face="Arial" SIZE="2">
+                <xsl:value-of select="tipoClave" />:&#160;</FONT>
+            </b>
+            <FONT face="Arial" SIZE="2">
+              <xsl:value-of select="idPersona" /></FONT>
+          </TD>
+        </TR>
+        <TR>
+          <TD>
+            <FONT face="Arial" SIZE="2">
+              <xsl:value-of select="apellido" />&#160;<xsl:value-of select="nombre" />
+            </FONT>
+          </TD>
+        </TR>
+        <TR>
+          <TD>
+
+            <FONT face="Arial" SIZE="2">
+              <xsl:value-of select="domicilioFiscal/direccion" /></FONT>
+          </TD>
+        </TR>
+
+        <TR>
+          <TD>
+            <FONT face="Arial" SIZE="2">
+              <xsl:value-of select="domicilioFiscal/localidad" />&#160;</FONT>
+          </TD>
+        </TR>
+
+        <TR>
+          <TD>
+            <FONT face="Arial" SIZE="2">
+              <xsl:value-of select="domicilioFiscal/codPostal" />&#160;-&#160;<xsl:value-of select="domicilioFiscal/descripcionProvincia" /></FONT>
+          </TD>
+        </TR>
+
+      </TABLE>
+    </TD>
+  </TR>
+
+</xsl:template>
+
+<xsl:template match="ns2:getPersonaResponse/personaReturn/datosRegimenGeneral/regimen" mode="regimen">
+  <tr><TD><HR/></TD></tr>
+  <tr><td>&#160;</td></tr><tr>
+    <TD><FONT face="Arial" SIZE="2"><xsl:value-of select="idRegimen" />&#160;-&#160;<xsl:value-of select="descripcionRegimen" /></FONT></TD>
+  </tr>
+  <tr>
+    <td align="CENTER"><b><font face="Arial" size="5">AC</font></b></td>
+  </tr>
+  <tr>
+    <td align="CENTER"><b><font face="Arial" size="2">(INSCRIPCIÓN DE OFICIO)</font></b></td>
+  </tr>
+  <TR>
+    <TD><FONT face="Arial" SIZE="1">FECHA DE INICIO: <xsl:value-of select="periodo" /></FONT></TD>
+  </TR>
+</xsl:template>
+
+<xsl:template match="ns2:getPersonaResponse/personaReturn/datosMonotributo/impuesto" mode="impuesto">
+  <TR>
+    <TD>
+      <FONT face="Arial" SIZE="2"><xsl:value-of select="descripcionImpuesto" />&#160;-&#160;<xsl:value-of select="idImpuesto" /></FONT>
+    </TD>
+  </TR>
+</xsl:template>
+
+<xsl:template match="ns2:getPersonaResponse/personaReturn/datosMonotributo/actividadMonotributista" mode="actividad">
+  <tr>
+    <TD style="width:100%">
+     <table width="100%">
+        <TR>
+          <td valign="top">
+            <FONT face="Arial" SIZE="2">
+              <xsl:if test="string(orden)='1'">
+                ACTIVIDAD:
+              </xsl:if>
+              &#160;</FONT>
+          </td>
+          <td>
+            <FONT face="Arial" SIZE="2">F<xsl:value-of select="nomenclador" />&#160;-&#160;<xsl:value-of select="idActividad" />&#160;-&#160;<xsl:value-of select="descripcionActividad" />
+          </FONT>
+          </td>
+        </TR>
+     </table>
+   </TD>
+  </tr>
+  <tr><TD  width="100%"><HR/></TD></tr>
+  <TR>
+      <TD>
+         <FONT face="Arial" SIZE="1">FECHA DE INICIO:&#160;<xsl:value-of select="periodo" />
+       </FONT>
+     </TD>
+  </TR>
+</xsl:template>
+  
+  <xsl:template match="ns2:getPersonaResponse/personaReturn/datosRegimenGeneral/impuesto" mode="Rimpuesto">
+   <TR>
+    <TD style="width:100%">
+      <BR/>
+      <table width="100%" >
+        <TR>
+          <TD>
+            <FONT face="Arial" SIZE="2"><xsl:value-of select="descripcionImpuesto" />&#160;-&#160;<xsl:value-of select="idImpuesto" /></FONT>
+         </TD>
+       </TR>
+       <tr><TD  width="100%"><HR/></TD></tr>        
+        <TR>
+          <TD>
+            <FONT face="Arial" SIZE="1">FECHA DE INICIO:&#160;<xsl:value-of select="periodo" />
+          </FONT>
+          </TD>
+        </TR>
+      </table>    
+    </TD>
+  </TR>
+  
+</xsl:template>
+
+<xsl:template match="ns2:getPersonaResponse/personaReturn/datosMonotributo/categoriaMonotributo" mode="categoriaMonotributo">
+  <tr>
+    <td width="100%">
+      <FONT face="Arial" SIZE="2"></FONT>
+      <BR/>
+      <TABLE border="1" cellPadding="0" cellSpacing="0" rules="groups" align="center">
+        <TR>
+          <TD ALIGN="CENTER" nowrap="nowrap">
+            <FONT face="Arial" SIZE="2">CATEGORÍA</FONT>
+            <BR/>
+            <FONT face="Arial" style="FONT-SIZE: 40pt">
+              <xsl:value-of select="substring(descripcionCategoria,1,1)"/>
+            </FONT>
+          </TD>
+        </TR>
+      </TABLE>
+    </td>
+  </tr>
+  <TR>
+    <TD ALIGN="CENTER">
+      <FONT face="Arial" SIZE="2">&#160;LOCACIONES DE SERVICIO&#160;</FONT>
+    </TD>
+  </TR>
+  <tr>
+    <TD>&#160;</TD>
+  </tr>
+  <TR>
+    <TD>
+      <FONT face="Arial" SIZE="1">FECHA DE INICIO:&#160;<xsl:value-of select="periodo" />
+    </FONT>
+    </TD>
+  </TR>
+</xsl:template>
+  
+  
+<xsl:template match="ns2:getPersonaResponse/personaReturn/metadata" mode="metadata">
+     <xsl:variable name="fecha_hasta" select="Extension:fechaHasta(fechaHora)" />
+    	<TR>
+			<TD>
+				<table width="100%">
+					<tr>
+						<td><BR /> <FONT face="Arial" SIZE="1">Vigencia de la presente constancia:&#160;</FONT> <B> <i>
+            <FONT face="Arial" SIZE="1"><xsl:value-of select="Extension:formatFecha(fechaHora,'dd-MM-yyyy')" /></FONT></i>
+						</B><FONT face="Arial" SIZE="1">&#160;a&#160;<xsl:value-of select="Extension:formatFecha($fecha_hasta,'dd-MM-yyyy')"/></FONT> <B> <i><FONT
+									face="Arial" SIZE="1"></FONT></i>
+						</B></td>
+						<td align="right"><BR /> <FONT face="Arial" SIZE="1">Hora&#160;</FONT>
+							<B> <FONT face="Arial" SIZE="1"> <xsl:value-of select="Extension:formatFecha(fechaHora,'HH:mm:ss')" />
+							</FONT>
+						</B>
+						<BR/></td>
+					</tr>
+				</table>
+			</TD>
+		</TR>
+</xsl:template>
+
+</xsl:stylesheet>

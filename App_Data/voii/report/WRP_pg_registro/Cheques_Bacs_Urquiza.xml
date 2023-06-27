@@ -1,0 +1,488 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <LastAuthor>HBOSCH</LastAuthor>
+  <Created>2007-11-14T17:56:14Z</Created>
+  <Version>11.5606</Version>
+ </DocumentProperties>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>8835</WindowHeight>
+  <WindowWidth>15180</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>105</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Cheques_bacs_ch9_FI13112007_FF1">
+  <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="36" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+   <Column ss:AutoFitWidth="0" ss:Width="21"/>
+   <Column ss:AutoFitWidth="0" ss:Width="157.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="21"/>
+   <Column ss:AutoFitWidth="0" ss:Width="157.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63"/>
+   <Column ss:AutoFitWidth="0" ss:Width="52.5" ss:Span="1"/>
+   <Column ss:Index="8" ss:AutoFitWidth="0" ss:Width="42"/>
+   <Column ss:AutoFitWidth="0" ss:Width="262.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="73.5"/>
+   <Row>
+    <Cell><Data ss:Type="String">ch_lcredito</Data></Cell>
+    <Cell><Data ss:Type="String">descripcion_linea</Data></Cell>
+    <Cell><Data ss:Type="String">ch_chequera</Data></Cell>
+    <Cell><Data ss:Type="String">descripcion_chequera</Data></Cell>
+    <Cell><Data ss:Type="String">ch_envio</Data></Cell>
+    <Cell><Data ss:Type="String">nrocred</Data></Cell>
+    <Cell><Data ss:Type="String">ch_numero</Data></Cell>
+    <Cell><Data ss:Type="String">ch_fechav</Data></Cell>
+    <Cell><Data ss:Type="String">ch_orden</Data></Cell>
+    <Cell><Data ss:Type="String">ch_importe</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4083165</Data></Cell>
+    <Cell><Data ss:Type="Number">7525819</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ALBANEZ, DANIEL</Data></Cell>
+    <Cell><Data ss:Type="Number">3500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084247</Data></Cell>
+    <Cell><Data ss:Type="Number">7525820</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ALBORNOZ, NILDA PATRICIA</Data></Cell>
+    <Cell><Data ss:Type="Number">1300</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084141</Data></Cell>
+    <Cell><Data ss:Type="Number">7525821</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ALEM, CLAUDIO ALEJANDRO</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084110</Data></Cell>
+    <Cell><Data ss:Type="Number">7525822</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ALMADA, JAVIER EDUARDO</Data></Cell>
+    <Cell><Data ss:Type="Number">4800</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084224</Data></Cell>
+    <Cell><Data ss:Type="Number">7525823</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ALMADA, NELIDA ARGENTINA</Data></Cell>
+    <Cell><Data ss:Type="Number">1100</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4082922</Data></Cell>
+    <Cell><Data ss:Type="Number">7525824</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ANDRADE, CLAUDIA MARCELA</Data></Cell>
+    <Cell><Data ss:Type="Number">4000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084073</Data></Cell>
+    <Cell><Data ss:Type="Number">7525825</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ANDRIAN, EVELYN MIRELLA</Data></Cell>
+    <Cell><Data ss:Type="Number">1100</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084107</Data></Cell>
+    <Cell><Data ss:Type="Number">7525826</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ANTIVERO, MARIA BEATRIZ</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084195</Data></Cell>
+    <Cell><Data ss:Type="Number">7525827</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">ANTUNEZ, NESTOR JAVIER</Data></Cell>
+    <Cell><Data ss:Type="Number">2000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084230</Data></Cell>
+    <Cell><Data ss:Type="Number">7525828</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">BALLEJO , JULIO ARTURO</Data></Cell>
+    <Cell><Data ss:Type="Number">3000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084162</Data></Cell>
+    <Cell><Data ss:Type="Number">7525829</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">BERTOCHI, ANDREA GABRIELA</Data></Cell>
+    <Cell><Data ss:Type="Number">2500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084059</Data></Cell>
+    <Cell><Data ss:Type="Number">7525830</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">BLANCO, FLORENCIA SOLEDAD</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084144</Data></Cell>
+    <Cell><Data ss:Type="Number">7525831</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">CAPURRO, CARLOS MANUEL</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084020</Data></Cell>
+    <Cell><Data ss:Type="Number">7525832</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">DI BIASE, DANIEL HECTOR</Data></Cell>
+    <Cell><Data ss:Type="Number">1800</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084062</Data></Cell>
+    <Cell><Data ss:Type="Number">7525833</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">DONATO, RICARDO ALBERICO</Data></Cell>
+    <Cell><Data ss:Type="Number">1000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084078</Data></Cell>
+    <Cell><Data ss:Type="Number">7525834</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">EYRAS, HERNAN MAXIMILIANO</Data></Cell>
+    <Cell><Data ss:Type="Number">1200</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084052</Data></Cell>
+    <Cell><Data ss:Type="Number">7525835</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">FERNANDEZ, MIGUEL MARTIN</Data></Cell>
+    <Cell><Data ss:Type="Number">1000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084046</Data></Cell>
+    <Cell><Data ss:Type="Number">7525836</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">FUNES, SILVINA ADRIANA</Data></Cell>
+    <Cell><Data ss:Type="Number">3000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084265</Data></Cell>
+    <Cell><Data ss:Type="Number">7525837</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">GUIDONI, JUAN JOSE SANTIAGO</Data></Cell>
+    <Cell><Data ss:Type="Number">1000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084254</Data></Cell>
+    <Cell><Data ss:Type="Number">7525838</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">KISCHNER, LUIS MARTIN</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084143</Data></Cell>
+    <Cell><Data ss:Type="Number">7525839</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">LEIVA, JUAN CARLOS</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084109</Data></Cell>
+    <Cell><Data ss:Type="Number">7525840</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">LESCANO, LIDIA GRACIELA</Data></Cell>
+    <Cell><Data ss:Type="Number">3100</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084149</Data></Cell>
+    <Cell><Data ss:Type="Number">7525841</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">MARCEL, RAMON MARTIN</Data></Cell>
+    <Cell><Data ss:Type="Number">2000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084209</Data></Cell>
+    <Cell><Data ss:Type="Number">7525842</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">MAYOBRE, AMELIA NELIDA</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084189</Data></Cell>
+    <Cell><Data ss:Type="Number">7525843</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">MORALES, CARMEN IRIS</Data></Cell>
+    <Cell><Data ss:Type="Number">1700</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084070</Data></Cell>
+    <Cell><Data ss:Type="Number">7525844</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">MORINIGO, ROBERTA</Data></Cell>
+    <Cell><Data ss:Type="Number">1400</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084102</Data></Cell>
+    <Cell><Data ss:Type="Number">7525845</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">MUÑOZ, RAMONA DESIDERIA</Data></Cell>
+    <Cell><Data ss:Type="Number">1000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084160</Data></Cell>
+    <Cell><Data ss:Type="Number">7525846</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">OJEDA, MARIA BEATRIZ</Data></Cell>
+    <Cell><Data ss:Type="Number">600</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084049</Data></Cell>
+    <Cell><Data ss:Type="Number">7525847</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">OYUELA, MARIA VIRGINIA</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084104</Data></Cell>
+    <Cell><Data ss:Type="Number">7525848</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">POGGI, YOLANDA INES</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084241</Data></Cell>
+    <Cell><Data ss:Type="Number">7525849</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">RIOS, MIRTA AMALIA</Data></Cell>
+    <Cell><Data ss:Type="Number">1100</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084219</Data></Cell>
+    <Cell><Data ss:Type="Number">7525850</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">RUIZ DIAZ, GLORIA PATRICIA</Data></Cell>
+    <Cell><Data ss:Type="Number">2500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084076</Data></Cell>
+    <Cell><Data ss:Type="Number">7525851</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">SANCHEZ, CARLOS ALBERTO</Data></Cell>
+    <Cell><Data ss:Type="Number">1500</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4083537</Data></Cell>
+    <Cell><Data ss:Type="Number">7525852</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">SOTO, ABDON HECTOR ARNOLDO</Data></Cell>
+    <Cell><Data ss:Type="Number">1000</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AYUDA ECONOMICA AMUS</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CTA CTE BERSA</Data></Cell>
+    <Cell><Data ss:Type="String">446 / 16830</Data></Cell>
+    <Cell><Data ss:Type="Number">4084115</Data></Cell>
+    <Cell><Data ss:Type="Number">7525853</Data></Cell>
+    <Cell><Data ss:Type="String">13-Nov-07 00:00:00</Data></Cell>
+    <Cell><Data ss:Type="String">VERON, INES LEONOR</Data></Cell>
+    <Cell><Data ss:Type="Number">1600</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0"/>
+    <Footer x:Margin="0"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <Selected/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

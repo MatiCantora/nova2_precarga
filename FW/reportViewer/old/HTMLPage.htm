@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-16" ?>
+<html xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:rs="urn:schemas-microsoft-com:rowset"
+xmlns:z="#RowsetSchema">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Créditos</title>
+    <link href="/fw/css/base.css" type="text/css" rel="stylesheet" />
+    <link href="/fw/css/btnSvr.css" type="text/css" rel="stylesheet" />
+    <link href="/fw/css/mnuSvr.css" type="text/css" rel="stylesheet" />
+    <link href="/fw/css/window_themes/default.css" rel="stylesheet" type="text/css" />
+    <link href="/fw/css/window_themes/alphacube.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fw/script/prototype.js" language="JavaScript" />
+    <script type="text/javascript" src="/fw/script/tCampo_head.aspx" language="JavaScript" />
+    <script language="javascript" type="text/javascript">
+        campos_head.id_exp_origen = ''
+        var mantener_origen = ''
+        campos_head.cacheID = ''
+        campos_head.cacheControl = 'none'
+        campos_head.recordcount = 26
+        campos_head.PageCount = 10
+        campos_head.PageSize = 3
+        campos_head.AbsolutePage = 1
+        if (mantener_origen == '0')
+            campos_head.nvFW = window.parent.nvFW
+    </script>
+    <script type="text/javascript">
+        function windows_onload() {
+            debugger
+        }
+    </script>
+</head>
+<body onload="windows_onload" style="width: 100%; height: 100%; overflow: hidden">
+    <table width="100%" class="tb1" id="tbCabe">
+        <tr class="tbLabel">
+            <td style="text-align: center; width: 25%">
+                <script>                    campos_head.agregar('Estado', 'true', 'estado')</script>
+            </td>
+            <td style="text-align: center; width: 25%">
+                <script>                    campos_head.agregar('Descripción', 'true', 'descripcion')</script>
+            </td>
+            <td style="text-align: center; width: 25%">
+                <script>                    campos_head.agregar('Orden', 'true', 'orden')</script>
+            </td>
+            <td style="text-align: center; width: 25%">
+                <script>                    campos_head.agregar('Permiso', 'true', 'nro_permiso')</script>
+            </td>
+        </tr>
+    </table>
+    <div id="div_lst_creditos" style="width: 100%; overflow: auto">
+        <table class="tb1" id="tbDetalle">
+            <tr>
+                <td style="text-align: center; width: 25%">
+                    A
+                </td>
+                <td style="text-align: center; width: 25%">
+                    Aprobado
+                </td>
+                <td style="text-align: center; width: 25%">
+                </td>
+                <td style="text-align: center; width: 25%">
+                    1
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; width: 25%">
+                    B
+                </td>
+                <td style="text-align: center; width: 25%">
+                    Precarga
+                </td>
+                <td style="text-align: center; width: 25%">
+                </td>
+                <td style="text-align: center; width: 25%">
+                    21
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; width: 25%">
+                    C
+                </td>
+                <td style="text-align: center; width: 25%">
+                    Cancelado
+                </td>
+                <td style="text-align: center; width: 25%">
+                </td>
+                <td style="text-align: center; width: 25%">
+                    3
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="div_pag" class="divPages">
+        <script type="text/javascript">
+            document.write(campos_head.paginas_getHTML())
+        </script>
+    </div>
+</body>
+</html>

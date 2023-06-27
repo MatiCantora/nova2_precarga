@@ -1,0 +1,303 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%
+    'Dim op As nvFW.nvSecurity.tnvOperador = nvApp.operador
+    'If (Not op.tienePermiso("permisos_abm_cuentas", 3)) Then Response.Redirect("/FW/error/httpError_401.aspx")
+    'Me.addPermisoGrupo("permisos_abm_cuentas")
+
+    Dim strXML As String = nvFW.nvUtiles.obtenerValor("strXML", "")
+
+    If strXML <> "" Then
+
+        Dim err As New tError()
+
+        Try
+            Dim cmd As New nvFW.nvDBUtiles.tnvDBCommand("com_parametros_abm", ADODB.CommandTypeEnum.adCmdStoredProc, nvDBUtiles.emunDBType.db_app)
+            cmd.addParameter("@strXML", ADODB.DataTypeEnum.adLongVarChar, ADODB.ParameterDirectionEnum.adParamInput, strXML.Length, strXML)
+
+            Dim rs As ADODB.Recordset = cmd.Execute()
+
+            If Not rs.EOF Then
+                err.numError = rs.Fields("numError").Value
+                err.mensaje = rs.Fields("mensaje").Value
+                err.debug_desc = rs.Fields("debug_desc").Value
+                err.debug_src = rs.Fields("debug_src").Value
+            End If
+        Catch ex As Exception
+            err.numError = 1000
+            err.mensaje = "Error al cargar la cuenta"
+            err.debug_desc = ex.Message
+        End Try
+
+        err.response()
+
+    End If
+
+    Me.contents("comTiposParametros") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='com_parametros_tipo'><campos>*</campos><filtro></filtro></select></criterio>")
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>NOVA Modulo Comentarios</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <script type="text/javascript" src="/FW/script/tTable.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript">
+        var win = nvFW.getMyWindow();
+        var modo;
+ 
+        function window_onresize() {
+
+        }
+
+        function window_onload() {
+            vMenu.MostrarMenu();
+            let nro_com_parametro = win.options.userData.nro_com_parametro;
+            campos_defs.set_value('nro_com_tipo', parseInt(win.options.userData.nro_com_tipo));
+            
+            if (nro_com_parametro != '') {
+                modo = 'M';
+                let rs = new tRS();
+                let filtroWhere = "<criterio><select><filtro><nro_com_parametro type='igual'>'" + nro_com_parametro + "'</nro_com_parametro></filtro></select></criterio>";
+                rs.open({ filtroXML: nvFW.pageContents.comTiposParametros, filtroWhere: filtroWhere });
+                if (rs.eof()) {
+                    top.nvFW.alert("Ha ocurrido un error.");
+                    win.close();
+                    return;
+                }
+                
+                let com_parametro = rs.getdata('com_parametro');
+                let tipo_dato = rs.getdata('tipo_dato');
+                let requerido = rs.getdata('requerido');
+                let por_rango = rs.getdata('por_rango');
+                let esfiltro = rs.getdata('esfiltro');
+                let com_etiqueta = rs.getdata('com_etiqueta');
+                let visible = rs.getdata('visible');
+
+                campos_defs.set_value('com_parametro', com_parametro);
+                $('selVisible').value = visible;
+                if (tipo_dato == 'VARCHAR')
+                    $('selTipoDato').value = "VARCHAR";
+                else if (tipo_dato == 'ENTERO')
+                    $('selTipoDato').value = "ENTERO";
+                else if (tipo_dato == 'MONEY')
+                    $('selTipoDato').value = "MONEY";
+                if (requerido == 'True')
+                    $('paramRequerido').checked = true;
+                if (por_rango == 'True')
+                    $('porRango').checked = true;
+                if (esfiltro == 'True')
+                    $('esFiltro').checked = true;
+                if (com_etiqueta != '')
+                    campos_defs.set_value('com_etiqueta', com_etiqueta);
+       
+            }
+            else
+                modo = 'A';
+        }
+
+        function guardar() {
+            let nro_com_tipo = campos_defs.get_value('nro_com_tipo');
+            let com_parametro = campos_defs.get_value('com_parametro');
+            let tipo_dato = $('selTipoDato').value;
+            let requerido;
+            let por_rango;
+            let esfiltro;
+            let com_etiqueta;
+            let visible;
+            let nro_com_parametro = win.options.userData.nro_com_parametro;
+
+            if ((nro_com_tipo == '') || (com_parametro == '')) {
+                nvFW.alert("El campo Parametro no puede estar vacío. Intente nuevamente.");
+                return;
+            }
+
+            if ($('paramRequerido').checked == true)
+                requerido = 1;
+            else
+                requerido = 0;
+            if ($('porRango').checked == true)
+                por_rango = 1;
+            else
+                por_rango = 0;
+            if ($('esFiltro').checked == true)
+                esfiltro = 1;
+            else
+                esfiltro = 0;
+            com_etiqueta = campos_defs.get_value('com_etiqueta');
+            visible = $('selVisible').value;
+
+
+            //switch (modo) {
+            //    case 'A':
+            //        if (!nvFW.tienePermiso('permisos_abm_cuentas', 2)) {
+            //            alert('No posee permisos para hacer esta operacion, consulte al administrador del sistema.');
+            //            return;
+            //        }
+            //    case 'M':
+            //        if (!nvFW.tienePermiso('permisos_abm_cuentas', 3)) {
+            //            alert('No posee permisos para hacer esta operacion, consulte al administrador del sistema.');
+            //            return;
+            //        }
+            //    case 'B':
+            //        if (!nvFW.tienePermiso('permisos_abm_cuentas', 4)) {
+            //            alert('No posee permisos para hacer esta operacion, consulte al administrador del sistema.');
+            //            return;
+            //        }
+            //}
+
+            if (modo == 'A') {
+                let strXML = '<?xml version="1.0" encoding="ISO-8859-1"?><com_parametros modo="' + modo + '" nro_com_tipo="' + nro_com_tipo + '" com_parametro="' + com_parametro + '" tipo_dato="' + tipo_dato + '" requerido="' + requerido + '" com_etiqueta="' + com_etiqueta + '" por_rango="' + por_rango + '" esfiltro="' + esfiltro + '" visible="' + visible + '" ></com_parametros>'
+
+                nvFW.error_ajax_request("com_parametros_abm.aspx", {
+                    parameters: {
+                        strxml: strXML
+                    },
+
+                    onSuccess: function (err) {
+
+                        if (err.numerror == 0) {
+                            top.nvFW.alert('El parámetro fue creado con éxito.');
+                            win.close();
+
+                        }
+                        else
+                            nvFW.alert(err.message);
+                    },
+
+                    onFailure: function () {
+                        nvFW.alert("Ocurrió un error. Contacte al administrador.");
+                    },
+
+                    error_alert: false
+                })
+            }
+
+            else if (modo == 'M') {
+                let strXML = '<?xml version="1.0" encoding="ISO-8859-1"?><com_parametros modo="' + modo + '" nro_com_parametro="' + nro_com_parametro + '" nro_com_tipo="' + nro_com_tipo + '" com_parametro="' + com_parametro + '" tipo_dato="' + tipo_dato + '" requerido="' + requerido + '" com_etiqueta="' + com_etiqueta + '" por_rango="' + por_rango + '" esfiltro="' + esfiltro + '" visible="' + visible + '" ></com_parametros>'
+
+                nvFW.error_ajax_request("com_parametros_abm.aspx", {
+                    parameters: {
+                        strxml: strXML
+                    },
+                    onSuccess: function (err) {
+
+                        if (err.numerror == 0) {
+                            top.nvFW.alert('Modificación hecha con éxito');
+                            win.close();
+                        }
+                        else {
+                            top.nvFW.alert(err.message);
+                        }
+
+                    },
+                    onFailure: function () {
+                        top.nvFW.alert("Ocurrió un error. Contacte al administrador.");
+                    },
+                    error_alert: false
+                })
+            }
+
+        }
+
+    </script>
+
+</head>
+<body onload="window_onload()" onresize="window_onresize()" style="width:100%; height:100%; overflow:hidden">
+    <div id="divMenu">
+            <script type="text/javascript">
+                let vMenu = new tMenu('divMenu', 'vMenu');
+                Menus["vMenu"] = vMenu;
+                Menus["vMenu"].loadImage("guardar", '/fw/image/icons/guardar.png');
+                Menus["vMenu"].alineacion = 'centro';
+                Menus["vMenu"].estilo = 'A';
+                Menus["vMenu"].CargarMenuItemXML("<MenuItem id='0' style='text-align:left'><Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>guardar()</Codigo></Ejecutar></Acciones></MenuItem>");
+                Menus["vMenu"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 95%;text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>");
+            </script>
+    </div>
+
+    <table class="tb1" id="tabla">
+        <tr hidden>
+            <td class="Tit1">Nro comentario</td>
+            <td>
+                <script type="text/javascript">
+                    campos_defs.add('nro_com_tipo', {
+                        nro_campo_tipo: 100,
+                        enDB: false
+                    });
+                </script>
+            <td>
+        </tr>
+
+        <tr>
+            <td class="Tit1">Parámetro</td>
+            <td colspan="5">
+                <script type="text/javascript">
+                    campos_defs.add('com_parametro', {
+                        nro_campo_tipo: 104,
+                        enDB: false
+                    })
+                </script>
+            <td>
+        </tr>
+
+        <tr>
+            <td class="Tit1">Tipo dato</td>
+            <td colspan="5">
+                <select id="selTipoDato" name="selTipoDato" style="width:100%;">
+                    <option value="ENTERO" selected>ENTERO</option>
+                    <option value="VARCHAR">VARCHAR</option>
+                    <option value="MONEY">MONEY</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="Tit1"> Requerido </td>
+            <td style="text-align:center;">
+                <input type="checkbox" id="paramRequerido" name="paramRequerido">
+            </td>
+            <td class="Tit1"> Por rango </td>
+            <td style="text-align:center;">
+                <input type="checkbox" id="porRango" name="porRango">
+            </td>
+            <td class="Tit1"> Es filtro </td>
+            <td style="text-align:center;">
+                <input type="checkbox" id="esFiltro" name="esFiltro">
+            </td>
+        </tr>
+
+        <tr>
+            <td class="Tit1">Etiqueta dato</td>
+            <td colspan="5">
+                <script type="text/javascript">
+                    campos_defs.add('com_etiqueta', {
+                        nro_campo_tipo: 104,
+                        enDB: false
+                    })
+                </script>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="Tit1"> Visible </td>
+            <td colspan="5">
+                <select id="selVisible" name="selVisible" style="width:100%;">
+                    <option value="siempre" selected>Siempre</option>
+                    <option value="nunca">Nunca</option>
+                </select>
+            </td>
+        </tr>
+
+    </table>
+
+</body>
+</html>

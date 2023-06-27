@@ -1,0 +1,88 @@
+﻿.gadget {
+    position: relative;
+    overflow: hidden;
+}
+.gadget .block{
+    float: left;
+}
+.gadget.block-selected .block:hover{
+    background: #CCCCFF;
+    background: rgba(0, 0, 200, 0.1);
+    outline: 1px dotted #666666;
+}
+.gadget .element{
+    margin: 0 auto;
+    position: relative;
+    background: #FFFFFF;
+    -webkit-border-radius: 0.33em;
+    -moz-border-radius: 0.33em;
+    -ms-border-radius: 0.33em;
+    border-radius: 0.33em;
+    border: 1px solid #777777;
+    -webkit-box-shadow: 1px 1px 3px #999999;
+    -moz-box-shadow: 1px 1px 3px #999999;
+    -ms-box-shadow: 1px 1px 3px #999999;
+    box-shadow: 1px 1px 3px #999999;
+    width: 100%;
+}
+.gadget .element.selected{
+    z-index: 100;
+}
+.gadget .element .title{
+    height: 20px;
+    padding: 2px;
+    -webkit-border-radius: 0.33em 0.33em 0 0;
+    -moz-border-radius: 0.33em 0.33em 0 0;
+    -ms-border-radius: 0.33em 0.33em 0 0;
+    border-radius: 0.33em 0.33em 0 0;
+    text-align: center;
+    cursor: move;
+    font-size: 16px;
+    font-weight: 600;
+    color: #123456;
+    line-height: 16px;
+    margin: 2px;
+}
+.gadget .element .body{
+    padding: 0 3px 5px 3px;
+    -webkit-border-radius: 0 0 0.33em 0.33em;
+    -moz-border-radius: 0 0 0.33em 0.33em;
+    -ms-border-radius: 0 0 0.33em 0.33em;
+    border-radius: 0 0 0.33em 0.33em;
+    position: absolute;
+    top: 24px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.gadget .element .body .content{
+    border: 1px solid #777777;
+    height: 100%;
+    -webkit-border-radius: 0 0 0.33em 0.33em;
+    -moz-border-radius: 0 0 0.33em 0.33em;
+    -ms-border-radius: 0 0 0.33em 0.33em;
+    border-radius: 0 0 0.33em 0.33em;
+    /*border-radius: 0 0 5px 5px;*/
+    overflow: auto;
+    position: relative;
+}
+.gadget .moving {
+    z-index: 100;
+    background: #000090;
+    background: rgba(0, 0, 180, 0.4);
+    border: 1px solid #000090;
+    border: 1px solid rgba(0, 0, 180, 0.7);
+    position: absolute;
+}
+.gadget .unselectable{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+.gadget .clear{
+    height: 0px;
+    width: 100%;
+    clear: both;
+}

@@ -1,0 +1,162 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false"  Inherits="nvFW.nvPages.nvPageFW" %>
+<%
+
+%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Editar</title>
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+    
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_basicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/tParam_def.js"></script>
+     
+
+    <%= Me.getHeadInit() %>
+
+    <script type="text/javascript">
+        var default_accion = ""
+        var params
+        var callback_onSave
+        var myWindow
+
+        
+        function window_onload()
+        {
+            
+            myWindow = nvFW.getMyWindow()
+
+            if (!myWindow.options.userData)
+                myWindow.close()
+            params = myWindow.options.userData.params.sort(function (a, b) { return a.orden - b.orden })
+            callback_onSave = myWindow.options.userData.onSave
+
+            params_dibujar()
+
+            var vButtonItems = {}
+            vButtonItems[0] = {}
+            vButtonItems[0]["nombre"] = "Aceptar";
+            vButtonItems[0]["etiqueta"] = "Aceptar";
+            vButtonItems[0]["imagen"] = "confirmar";
+            vButtonItems[0]["onclick"] = "return guardar()";
+            vButtonItems[1] = {}
+            vButtonItems[1]["nombre"] = "Cancelar";
+            vButtonItems[1]["etiqueta"] = "Cancelar";
+            vButtonItems[1]["imagen"] = "cancelar";
+            vButtonItems[1]["onclick"] = "return cancelar()";
+
+            var vListButton = new tListButton(vButtonItems, 'vListButton');
+            vListButton.loadImage("confirmar", '/FW/image/icons/confirmar.png');
+            vListButton.loadImage("cancelar", '/FW/image/icons/cancelar.png');
+            vListButton.MostrarListButton()
+
+            $$('input[type!=hidden]')[0].focus()
+        }
+
+        function params_dibujar() {
+            
+            $('tableEdit').innerHTML = "";
+            for (var i = 0; i < params.length; i += 1) {
+                var param = params[i];
+                if (param.visible === false)
+                    $$("body")[0].insert('<input type="hidden" id="' + param.parametro + '" name="param' + i + '" value="' + param.valor + '" />');
+                else {
+                    $$('#tableEdit')[0].insert('<tr><td class="Tit2" width="10%" nowrap>' + param.etiqueta + ':</td>' +
+                        '<td id="t_' + i + '" ></td></tr>');
+                    if (param.campo_def) {
+                        campos_defs.add(param.campo_def, { target: "t_" + i })
+                        campos_defs.set_value(param.campo_def, param.valor)
+                        campos_defs.habilitar(param.campo_def, param.editable === true)
+                    }
+                    else {
+                        var valor = param.valor;
+                        switch (param.tipo_dato) {
+                            case 'int':
+                                campos_defs.add(param.parametro, { nro_campo_tipo: 100, enDB: false, target: "t_" + i })
+                                break
+                            case 'datetime':
+                                campos_defs.add(param.parametro, { nro_campo_tipo: 103, enDB: false, target: "t_" + i })
+                                break
+                            case 'decimal':
+                            case 'money':
+                                campos_defs.add(param.parametro, { nro_campo_tipo: 102, enDB: false, target: "t_" + i })
+                                break
+                            default:
+                                campos_defs.add(param.parametro, { nro_campo_tipo: 104, enDB: false, target: "t_" + i })
+                        }
+                        campos_defs.set_value(param.parametro, valor)
+                        campos_defs.habilitar(param.parametro, param.editable === true)
+                    }
+                    
+                }
+
+            }
+        }
+
+        function cancelar() { myWindow.close() }
+
+        function guardar() {
+
+            var paramsTemp = []
+            //validar los requeridos
+            for (var i = 0; i < params.length; i += 1) {
+                var param = params[i];
+                var valor = param.valor
+                if (param.visible !== false) {
+                    if (param.editable) {
+                        valor = param.campo_def ? campos_defs.get_value(param.campo_def) : campos_defs.get_value(param.parametro)
+                        if (param.requerido && !valor) {
+                            alert("No ha ingresado el valor para <b>" + param.etiqueta + "</b>")
+                            return
+                        }
+                    }
+                    
+                }
+                
+                paramsTemp.push(new tParam_def({
+                    parametro: param.parametro
+                    , valor: valor
+                    , etiqueta: param.etiqueta
+                    , tipo_dato: param.tipo_dato
+                    , campo_def: param.campo_def
+                    , requerido: param.requerido
+                    , editable: param.editable
+                    , visible: param.visible
+                }))
+                
+            }
+
+            var er = callback_onSave(paramsTemp)
+            if (er.numError != 0)
+                alert(er.message)
+            else
+                myWindow.close()
+              
+        }
+
+
+
+    </script>
+</head>
+<body style="overflow: hidden;" onload="window_onload()">
+    <form onsubmit="return false;" autocomplete="off">
+        <table class="tb1">
+            <tbody id="tableEdit"></tbody>
+        </table>
+        <table class="tb1" style="position:absolute; bottom:0">
+            <tr>
+                <td style="width:10%"></td>
+                <td style="width:40%">
+                    <div id="divAceptar" style="width: 100%"></div>
+                </td>
+                <td style="width:40%">
+                    <div id="divCancelar" style="width: 100%"></div>
+                </td>
+                <td style="width:10%"></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

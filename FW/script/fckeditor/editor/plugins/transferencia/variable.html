@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * This is the sample "Replace" plugin window.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta content="noindex, nofollow" name="robots">
+        
+        <script type="text/javascript" src="/FW/script/prototype.js"></script>
+        
+        <style type="text/css">
+            #txtVariable {
+            }
+            #selectVariable {
+            }
+            tr.shadow td {
+                background: #DDDDFF;
+            }
+            td {
+                vertical-align: top;
+            }
+            #showSelect {
+                font-weight: bold;
+                font-size: 18px;
+                color: #749BC4;
+                cursor: pointer;
+                cursor: hand;
+            }
+        </style>
+        <script type="text/javascript">
+            var oEditor = window.parent.InnerDialogLoaded();
+            var dialog = window.parent;
+            var args = dialog.Args().CustomValue;
+            function OnLoad()
+            {
+                document.getElementById('txtVariable').focus();
+                // First of all, translate the dialog box texts
+                oEditor.FCKLanguageManager.TranslatePage(document);
+
+                if (args.element) {
+                    document.getElementById('txtVariable').value = args.element.getAttribute('varName');
+                    document.getElementById('txtLabel').value = args.element.getAttribute('varLabel');
+                }
+                window.parent.SetAutoSize(true);
+
+                dialog.SetOkButton(true);
+                var OkFunction = dialog.Ok;
+                dialog.Ok = function() {
+                    if (OnOk()) {
+                        OkFunction();
+                        dialog.CloseDialog();
+                    }
+                };
+                var CancelFunction = dialog.Cancel;
+                dialog.Cancel = function() {
+                    CancelFunction();
+                    OnCancel();
+                };
+                $('selectVariable').hide();
+                var varsSel = [
+                    "",
+                    "Fecha",
+                    "Transf.id_transferencia",
+                    "Transf.nombre",
+                    "Transf.habi",
+                    "Transf.timeout",
+                    "Transf.estado",
+                    "Transf.id_transf_log",
+                    "Transf.transf_det_pendiente",
+                    "Transf.cola_ejecucion",
+                    "Transf.tareas[x]",
+                    "Transf.param[x]",
+                    "Transf.cola_ejecucion[x]"
+                ];
+                parent.parent.Transferencia.parametros.each(function(parametro){
+                    varsSel.push(parametro.parametro);
+                });
+                varsSel.each(function(option){
+                    var domOption = $(document).createElement('option');
+                    domOption.setAttribute('value', option);
+                    domOption.innerHTML = option;
+                    $('selectVariable').insert(domOption);
+                });
+                var doHide = true;
+                $('showSelectTd').observe('mouseover', function(e){
+                    doHide = true;
+                    $('selectVariable').show();
+                    $('showSelectTd').up('tr').addClassName('shadow');
+                });
+                $('showSelectTd').up('tr').observe('mouseleave', function(){
+                    if(doHide) {
+                        $('selectVariable').hide();
+                        $('txtVariable').focus();
+                        $('showSelectTd').up('tr').removeClassName('shadow');
+                    }
+                });
+                $('selectVariable').observe('focus', function(){
+                    doHide = false;
+                });
+                $('selectVariable').observe('blur', function(){
+                    doHide = true;
+                });
+                $('selectVariable').observe('change', function(){
+                    doHide = true;
+                    $('selectVariable').select('option').each(function(option) {
+                        if (option.selected) {
+                            $('txtVariable').value = option.value;
+                            $('selectVariable').select('option')[0].selected = true;
+                            throw $break;
+                        }
+                    });
+                    $('txtVariable').focus();
+                });
+            }
+            function OnOk() {
+                var value = document.getElementById('txtVariable').value;
+                var label = document.getElementById('txtLabel').value;
+
+                if (value == '') {
+                    alert('Debe ingresar un valor en el campo variable.');
+                    return false;
+                } else {
+                    args.okFunction(args.element, args.fakeSpan, value, label);
+                }
+                return true;
+            }
+            function OnCancel() {
+
+            }
+        </script>
+    </head>
+    <body onload="OnLoad();" style="overflow: hidden;">
+        <div align="center"></div>
+        <table cellSpacing="0" cellPadding="2" width="100%" border="0" style="border-collapse: collapse;">
+            <tr>
+                <td noWrap>
+                    <label for="txtVariable" fckLang="Variable">Variable:</label>
+                </td>
+                <td width="100%">
+                    <div style="position: relative;">
+                        <input id="txtVariable" style="WIDTH: 100%" tabIndex="1" type="text">
+                        <select id="selectVariable" style="WIDTH: 100%"></select>
+                    </div>
+                </td>
+                <td id="showSelectTd">
+                    <span id="showSelect">+</span>
+                </td>
+            </tr>
+            <tr>
+                <td noWrap>
+                    <label for="txtLabel" fckLang="Etiqueta">Etiqueta:</label>
+                </td>
+                <td width="100%">
+                    <input id="txtLabel" style="WIDTH: 100%" tabIndex="2" type="text">
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

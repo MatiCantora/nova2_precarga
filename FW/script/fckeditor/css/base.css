@@ -1,0 +1,24 @@
+.body_fckEditor { 
+    margin-left:0.1cm;
+    vertical-align:top;
+}
+p {
+    font: 13px arial ;
+    margin: 1px;
+}
+li {
+    font: 13px arial ;
+    margin: 1px;
+}
+
+/* Transferencia variable */
+.FCK__TransfVariable {
+    padding: 0;
+    margin-left: 1px;
+    background: #FFFF99;
+    border: 1px solid #AAAA77;
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    cursor: hand;
+}

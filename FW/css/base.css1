@@ -1,0 +1,319 @@
+/*
+	*** Colores de fondo **
+	#d6d3d3 Vidrio de ventana
+	#e6e3e3 Body
+	white   tb1
+	#DFD6E0 highligth tr-td
+	#a2a2a2 tbLabel / Tit2 / Tit3
+	#d0d0d0 tbLabel0 / Tit1
+	#f4f4f4 Tit4
+*/
+@media screen and (max-device-width: 800px) and (orientation: portrait) { 
+	BODY {
+		font: 100% Arial, Helvetica, sans-serif;
+	}
+	input {
+		font: 16px Arial, Helvetica, sans-serif !Important;
+	}
+}
+@media screen and (max-device-width: 800px) and (orientation: landscape) {
+	BODY {
+		font: 100% Arial, Helvetica, sans-serif;
+	}
+	input {
+		font: 16px Arial, Helvetica, sans-serif !Important;
+	}
+}
+/* Vidrio de los bloqueos */
+.overlay_bloqueo {
+    position: absolute;
+    float: left;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    filter: alpha(opacity=50);       /* IE8 and lower */
+    background: #d6d3d3 url('/fw/image/icons/spinner24x24_azul.gif') no-repeat 50% 50%;
+}
+.overlay_bloqueo_base {
+    position: absolute;
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+.overlay_bloqueo_msg{
+    margin-top: -40px;
+	padding: 5px 15px;
+    background : white;
+    color: black;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    border:solid #d6d3d3 1px;
+    opacity: 0.9;
+    filter: alpha(opacity=90);       /* IE8 and lower */
+}
+/* Vidrio de las ventanas */
+.overlay_alphacube {
+    background-color:  #d6d3d3 !Important;
+}
+HTML {
+	height: 100%;
+}
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+*:focus {
+	outline:none;
+	box-shadow: 0 0 2px gray;
+}
+input[type=text]:focus {
+    box-shadow: 0 0 2px gray;
+}
+input[type=password]:focus {
+    box-shadow: 0 0 2px gray;
+}
+input[type=button]:focus {
+    box-shadow: 0 0 1px gray;
+    border: 0px;
+    border: solid #B0B0B0 1px !important;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { 
+    margin: 0; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+input[type=number] {
+	-moz-appearance: textfield;
+}
+input[type=date]::-webkit-inner-spin-button,
+input[type=date]::-webkit-outer-spin-button { 
+    margin: 0; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+input[type=button] {
+    padding-bottom: 0.30em;
+    padding-top: 0.30em;
+    box-shadow: 0 0 1px #f4f4f4;
+}
+select:focus {
+    box-shadow: 0 0 2px gray;
+}
+BODY
+{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #e6e3e3;
+    background-position: center center;
+    border: none;
+    font: 13px Arial, Helvetica, sans-serif;
+}
+select
+{
+    padding-left: 0.41em;
+    padding-right: 0.41em;
+	border: #D0D0D0 1px solid;
+	-moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+input,
+textarea {
+	padding-left: 0.41em;
+	padding-right: 0.41em;
+	border: #D0D0D0 1px solid;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+	-moz-outline-radius: 0.33em;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.tb1
+{
+    width: 100%;
+    background-color: white;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.tb1 TR {
+	background: #ffffff
+}
+.tb1 TR TD
+{
+    vertical-align: middle;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    box-shadow: 0 0 1px #f4f4f4;
+    text-align: left;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.tbLabelNormal TD
+{
+    vertical-align: middle;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.layout_fixed { table-layout: fixed; }
+.layout_fixed TR TD { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.highlightTROver TR:hover td {
+   background-color: #DFD6E0;
+}
+.highlightTDOver TR td:hover {
+   background-color: #DFD6E0;
+}
+.highlightEven tr:nth-child(odd) { background: #f4f4f4; }
+.highlightEven tr:nth-child(even) { background: #ffffff; }
+.highlightOdd tr:nth-child(odd) { background: #ffffff; }
+.highlightOdd tr:nth-child(even) { background: #f4f4f4; }
+/*********************************************/
+table.scroll { table-layout: fixed; }
+table.scroll tr td { overflow: hidden; }
+/********************************************/
+.tbLabel TD
+{
+    height: 20px;
+    margin: 0px !Important;
+    padding: 0px 0.30em 0px 0.30em;
+    background-color: #a2a2a2 !Important;
+	color:#FFFFFF;
+	-moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    font: 1em Arial, Helvetica, sans-serif !Important;
+    text-align: center;
+}
+.tbLabel0 TD
+{
+    height: 20px;
+    margin: 0px !Important;
+	padding: 0px 0.30em 0px 0.30em;
+    background-color: #d0d0d0 !Important;
+	color:#404040 !Important;
+	-moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    font: 1.0em Tahoma !Important;
+    text-align: center;
+}
+.Tit1
+{
+    padding: 0px 0.35em 0px 0.35em;
+    BACKGROUND-COLOR: #d0d0d0 !Important;
+    COLOR: #404040;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    FONT-SIZE: 1.04em !Important;
+}
+.Tit2
+{
+    padding: 0px 0.35em 0px 0.35em;
+    BACKGROUND-COLOR: #a2a2a2 !Important;
+    COLOR: #FFFFFF;
+    font: 1.04em Arial, Helvetica, sans-serif !Important;
+}
+.Tit3
+{
+    MARGIN: 0px !Important;
+    padding: 0px 0.35em 0px 0.35em;
+    BACKGROUND-COLOR: #a2a2a2 !Important;
+    COLOR: white;
+	font: bolder 1em tahoma, Arial, Helvetica, sans-serif;
+}
+.Tit4
+{
+    MARGIN: 0px !Important;
+    padding: 0px 0.35em 0px 0.35em;
+    BACKGROUND-COLOR: #f4f4f4 !Important;
+    BORDER: 1px #A6A6A6 Solid  !Important;
+	font: 1em Arial, Helvetica, sans-serif;
+}
+.tb2
+{
+    WIDTH: 100%;
+    BACKGROUND-COLOR: #E9F0F4;
+    border: 0px;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.tb2 TR TD
+{
+    VERTICAL-ALIGN: middle;
+    BACKGROUND-COLOR: #E9F0F4;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.tbPages {
+	font: 1em Arial, Helvetica, sans-serif;
+}
+.divPages {/*IE*/
+	width:100%;
+	text-align: right !Important;
+}
+.divPages {/*CHROME*/
+	width:100%;
+	text-align: -khtml-right !Important;
+}
+.divPages {/*FF*/
+	width:100%;
+	text-align: -moz-right !Important;
+}
+.tdPageSelected {
+	FONT-WEIGHT: bolder;
+}
+.tr_cel TD {
+	background-color: #F0FFFF !Important;
+}
+.tb_O
+{
+    WIDTH: 100%;
+    MARGIN: 0px;
+    PADDING: 0px;
+    BORDER: 0px;
+    BACKGROUND-COLOR: #E9F0F4;
+    FONT-SIZE: 1em;
+}
+.tb_O tr
+{
+   MARGIN: 0px;
+   PADDING: 0px;
+   BORDER: 0px;
+}
+.tb_O tr td 
+{
+   MARGIN: 0px;
+   PADDING: 0px;
+   BORDER: 0px;
+}
+.tbLabel_O 
+{
+	HEIGHT: 12px;
+	BACKGROUND-COLOR: #E9F0F4;
+}
+.tbLabel0_O 
+{
+	HEIGHT: 24px;
+	BACKGROUND-COLOR: #E9F0F4;
+}
+.tbLabel_O TD {
+    WHITE-SPACE: nowrap;
+	FONT-SIZE: 1em !Important;
+    FONT-WEIGHT: bolder;
+    TEXT-ALIGN: center;
+}
+.tbLabel0_O TD
+{
+    FONT-WEIGHT: bolder;
+    TEXT-ALIGN: center;
+}

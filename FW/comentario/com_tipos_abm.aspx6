@@ -1,0 +1,308 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%
+    Dim modo As String = nvFW.nvUtiles.obtenerValor("modo", "")
+    Dim accionBack As String = nvFW.nvUtiles.obtenerValor("accionBack", "")
+    'Dim op As nvFW.nvSecurity.tnvOperador = nvApp.operador
+    Dim err = New nvFW.tError
+
+    If (modo = "ajax_call") Then
+        If (accionBack = "guardar") Then
+            Try
+
+                Dim strXml As String = nvFW.nvUtiles.obtenerValor("xml", "")
+
+                Dim cmd As New nvFW.nvDBUtiles.tnvDBCommand("sp_nv_tipos_abm", ADODB.CommandTypeEnum.adCmdStoredProc)
+                cmd.addParameter("@strXML", ADODB.DataTypeEnum.adVarChar, ADODB.ParameterDirectionEnum.adParamInput, strXml.Length, strXml)
+                Dim rs As ADODB.Recordset = cmd.Execute()
+                Dim numError As Integer = rs.Fields.Item("numError").Value
+
+                err.numError = rs.Fields("numError").Value
+                err.mensaje = rs.Fields("mensaje").Value
+                err.titulo = rs.Fields("titulo").Value
+                err.debug_desc = rs.Fields("debug_desc").Value
+                err.debug_src = rs.Fields("debug_src").Value
+                err.params("nro_com_tipo") = rs.Fields("nro_com_tipo").Value
+
+                nvFW.nvDBUtiles.DBCloseRecordset(rs)
+
+            Catch ex As Exception
+                err.numError = -2
+                err.titulo = ""
+                err.mensaje = "No se pudo realizar la acción."
+                err.debug_desc = ex.Message
+                err.debug_src = "com_tipos_abm::ajax_call"
+            End Try
+
+            err.response()
+        End If
+    End If
+
+    Me.contents("vistaTipos") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verCom_tipos'><campos>*</campos><filtro></filtro></select></criterio>")
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>NOVA Modulo Comentarios</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_head.js"></script>
+    <script type="text/javascript" src="/FW/script/tTable.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript">
+        var vButtonItems = {};
+        vButtonItems[0] = []
+        vButtonItems[0]["nombre"] = "Buscar";
+        vButtonItems[0]["etiqueta"] = "Buscar";
+        vButtonItems[0]["imagen"] = "buscar";
+        vButtonItems[0]["onclick"] = "return Mostrar()";
+
+        var vListButtons = new tListButton(vButtonItems, 'vListButtons');
+        vListButtons.loadImage("buscar", '/fw/image/icons/buscar.png');
+        var filtro = '';
+
+        function window_onresize() {
+            let alto_body = $$('BODY')[0].getHeight();
+            let alta_main = $('divCabecera').getHeight();
+            let alto_div = alto_body - alta_main;
+            $("tabla_tipos_abm").setStyle({ height: (alto_div + "px" )});
+
+        }
+
+        function window_onload() {
+            vListButtons.MostrarListButton();
+            Mostrar();
+            window_onresize();
+        }
+
+        function editarTipoABM(modo_edicion, nro_com_tipo = '', com_tipo, style = '', nro_permiso_grupo = '', nro_permiso = '', nombre_asp = '') {
+            win2 = top.nvFW.createWindow({
+                title: '<b>Editar Tipo</b>',
+                url: '/FW/comentario/com_tipos_abm_editar.aspx',
+                modal: true,
+                maximizable: true,
+                minimizable: true,
+                resizable: true,
+                draggable: true,
+                height: 500,
+                width: 1200,
+                destroyOnClose: true,
+                onClose: function (win) {
+                    Mostrar();
+                }
+            });
+            win2.options.userData = {
+                modo_edicion: modo_edicion,
+                nro_com_tipo: nro_com_tipo,
+                com_tipo: com_tipo,
+                nro_permiso: nro_permiso,
+                nro_permiso_grupo: nro_permiso_grupo,
+                nombre_asp: nombre_asp,
+                style: style
+            }
+            win2.name = "ventanaEditarTipo";
+            win2.showCenter();
+        }
+
+        function filtrar() {
+            filtro = '';
+
+            if (campos_defs.get_value('nro_com_tipo') != '') {
+                filtro += "<nro_com_tipo type='igual'>'" + campos_defs.get_value('nro_com_tipo') + "'</nro_com_tipo>";
+            }
+
+            if (campos_defs.get_value('com_tipo') != '') {
+                filtro += "<com_tipo type='like'>%" + campos_defs.get_value('com_tipo') + "%</com_tipo>";
+            }
+
+            if (campos_defs.get_value('style') != '') {
+                filtro += "<style type='like'>%" + campos_defs.get_value('style') + "%</style >";
+            }
+
+            if (campos_defs.get_value('nro_permiso_grupo') != '')
+                filtro += '<nro_permiso_grupo type="igual">' + campos_defs.get_value('nro_permiso_grupo') + '</nro_permiso_grupo>';
+
+            if (campos_defs.get_value('nro_permiso_dep') != '') {
+                filtro += '<nro_permiso type="igual">' + campos_defs.get_value('nro_permiso_dep') + '</nro_permiso>';
+            }
+
+            if (campos_defs.get_value('nombre_asp') != '')
+                filtro += '<nombre_asp type="like">%' + campos_defs.get_value('nombre_asp') + '%</nombre_asp>';
+
+        }
+
+        function Mostrar() {
+            let cantFilas = Math.floor(($("tabla_tipos_abm").getHeight() - 18 * 2) / 22);
+            filtrar();
+
+            nvFW.exportarReporte({
+                filtroXML: nvFW.pageContents.vistaTipos,
+                filtroWhere: "<criterio><select PageSize='" + cantFilas + "' AbsolutePage='1' expire_minutes='1' cacheControl='Session'><filtro>" + filtro + "</filtro></select></criterio>",
+                path_xsl: 'report/comentario/com_tipos_abm.xsl',
+                formTarget: 'tabla_tipos_abm',
+                bloq_contenedor: $('tabla_tipos_abm'),
+                nvFW_mantener_origen: true,
+                cls_contenedor: 'tabla_tipos_abm',
+                cls_contenedor_msg: " ",
+                bloq_msg: "Cargando..."
+            })
+        }
+
+        function eliminarTipo(nro_com_tipo) {
+            if (nro_com_tipo == '') {
+                top.nvFW.alert("Tiene que haber un tipo existente marcado para la acción.");
+                return;
+            }
+
+            modo = 'eliminar';
+            let xml = '<?xml version="1.0" encoding="ISO-8859-1"?><tipos><tipo accion="' + modo + '" nro_com_tipo="' + nro_com_tipo + '" ></tipo></tipos>';
+            
+            Dialog.confirm("¿Confirma que desea eliminar el tipo?", {
+                width: 450,
+                className: "alphacube",
+                onOk: function (winDialog) {
+                    nvFW.error_ajax_request("com_tipos_abm.aspx", {
+                        parameters: {
+                            xml: xml,
+                            modo: "ajax_call",
+                            accionBack: "guardar"
+                        },
+
+                        onFailure: function (err, transport) {
+                            top.nvFW.alert("Ocurrió un error. Contacte al administrador.");
+                        },
+                        error_alert: false
+                    })
+
+                    winDialog.close();
+                    Mostrar();
+                },
+                onCancel: function (winDialog) {
+                    winDialog.close()
+                },
+                okLabel: 'Confirmar',
+                cancelLabel: 'Cancelar'
+            });
+        }
+
+        function ventanaComentariosTipoGrupo() {
+            win_com = window.top.nvFW.createWindow({
+                className: 'alphacube',
+                url: '/fw/comentario/com_tipos_grupos_abm.aspx',
+                title: ('Relacion Grupo/Tipo ABM'),
+                minimizable: true,
+                maximizable: true,
+                draggable: true,
+                width: 600,
+                height: 400
+            });
+            win_com.options.userData = {};
+            win_com.showCenter(true);
+        }
+
+        function key_Buscar() {
+            if ((typeof campos_defs.items[document.activeElement.id] != 'undefined' || typeof $$('input#' + document.activeElement.id) != 'undefined') && window.event.keyCode == 13)
+                Mostrar();
+        }
+
+    </script>
+
+</head>
+<body onload="window_onload()" onresize="window_onresize()" onkeypress="return key_Buscar()" style="width:100%;height:100%; overflow:hidden">
+    <div id ="divCabecera">
+        <div id="divTitulo"> 
+        <script type="text/javascript">
+            var vTipos = new tMenu('divTitulo', 'vTipos');
+            vTipos.loadImage("nueva", '/FW/image/icons/nueva.png');
+            vTipos.loadImage("abm", '/FW/image/icons/abm.png');
+            Menus["vTipos"] = vTipos;
+            Menus["vTipos"].alineacion = 'centro';
+            Menus["vTipos"].estilo = 'A';
+            Menus["vTipos"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 80%;text-align:center; vertical-align:middle'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>ABM Tipos</Desc></MenuItem>");
+            Menus["vTipos"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 10%; text-align:center; vertical-align:middle'>" +
+                "<Lib TipoLib='offLine'>DocMNG</Lib><icono>abm</icono><Desc>Rel Tipos/Grupos</Desc><Acciones><Ejecutar Tipo='script'>" +
+                "<Codigo>ventanaComentariosTipoGrupo()</Codigo></Ejecutar></Acciones></MenuItem>");
+            Menus["vTipos"].CargarMenuItemXML("<MenuItem id='2' style='WIDTH: 5%; text-align:center; vertical-align:middle'>" +
+                "<Lib TipoLib='offLine'>DocMNG</Lib><icono>nueva</icono><Desc>Nuevo tipo</Desc><Acciones><Ejecutar Tipo='script'>" +
+                "<Codigo>editarTipoABM('nuevo')</Codigo></Ejecutar></Acciones></MenuItem>");
+
+            vTipos.MostrarMenu();
+        </script>
+        </div>
+
+     <table class="tb1" id="tbFiltro">
+            <tr class="tbLabel">
+                <td style="text-align:center"> Número </td>
+                <td style="text-align:center"> Tipo </td>
+                <td style="text-align:center"> Estilo </td>
+                <td style="text-align:center"> Permiso grupo </td>
+                <td style="text-align:center"> Permiso </td>
+                <td style="text-align:center"> Nombre ASP </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <script type="text/javascript">
+                        campos_defs.add('nro_com_tipo', {
+                            nro_campo_tipo: 100,
+                            enDB: false
+                        })
+                    </script>
+                </td>
+                
+                <td>
+                    <script type="text/javascript">
+                        campos_defs.add('com_tipo', {
+                            nro_campo_tipo: 104,
+                            enDB: false
+                        })
+                    </script>
+                </td>
+
+                <td>
+                    <script type="text/javascript">
+                        campos_defs.add('style', {
+                            nro_campo_tipo: 104,
+                            enDB: false
+                        })
+                    </script>
+                </td>
+
+                <td>
+                    <script type="text/javascript">
+                        campos_defs.add('nro_permiso_grupo')
+                    </script>
+                </td>
+
+                <td>          
+                    <script type="text/javascript">
+                        campos_defs.add('nro_permiso_dep')
+                    </script>
+                </td>
+
+                <td>
+                     <script type="text/javascript">
+                         campos_defs.add('nombre_asp', {
+                             nro_campo_tipo: 104,
+                             enDB: false
+                         })
+                     </script>
+                </td>
+
+                <td>
+                    <div id="divBuscar" style="width: 100%;"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <iframe name="tabla_tipos_abm" id="tabla_tipos_abm" style="width: 100%;height:100%; background-color: white; overflow:hidden;" frameborder="0"> </iframe>
+
+</body>
+</html>

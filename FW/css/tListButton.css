@@ -1,0 +1,181 @@
+.btnTB_O {
+    width: 100% !important;
+    height: 24px !important;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    white-space: nowrap !important;
+}
+
+.btnNormal_O {
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+    background-color: #DDDDDD !important;
+    border: solid #DDDDDD 2px !important;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    box-shadow: 0 0 1px #f4f4f4;
+    font: 14px Tahoma, Verdana, Segoe, sans-serif !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+    .btnNormal_O:hover {
+        border-top: 1px !important;
+        border-right: 1px !important;
+        border: solid #B0B0B0 2px !important;
+    }
+
+.btnBegin_O {
+}
+
+.btnEnd_O {
+}
+
+.btnTB_L {
+    width: 100% !important;
+    height: 24px !important;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    white-space: nowrap !important;
+}
+
+.btnNormal_L {
+    display: inline-block;
+    position: relative;
+    margin: 1px;
+    padding: 8px 24px;
+    width: 100%;
+    font: 14px Tahoma, Verdana, Segoe, sans-serif;
+    font-weight: 600;
+    color: #000;
+    background-color: transparent;
+    border: none;
+    border-radius: 11px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+    .btnNormal_L:hover {
+        outline: solid #B0B0B0 1px;
+    }
+
+
+.btnTB_M {
+    width: 100% !important;
+    height: 24px !important;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    white-space: nowrap !important;
+}
+
+.btnNormal_M {
+    display: inline-block;
+    position: relative;
+    margin: 1px;
+    padding: 8px 24px;
+    width: 100%;
+    font: 14px Tahoma, Verdana, Segoe, sans-serif;
+    font-weight: 600;
+    color: #fff;
+    background-color: #194693;
+    border: none;
+    border-radius: 11px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+    .btnNormal_M::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        transition: width 0.8s, height 0.8s, opacity 0.8s;
+    }
+
+    .btnNormal_M:hover {
+        background-color: #1976d2;
+    }
+
+    .btnNormal_M:active {
+        color: #194693;
+        padding: 7px 23px;
+        background-color: #ffffff;
+        border: solid #194693 1px;
+    }
+
+    .btnNormal_M:hover::after {
+        width: 200%;
+        height: 200%;
+        opacity: 1;
+    }
+
+
+.btnTB_I {
+    width: 100% !important;
+    height: 24px !important;
+    -moz-border-radius: 0.33em;
+    -webkit-border-radius: 0.33em;
+    border-radius: 0.33em;
+    white-space: nowrap !important;
+}
+
+.btnNormal_I {
+    display: inline-block;
+    position: relative;
+    margin: 1px;
+    padding: 8px 24px;
+    width: 100%;
+    font: 14px Tahoma, Verdana, Segoe, sans-serif;
+    font-weight: 600;
+    color: #fff;
+    background-color: #42C1EF;
+    border: none;
+    border-radius: 11px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+    .btnNormal_I::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        transition: width 0.8s, height 0.8s, opacity 0.8s;
+    }
+
+    .btnNormal_I:hover {
+        background-color: #1976d2;
+    }
+
+    .btnNormal_I:active {
+        color: #194693;
+        padding: 7px 23px;
+        background-color: #ffffff;
+        border: solid #194693 1px;
+    }
+
+    .btnNormal_I:hover::after {
+        width: 200%;
+        height: 200%;
+        opacity: 1;
+    }
+
+

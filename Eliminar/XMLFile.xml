@@ -1,0 +1,26 @@
+﻿<xml xmlns:s="uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:rs="urn:schemas-microsoft-com:rowset" xmlns:z="#RowsetSchema">
+	<s:Schema id="RowsetSchema">
+		<s:ElementType name="row" content="eltOnly" rs:updatable="true">
+			<s:AttributeType name="estado" rs:number="1" rs:write="true" rs:writeunknown="true">
+				<s:datatype dt:type="string" dt:maxLength="1" rs:precision="0" rs:maybenull="false" />
+			</s:AttributeType>
+			<s:AttributeType name="descripcion" rs:number="2" rs:nullable="true" rs:write="true" rs:writeunknown="true">
+				<s:datatype dt:type="string" dt:maxLength="50" rs:precision="0" />
+			</s:AttributeType>
+			<s:AttributeType name="orden" rs:number="3" rs:nullable="true" rs:write="true" rs:writeunknown="true">
+				<s:datatype dt:type="i2" dt:maxLength="2" rs:precision="0" rs:fixedlength="true" />
+			</s:AttributeType>
+			<s:AttributeType name="nro_permiso" rs:number="4" rs:nullable="true" rs:write="true" rs:writeunknown="true">
+				<s:datatype dt:type="int" dt:maxLength="4" rs:precision="0" rs:fixedlength="true" />
+			</s:AttributeType>
+			<s:extends type="rs:rowbase" />
+		</s:ElementType>
+	</s:Schema>
+	<rs:data>
+		<z:row estado="A" descripcion="Aprobado" nro_permiso="1" />
+		<z:row estado="B" descripcion="Precarga" nro_permiso="21" />
+		<z:row estado="C" descripcion="Cancelado" nro_permiso="3" />
+	</rs:data>
+
+  <Params timeout="0" PageSize="3" AbsolutePage="1" orden_original="" recordcount="26" PageCount="10" cacheControl="none" orden="" cache="False" id_exp_origen="0" mantener_origen="False"  />
+</xml>

@@ -1,0 +1,294 @@
+<%@ Page Language="VB" AutoEventWireup="false" Inherits="nvFW.nvPages.nvPageFW" %>
+
+<%  
+    Dim nodo_get As String = nvFW.nvUtiles.obtenerValor("nodo_get", 0)
+    Dim nodo_depende As String = nvFW.nvUtiles.obtenerValor("nodo_depende", "")
+    Dim filtroCargar = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='verparametros_nodos'><campos>*</campos><filtro></filtro><orden></orden></select></criterio>")
+    
+    Dim filtroParametroAsociado = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='parametros_nodos'><campos>top 1 nro_par_nodo</campos><filtro></filtro><orden></orden></select></criterio>")
+    Me.contents("filtroSeleccionarParametro") = nvFW.nvXMLSQL.encXMLSQL("<criterio><select vista='parametros_def'><campos>*</campos></select></criterio>")
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Parametros Nodo ABM</title>
+
+    <link href="/fw/css/base.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/FW/script/nvFW.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_BasicControls.js"></script>
+    <script type="text/javascript" src="/FW/script/nvFW_windows.js"></script>
+    <script type="text/javascript" src="/FW/script/tCampo_def.js"></script>
+    <% = Me.getHeadInit()%>
+
+    <script type="text/javascript" language="javascript">
+       
+        var filtroCargar = '<% =filtroCargar %>'
+        var filtroParametroAsociado = '<%= filtroParametroAsociado %>  '
+        var nodo_depende = '<%= nodo_depende %>'
+        var win = nvFW.getMyWindow()
+        var editar = false
+
+        function window_onload() {  
+            campos_defs.set_value("par_nodo_tipo", "P")
+            campos_defs.set_value("nro_par_nodo_dep", nodo_depende)
+            campos_defs.habilitar("nro_par_nodo_dep", false)
+           campos_defs.items["par_nodo_tipo"]['onchange'] = par_nodo_tipo_onchange
+           if ($('nro_par_nodo').value != 0){
+               cargarParametro()
+               editar = true
+           }
+         }
+
+        function par_nodo_tipo_onchange(){
+            if( campos_defs.value("par_nodo_tipo") == 'P') {
+                campos_defs.habilitar("nro_permiso_grupo",true)
+                campos_defs.habilitar("nro_permiso_dep",true)
+                $('trId_param').show()
+                $('trId_paramValor').show()
+                $("trPermisoGrupo").show()
+                $("trPermiso").show()   
+                win.setTitle("<b>Parámetro ABM</b>")
+            }
+
+            if( campos_defs.value("par_nodo_tipo") == 'M'){
+                campos_defs.clear("nro_permiso_grupo")
+                campos_defs.clear("nro_permiso_dep")
+                campos_defs.habilitar("nro_permiso_grupo",false)
+                campos_defs.habilitar("nro_permiso_dep",false)
+                $('trId_param').hide()
+                $('trId_paramValor').hide()
+                $("trPermisoGrupo").hide()
+                $("trPermiso").hide()
+                win.setTitle("<b>Módulo ABM</b>")
+            }   
+
+        }
+
+        function cargarParametro(){
+            var filtroWhere = "<nro_par_nodo type='igual'>" + $('nro_par_nodo').value + "</nro_par_nodo>";
+            var i = 0;
+            var rs = new tRS();
+            rs.open(filtroCargar, '', filtroWhere, '', '');
+            if (!rs.eof())
+            {   
+                $('par_nodo').value = rs.getdata('par_nodo')
+
+                $('orden').value = rs.getdata('orden') != null ? rs.getdata('orden') : 0
+
+                campos_defs.set_value("par_nodo_tipo", rs.getdata("par_nodo_tipo"))
+                campos_defs.set_value("nro_permiso_grupo", rs.getdata("nro_permiso_grupo") == null ? "" : rs.getdata("nro_permiso_grupo"))
+                campos_defs.set_value("nro_permiso_dep", rs.getdata("nro_permiso") == null ? "" : rs.getdata("nro_permiso"))
+
+                $("id_param").value = rs.getdata("id_param") == null ? "" : rs.getdata("id_param")
+                campos_defs.set_value("param_tipo", rs.getdata("param_tipo") == null ? "" : rs.getdata("param_tipo"))
+
+                if ($("par_nodo_tipo").value != 'M')
+                {
+                    var habilitar = !(rs.getdata("encriptar") == 'False');
+                    $("encriptarCheckbox").checked = habilitar;
+                   // $("encriptarCheckbox").disabled = habilitar;
+                }
+                else $("encriptarCheckbox").checked = false
+
+                par_nodo_tipo_onchange() 
+            }
+            else {
+                campos_defs.set_value("par_nodo_tipo", "M")
+                par_nodo_tipo_onchange()
+            } 
+              
+            campos_defs.habilitar("par_nodo_tipo", false)
+
+        }
+
+         function parametro_asociado(nro_par_nodo, id_param){
+             var existe = false
+             var filtro_nodo = ""
+
+             if (nro_par_nodo != 0)
+                 filtro_nodo = "<nro_par_nodo type='distinto'>" + nro_par_nodo + "</nro_par_nodo>"
+
+             var rs = new tRS()
+             var filtroCampo = "<criterio><select vista='parametros_nodos'><campos>top 1 nro_par_nodo</campos><filtro></filtro><orden></orden></select></criterio>";
+             var filtroWhere = filtro_nodo + "<par_nodo_tipo type='igual'>'P'</par_nodo_tipo><id_param type='igual'>'" + id_param + "'</id_param>";
+
+             rs.open(filtroParametroAsociado, '', filtroWhere, '', '');
+             if (!rs.eof())
+                 existe = true
+
+             return existe
+         }
+
+        function guardar(){
+            var strError = ''
+
+            if (campos_defs.value("nro_permiso_grupo") == '' && campos_defs.value("par_nodo_tipo") == 'P')
+                strError = "Ingrese el permiso grupo.</br>"
+
+            if (campos_defs.value("nro_permiso_dep") == '' && campos_defs.value("par_nodo_tipo") == 'P')
+                strError += "Ingrese el permiso.</br>"
+
+            if (campos_defs.value("par_nodo_tipo") == '')
+                strError += "Ingrese el tipo.</br>"
+
+            if (campos_defs.value("param_tipo") == '' && campos_defs.value("par_nodo_tipo") == 'P')
+                strError += "Ingrese el tipo de dato.</br>"
+
+            if (parseInt($('nro_par_nodo').value) >= 0 && campos_defs.value("par_nodo_tipo") == 'P' && campos_defs.value("id_param") != '' && !editar)
+                if (parametro_asociado($('nro_par_nodo').value, campos_defs.value("id_param")))
+                    strError += "El parametro</br>ya se encuentra asociado.</br>"
+
+            if ($("par_nodo").value == '' ) //&& campos_defs.value("par_nodo_tipo") != 'P')
+                strError += "Ingrese la descripción.</br>"
+
+
+            if (strError != ''){
+                alert(strError)
+                return
+            }
+               
+            parametros = new Array()
+            parametros['nro_par_nodo'] = $("nro_par_nodo").value
+            parametros['par_nodo'] = $("par_nodo").value
+            parametros['par_nodo_tipo'] = campos_defs.value("par_nodo_tipo")
+            parametros['par_nodo_tipo_desc'] = campos_defs.value("par_nodo_tipo") == 'P' ? 'Parámetro' : 'Módulo'
+            parametros['nro_permiso_grupo'] = campos_defs.value("nro_permiso_grupo")
+            parametros['permiso_grupo'] = campos_defs.desc('nro_permiso_grupo').split('  (')[0]
+            parametros['nro_permiso_dep'] = campos_defs.value("nro_permiso_dep")
+            parametros['permitir'] = campos_defs.desc('nro_permiso_dep').split('  (')[0] 
+            parametros['orden'] = 0
+            parametros['tiene_dependientes'] = false
+            parametros['id_param'] = campos_defs.value("id_param")
+            parametros['param_tipo'] = campos_defs.value("param_tipo") // == '' ? null : campos_defs.value("id_param")
+             parametros['param_tipo_desc'] = campos_defs.desc('param_tipo').split('  (')[0] 
+            parametros['encriptar'] = $("encriptarCheckbox").checked
+            parametros["hardcode_anterior"] = 0
+
+            win.params = parametros
+            win.close()
+        }
+
+
+         var dependiente
+        function seleccionar_parametro(valor) {
+            
+            dependiente = valor
+            if(campos_defs.value('par_nodo_tipo') == "M" && !dependiente){
+                alert("Está editando un módulo, no un párametro. No se puede realizar la búsqueda")
+                return
+            }
+
+            var win = nvFW.createWindow({
+                url: '/fw/parametros/parametros_buscar.aspx',
+                title: '<b>Buscar Parámetros</b>',
+                parameters: {
+                        consulta: nvFW.pageContents.filtroSeleccionarParametro,
+                        path_reporte: "report\\parametros\\ver_parametros_buscar\\ver_valores_parametros_buscar.xsl"
+                            },
+                minimizable: false,
+                maximizable: false,
+                draggable: true,
+                width: 450,
+                height: 250,
+                resizable: false,
+                destroyOnClose:true
+            });
+            win.showCenter(true)
+
+        }
+
+        function redraw(id_param) {
+            if (id_param == '')
+                return
+                       
+            if (parametro_asociado(0,id_param)) {
+                alert("El parámetro ya se encuentra asociado")
+                campos_defs.set_value('id_param', '')
+                campos_defs.set_value('param_tipo', '')
+                campos_defs.set_value('nro_permiso_grupo', '')
+                campos_defs.set_value('nro_permiso_dep', '')
+                return
+            }
+            else {
+                var rs_param = new tRS()
+                var filtroWhere = "<id_param type='igual'>'" + id_param + "'</id_param>";
+                rs_param.open(nvFW.pageContents.filtroSeleccionarParametro, '', filtroWhere)
+
+                campos_defs.set_value('id_param', id_param)
+                campos_defs.set_value('param_tipo', rs_param.getdata("param_tipo"))
+                campos_defs.set_value('nro_permiso_grupo', rs_param.getdata("nro_permiso_grupo"))
+                campos_defs.set_value('nro_permiso_dep', rs_param.getdata("nro_permiso"))
+                if (rs_param.getdata("encriptar") == 'True') {
+                    $('encriptarCheckbox').checked =  'checkeded'
+                }
+
+            }
+        }
+
+    </script>
+</head>
+<body onload="return window_onload()"  style="width:100%;height:100%;overflow:hidden">
+    <input type="hidden" id="nro_par_nodo" value="<% = nodo_get %>"/> 
+    <div id="divCabecera"></div>
+    <div id="divMenuABM"></div>
+        <script type="text/javascript" language="javascript">
+         var DocumentMNG = new tDMOffLine;
+         var vMenuABM = new tMenu('divMenuABM', 'vMenuABM');
+         vMenuABM.loadImage("guardar", '/FW/image/icons/guardar.png')
+         vMenuABM.loadImage("buscar", "/FW/image/icons/file.png")
+         Menus["vMenuABM"] = vMenuABM
+         Menus["vMenuABM"].alineacion = 'centro';
+         Menus["vMenuABM"].estilo = 'A';
+         Menus["vMenuABM"].CargarMenuItemXML("<MenuItem id='0' style='width:10%'><Lib TipoLib='offLine'>DocMNG</Lib><icono>guardar</icono><Desc>Guardar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>guardar()</Codigo></Ejecutar></Acciones></MenuItem>")
+         Menus["vMenuABM"].CargarMenuItemXML("<MenuItem id='1' style='text-align:center'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
+         Menus["vMenuABM"].CargarMenuItemXML("<MenuItem id='2' style='width:10%'><Lib TipoLib='offLine'>DocMNG</Lib><icono>buscar</icono><Desc>Parámetros</Desc><Acciones><Ejecutar Tipo='script'><Codigo>seleccionar_parametro(true)</Codigo></Ejecutar></Acciones></MenuItem>")
+         vMenuABM.MostrarMenu()
+         </script>  
+       <table class="tb1" style="width:100%; table-layout:fixed;">
+          <tr>
+              <td style='width:14%' class="Tit1">&nbsp;</td>
+              <td style='width:10%' class="Tit1">Tipo:</td>
+              <td style="text-align:left" id="td_par_nodo_tipo">
+              <%= nvFW.nvCampo_def.get_html_input("par_nodo_tipo", enDB:=False, nro_campo_tipo:=1, filtroWhere:="<par_nodo_tipo type='igual'>'%campo_value%'</par_nodo_tipo>",
+              filtroXML:="<criterio><select vista='parametros_nodos_tipos'><campos>distinct par_nodo_tipo as id, par_nodo_tipo_desc as [campo]</campos><orden>[campo]</orden><filtro><par_nodo_tipo type='distinto'>'R'</par_nodo_tipo></filtro></select></criterio>")%>
+              </td>
+              <td style='width:10%' class="Tit1">Orden:</td>
+              <td id="td_orden" style='width:10%'><%= nvFW.nvCampo_def.get_html_input("orden", nro_campo_tipo:=101, enDB:=False)%></td>
+              <td style='width:15%' class="Tit1">&nbsp;</td>
+          </tr>
+       </table>
+       <table class="tb1" style="width:100%">
+          <tr id="">
+             <td  class="Tit1" style='width:10%'>Depende de:</td>
+             <td style='width:75%' colspan="3" id="td_nro_par_nodo_dep"> <%= nvFW.nvCampo_def.get_html_input("nro_par_nodo_dep", enDB:=False, nro_campo_tipo:=1, filtroWhere:="<nro_par_nodo_dep type='igual'>'%campo_value%'</nro_par_nodo_dep>",
+                                                filtroXML:="<criterio><select vista='verParametros_Nodos_dep'><campos>distinct nro_par_nodo as id, par_nodo as [campo]</campos><filtro><par_nodo_tipo type='igual'>'M'</par_nodo_tipo></filtro><orden>[campo]</orden></select></criterio>")%>
+              </td>
+          </tr>
+          <tr id="trpar_nodo">
+             <td  class="Tit1" style='width:10%'>Descripción:</td>
+             <td style='width:75%' colspan="3"><input type="text" id="par_nodo" value="" style="width:100%"/> 
+             </td>
+          </tr>
+          <tr id="trId_param">
+            <td style='width:10%' class="Tit1" >Parámetro:</td>
+            <td id='td_id_param'><%= nvFW.nvCampo_def.get_html_input("id_param", enDB:=False, nro_campo_tipo:=104)%></td>
+            <td style='width:15%' class="Tit1" nowrap="nowrap">Tipo de dato:</td>
+            <td id="td_param_tipo" style='width:20%'> <%= nvFW.nvCampo_def.get_html_input("param_tipo", enDB:=False, nro_campo_tipo:=1, filtroXML:="<criterio><select vista='parametros_tipos'><campos>distinct param_tipo as id, param_tipo_desc as [campo] </campos><orden>[campo]</orden></select></criterio>",
+                                                    filtroWhere:="<param_tipo type='igual'>'%campo_value%'</param_tipo>")%></td>
+         </tr>
+         <tr id="trPermisoGrupo">
+              <td style='width:10%' class="Tit1">Grupo:</td>
+              <td style='width:30%' colspan="3" id="td_nro_permiso_grupo"><%= nvFW.nvCampo_def.get_html_input("nro_permiso_grupo", enDB:=True, nro_campo_tipo:=1)%></td>
+         </tr>
+         <tr id="trPermiso">     
+              <td style='width:10%' class="Tit1">Permiso:</td>
+              <td colspan="1" colspan="3" id="td_nro_permiso"> <%= nvFW.nvCampo_def.get_html_input("nro_permiso_dep", enDB:=True, nro_campo_tipo:=1)%> </td>
+          </tr> 
+         <tr id="trId_paramValor">
+            <td class="Tit1" style='width:8%'>Encriptar:</td>
+            <td><input type="checkbox" id="encriptarCheckbox" /></td>
+            <td style='width:15%' colspan="2" class="Tit1">&nbsp;</td>
+         </tr>
+       </table>
+</body>
+</html>

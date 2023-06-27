@@ -1,0 +1,197 @@
+/* Switch */
+
+.slider3 !Important {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 0.5em;
+    border-radius: 1em;
+    background: #FCD48C;
+    outline: none;
+    -webkit-transition: .05s;
+    transition: opacity .05s;
+}
+
+.slider3 {
+    -webkit-appearance: none;
+    -moz-apperance: none;
+    border-radius: 1em;
+    height: 0.8em;
+}
+
+    .slider3::-moz-range-track {
+        border: none;
+        background: none;
+        outline: none;
+    }
+
+    .slider3:focus {
+        outline: none;
+        border: none;
+    }
+
+    .slider3::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        background-color: #a30085;
+        height: 1.1em;
+        width: 1.1em;
+        border-radius: 50%;
+    }
+
+    .slider3::-moz-range-thumb {
+        -moz-appearance: none !important;
+        background-color: #a30085;
+        border: none;
+        height: 1.1em;
+        width: 1.1em;
+        border-radius: 50%;
+    }
+
+    .slider3:disabled {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 0.5em;
+        border-radius: 1em;
+        background: #9a6991;
+        outline: none;
+        -webkit-transition: .05s;
+        transition: opacity .05s;
+    }
+
+    .slider3:disabled {
+        -webkit-appearance: none;
+        -moz-apperance: none;
+        border-radius: 1em;
+        height: 0.8em;
+    }
+
+        .slider3:disabled::-moz-range-track {
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        .slider3:disabled:focus {
+            outline: none;
+            border: none;
+        }
+
+        .slider3:disabled::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            background-color: #a30085;
+            height: 1.1em;
+            width: 1.1em;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .slider3:disabled::-moz-range-thumb {
+            -moz-appearance: none !important;
+            background-color: #a30085;
+            border: none;
+            height: 1.1em;
+            width: 1.1em;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+
+.slider4 {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 0.5em;
+    border-radius: 1em;
+    background: #7e8fa6;
+    outline: none;
+    -webkit-transition: .05s;
+    transition: opacity .05s;
+}
+
+.slider4 {
+    -webkit-appearance: none;
+    -moz-apperance: none;
+    border-radius: 1em;
+    /*height: 0.5em;*/
+    height: 0.8em;
+}
+
+    .slider4::-moz-range-track {
+        border: none;
+        background: none;
+        outline: none;
+    }
+
+    .slider4:focus {
+        outline: none;
+        border: none;
+    }
+
+    .slider4::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        background-color: #111D2D;
+        /*height: 0.8em;
+        width: 0.8em;*/
+        height: 1.1em;
+        width: 1.1em;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .slider4::-moz-range-thumb {
+        -moz-appearance: none !important;
+        background-color: #111D2D;
+        border: none;
+        height: 1.1em;
+        width: 1.1em;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .slider4:disabled {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 0.5em;
+        border-radius: 1em;
+        background: #7e8fa6;
+        outline: none;
+        -webkit-transition: .05s;
+        transition: opacity .05s;
+    }
+
+    .slider4:disabled {
+        -webkit-appearance: none;
+        -moz-apperance: none;
+        border-radius: 1em;
+        /*height: 0.5em;*/
+        height: 0.8em;
+    }
+
+        .slider4:disabled::-moz-range-track {
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        .slider4:disabled:focus {
+            outline: none;
+            border: none;
+        }
+
+        .slider4:disabled::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            background-color: #111D2D;
+            /*height: 0.8em;
+        width: 0.8em;*/
+            height: 1.1em;
+            width: 1.1em;
+            border-radius: 50%;
+        }
+
+        .slider4:disabled::-moz-range-thumb {
+            -moz-appearance: none !important;
+            background-color: #111D2D;
+            border: none;
+            height: 1.1em;
+            width: 1.1em;
+            border-radius: 50%;
+        }
+/*------------------------*/
