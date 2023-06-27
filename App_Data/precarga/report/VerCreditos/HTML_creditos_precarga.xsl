@@ -119,7 +119,6 @@
 
     <xsl:template match="z:row">
         <xsl:variable name="pos" select="position()"/>
-
 		
         <tr style="margin-bottom: 5px ; ">
 			<xsl:attribute name="onclick">
