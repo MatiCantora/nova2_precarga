@@ -141,20 +141,18 @@
             return msj_captura
         }
 
-        var win_files
 
-        function MostrarArchivos() {
+                function MostrarArchivos() {
             
             var filtros = {}
             filtros['nro_credito'] = nro_credito
-            win_files = window.top.precarga.show_modal_window({
-                url: '/precarga/creditos/Credito_archivos.aspx',
+           window.top.precarga.show_modal_window({
+                url: '/precarga/Credito_archivos.aspx',
                 title: '<b>Archivos - ' + nro_credito + '</b>',
                 onClose: MostrarArchivos_return,
                 userData: { filtros: filtros }
             });
-            win_files.options.userData = { filtros: filtros },
-                win_files.showCenter(true)
+           
         }
 
         function MostrarArchivos_return()
@@ -164,14 +162,12 @@
 
             var filtros = {}
             filtros['nro_credito'] = nro_credito
-            win_files = window.top.precarga.show_modal_window({
-                url: '/precarga/ABMDocumentos.aspx',
+            window.top.precarga.show_modal_window({
+                url: 'ABMDocumentos.aspx',
                 title: '<b>ABM Documentos</b>',
                 onClose: ABMArchivos_return,
                 userData: { filtros: filtros }
             });
-            win_files.options.userData = { filtros: filtros },
-            win_files.showCenter(true)
         }
 
         function ABMArchivos_return() {}

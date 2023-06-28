@@ -87,7 +87,7 @@
             return msj_captura
         }
 
-        var win_files
+        
         function ABMArchivos() {
             var msj_captura = ''
             msj_captura = verificar_captura(nro_credito)
@@ -98,14 +98,13 @@
             var filtros = {}
             filtros['nro_credito'] = nro_credito
             
-            win_files = top.window.precarga.show_modal_window({
+            window.top.precarga.show_modal_window({
                 url: 'ABMDocumentos.aspx',
                 title: '<b>ABM Documentos</b>',
                 userData: { filtros: filtros },
                 onClose: ABMArchivos_return
             });
-            win_files.options.userData = { filtros: filtros }
-            win_files.showCenter(true)
+            
         }
 
         function ABMArchivos_return() {
