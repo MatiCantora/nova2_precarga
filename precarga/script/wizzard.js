@@ -31,7 +31,7 @@ function wizzard() {
     stepsArray[0].leyenda = 'Ingresa un DNI para iniciar búsqueda.';
     stepsArray[1] = {}
     stepsArray[1].element = 'divTrabajos';//segundo paso
-    stepsArray[1].leyenda = 'Necesitamos conocer el empleador.</br>Seleccione una opción para avanzar.';//segundo paso
+    stepsArray[1].leyenda = 'Necesitamos conocer el empleador.';//segundo paso
     stepsArray[2] = {}
     stepsArray[2].element = 'divSelCobro';//tercer paso
     stepsArray[2].leyenda = 'Seleccione un canal de cobro.';//tercer paso
@@ -86,34 +86,6 @@ function goToNextStep() {
         currentStep++;
         showStep(currentStep);
     }
-}
-
-
-//demasiado hardcodeado
-function mostrarDivPlanes(mostrar) {
-    $('divOfertaResp').hide();
-    $('divOfertaLimpiar').hide();
-    $('divOfertaNext').hide();
-    $('divPlanes').show();
-    $('divFiltros').show();
-    $('divVolverOferta').show();
-}
-
-function volverOferta() {
-    $('divVolverOferta').hide();
-    //planes
-    $('divPlanes').hide();
-    $('divFiltros').hide();
-    //cancelaciones
-    //$('tbCredVigente').hide();
-    //oferta
-    $('divOfertaResp').show();
-    $('divDisponible').show();
-    $('divOfertaNext').show();
-    $('divPropuestaMaxima').show();
-    $('divDictamen').show();
-    $('divOfertaLimpiar').show();
-    $('wizzardLeyenda').innerHTML = 'Aquí está la mejor propuesta para tu cliente.'
 }
 // Agregar el evento click al los elementos que tengan la clase nextButton"
 //var nextButtons = document.getElementsByClassName('nextButton');

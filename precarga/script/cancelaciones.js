@@ -151,16 +151,16 @@ objCancelaciones.dibujar_totales = function (cant) {
     if (cant == 0)
         strHTML += '<div id="divCMensaje" style="text-align: center;"><b>El socio no posee cancelaciones.</b></div>';
     else {
-        strHTML += '<div id="tbCredVigente" style="overflow-y: auto; max-height: 270px; display: none"></div>';
+        strHTML += '<div id="tbCredVigente" style="overflow-y: auto; display: none"></div>'; //max-height: 270px; 
         //Div agrupador
         strHTML += '<div style="display: flex; justify-content: space-evenly;">';
-        strHTML += '<div id="divcTotlaMora">Total mora: <span id="cTotlaMora">$0</span></div>';
-        strHTML += '<div id="divcCuotaLiberada">Cuota liberada: <span id="cCuotaLiberada">$0</span></div>';
+        strHTML += '<div id="divcTotlaMora">Total mora: <span id="cTotlaMora">$ 0.00</span></div>';
+        strHTML += '<div id="divcCuotaLiberada">Cuota liberada: <span id="cCuotaLiberada">$ 0.00</span></div>';
         strHTML += '</div>';
         //Div saldo a cancelar
-        strHTML += '<div id="divcSaldoCancelar">Saldo a cancelar: <span id="cSaldoCancelar">$0</span></div>'
+        strHTML += '<div id="divcSaldoCancelar">Saldo a cancelar: <span id="cSaldoCancelar">$ 0.00</span></div>'
         //Div mostrar cancelaciones
-        strHTML += '<div style="font-size: 1em" onclick="objCancelaciones.mostrarDivCancelaciones()"><a id="linkRefinanciar" href="javascript:;">Refinanciar</a></div>'
+        strHTML += '<div class="btn-link" style="font-size: 1em;"><img class="box-btn-spand" onclick="return spandDetailOnclick(\'tbCredVigente\', objCancelaciones.mostrarDivCancelaciones, objCancelaciones.mostrarDivCancelaciones)" src="/precarga/image/down.svg" /></div>'
     }
 
     //strHTML += '</div>';
@@ -186,8 +186,8 @@ objCancelaciones.dibujar = function () {
             { class: '', type: 'detalle', det: 'nro_credito', style: 'text-align: right;' },
             { class: '', type: 'detalle', det: 'banco', style: '' },
             { class: '', type: 'detalle', det: 'mutual', style: '' },
-            { class: '', type: 'detalle', desc: '<span style="float: left">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoMora', name: '' },
-            { class: '', type: 'detalle', desc: '<span style="float: left">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoCancelacion', name: '' }
+            { class: '', type: 'detalle', desc: '<span style="float: left; padding-left: 7px">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoMora', name: '' },
+            { class: '', type: 'detalle', desc: '<span style="float: left; padding-left: 7px">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoCancelacion', name: '' }
         ],
         detalleHidden: [
             { class: '', type: 'detalle', det: '', style: '', funcion: '', id: '', name: '', disabled: false },
@@ -203,7 +203,7 @@ objCancelaciones.dibujar = function () {
     //Crear tabla
     let tablaCancelaciones = document.createElement("table");
     tablaCancelaciones.id = 'tbCred';
-    tablaCancelaciones.className = 'tb1 tableFixHead';
+    tablaCancelaciones.className = 'tb1 tableFixHead highlightOdd highlightTROver';
     divCancelaciones.appendChild(tablaCancelaciones);
 
     //Crear cabecera
@@ -247,14 +247,14 @@ objCancelaciones.dibujar = function () {
                 $('rdCheckAllCancelaciones').disabled = false;
                 $('rdCheckCancelacion' + creditoActual.nro_credito).disabled = false;
                 $('rdCheckCancelacion' + creditoActual.nro_credito).onclick = function () { objCancelaciones.btnCancela_onClick(creditoActual.nro_credito, creditoActual.orden_aparicion, true) };
-                $('tdSaldoCancelacion' + creditoActual.nro_credito).innerHTML = '<span style="float: left">$</span> ' + creditoActual['saldo_importe'];
+                $('tdSaldoCancelacion' + creditoActual.nro_credito).innerHTML = '<span style="float: left; padding-left: 7px">$</span> ' + creditoActual['saldo_importe'];
                 this.valLiberaCuota(creditoActual)
                 break;
             case 'mora':
                 $('rdCheckAllMora').disabled = false;
                 $('rdCheckMora' + creditoActual.nro_credito).disabled = false;
                 $('rdCheckMora' + creditoActual.nro_credito).onclick = function () { objCancelaciones.btnCancela_onClick(creditoActual.nro_credito, creditoActual.orden_aparicion, true) };
-                $('tdSaldoMora' + creditoActual.nro_credito).innerHTML = '<span style="float: left">$</span> ' + creditoActual['saldo_importe'];
+                $('tdSaldoMora' + creditoActual.nro_credito).innerHTML = '<span style="float: left; padding-left: 7px">$</span> ' + creditoActual['saldo_importe'];
                 break
         }
     }
@@ -507,9 +507,9 @@ objCancelaciones.actualizarDatos = function () {
 
     analisis.actualizar();
 
-    $('cTotlaMora').innerHTML = '$' + this.totalMora;
-    $('cCuotaLiberada').innerHTML = '$' + this.LiberaCuota;
-    $('cSaldoCancelar').innerHTML = '$' + this.totalCancelaciones;
+    $('cTotlaMora').innerHTML = '$ ' + this.totalMora;
+    $('cCuotaLiberada').innerHTML = '$ ' + this.LiberaCuota;
+    $('cSaldoCancelar').innerHTML = '$ ' + this.totalCancelaciones;
 }
 
 
@@ -591,11 +591,8 @@ objCancelaciones.administrarPostergacion = function (nro_credito, nro_calc_tipo,
 
 
 objCancelaciones.mostrarDivCancelaciones = function () {
-    if ($('tbCredVigente').style.display === '') {
+    if ($('tbCredVigente').style.display === '')
         $('tbCredVigente').hide();
-        $('linkRefinanciar').innerHTML = 'Refinanciar';
-    } else {
+    else
         $('tbCredVigente').show();
-        $('linkRefinanciar').innerHTML = 'Ocultar';
-    }
 }

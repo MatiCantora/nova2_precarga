@@ -21,8 +21,8 @@
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    /*min-width: 50%;
-    max-width: 50%;*/
+    min-width: 50%;
+    max-width: 50%;
 }
 
 .step {
@@ -64,3 +64,47 @@
 .step:not(:last-child)::after {
     right: 0;
 }
+/*
+MiddleContainer {
+    margin-top: 20%;
+    margin-left: 200px;
+    width: 100%;
+}
+
+TopContainer {
+    width: 100%;
+    margin-left: 200px;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .MiddleContainer {
+        margin-top: 20%;
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .TopContainer {
+        margin-top: 60px !important;
+        margin-left: 0 !important;
+        width: 100%;
+    }
+
+    .SellerWrapper {
+        width: fit-content;
+        display: inline-flex;
+    }
+
+    .Seller {
+        font-size: 14px !important;
+        margin-left: 10px;
+        width: 45%;
+        display: inline-flex;
+    }
+
+    .ButtonsWrapper {
+        flex-direction: column;
+        align-items: center;
+        height:
+    }
+}*/

@@ -71,7 +71,6 @@
                  }
 
                  credito_grupos.filtroGrupos = function (cod_grupo) {
-                     //filtros["nro_docu"] = $('nro_docu').value
                      var filtros = {}
                      filtros["estados"] = cod_grupos[cod_grupo]["estados"]
                      filtros["month"] = credito_grupos.meses
@@ -81,39 +80,15 @@
 
                  credito_grupos.aplicarFiltro = function (filtros) {
 
-
-                     //filtros['nro_vendedor'] = consulta.nro_vendedor
-                     //filtros['nro_docu'] = consulta.cliente.nro_docu
-
-
                      let win_creditos = top.window.precarga.show_modal_window({
                          url: 'creditos/credito_listar.aspx',
                          title: '<b>Mis créditos</b>',
-                         //maxWidth: 440,
-                         //maxHeight: 500,
-                         //minimizable: false,
-                         //maximizable: false,
-                         //draggable: true,
-                         //resizable: true,
-                         //destroyOnClose: true,
-                         //bloq_contenedor: $('divSelTrabajo')
                          userData: { filtros: filtros }
                      });
-                     //win_creditos.options.userData = { filtros: filtros }
-                     //win_creditos.showCenter(true)
-
-                     //if (isMobile())
-                     //    mostrarMenuIzquierdo()
                  }
-
 
              </script>
                     <script type="text/javascript" language="javascript" >
-
-                        //var alert = function (msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); }
-                        //var win = nvFW.getMyWindow()
-
-
 
                         var vButtonItems = {}
                         vButtonItems[0] = {}
@@ -133,13 +108,7 @@
 
                             vListButtons.MostrarListButton()
 
-                            //fe_desde = new Date()
-                            //fe_desde.setDate(1)
-
                         }
-
-                        //var filtros = {}
-
 
                         function filtroGrupos(cod_grupo) {
                             filtros["nro_docu"] = $('nro_docu').value
@@ -177,37 +146,10 @@
                                 else {
                                     $(id).removeClassName("btnFe_selected")
                                 }
-                            
 
-                            //if (id == 'btnFe30') {
-                            //    var cantidadDias = 30
-
-                            //} else if (id == 'btnFe60') {
-                            //    var cantidadDias = 60
-
-                            //} else if (id == 'btnFe90') {
-                            //    var cantidadDias = 90
-
-                            //}
-
-                            //var fechaActual = new Date();
-
-                            //var fe_desde = (new Date(fechaActual.getTime() - ((cantidadDias) * 24 * 60 * 60 * 1000))).toLocaleDateString();
-
-                            //filtros["fe_desde"] = fe_desde
-
-
-                            //$(id).style.background = '#194693';
-
-                            /*aplicarFiltro(filtros)*/
                         }
 
                         function aplicarFiltro(filtros) {
-
-
-                            //filtros['nro_vendedor'] = consulta.nro_vendedor
-                            //filtros['nro_docu'] = consulta.cliente.nro_docu
-
 
                             let win_creditos = top.window.createWindow2({
                                 url: 'creditos/credito_listar.aspx',
@@ -219,14 +161,12 @@
                                 draggable: true,
                                 resizable: true,
                                 destroyOnClose: true,
-                                bloq_contenedor: $('divSelTrabajo')
+                               
 
                             });
                             win_creditos.options.userData = { filtros: filtros }
                             win_creditos.showCenter(true)
 
-                            //if (isMobile())
-                            //    mostrarMenuIzquierdo()
                         }
 
                         function window_onresize() {
@@ -252,6 +192,7 @@
                         }
 
                     </script>
+            
         </head>
 
         <body onload="return window_onload()" onresize="return window_onresize()"

@@ -550,82 +550,75 @@ function establecerFuncionBack(event) {
 var menuRight = false;
 
 var vButtonItems = {}
+//vButtonItems[0] = {}
+//vButtonItems[0]["nombre"] = "PBuscar";
+//vButtonItems[0]["etiqueta"] = " Buscar";
+//vButtonItems[0]["imagen"] = "buscar";
+//vButtonItems[0]["onclick"] = "return consulta.cliente_buscar()";
+//vButtonItems[0]["estilo"] = "M";
+
 vButtonItems[0] = {}
-vButtonItems[0]["nombre"] = "PBuscar";
-vButtonItems[0]["etiqueta"] = " Buscar";
-vButtonItems[0]["imagen"] = "buscar";
-vButtonItems[0]["onclick"] = "return consulta.cliente_buscar()";
+vButtonItems[0]["nombre"] = "PlanBuscar";
+vButtonItems[0]["etiqueta"] = "Buscar";
+vButtonItems[0]["imagen"] = "";
+vButtonItems[0]["onclick"] = "return Validar_datos()";
 vButtonItems[0]["estilo"] = "M";
 
 vButtonItems[1] = {}
-vButtonItems[1]["nombre"] = "PlanBuscar";
-vButtonItems[1]["etiqueta"] = "Buscar";
-vButtonItems[1]["imagen"] = "";
-vButtonItems[1]["onclick"] = "return Validar_datos()";
-vButtonItems[1]["estilo"] = "M";
+vButtonItems[1]["nombre"] = "PLimpiar";
+vButtonItems[1]["etiqueta"] = "Limpiar";
+vButtonItems[1]["imagen"] = "limpiar";
+vButtonItems[1]["onclick"] = "return consulta.limpiar()";
+vButtonItems[1]["estilo"] = "L";
 
 vButtonItems[2] = {}
-vButtonItems[2]["nombre"] = "PLimpiar";
-vButtonItems[2]["etiqueta"] = "Limpiar";
-vButtonItems[2]["imagen"] = "limpiar";
-vButtonItems[2]["onclick"] = "return consulta.limpiar()";
-vButtonItems[2]["estilo"] = "L";
+vButtonItems[2]["nombre"] = "PMesa";
+vButtonItems[2]["etiqueta"] = "Mesa de ayuda";
+vButtonItems[2]["imagen"] = "telefono";
+vButtonItems[2]["estilo"] = "I";
+vButtonItems[2]["onclick"] = "alert('No implementado')";
 
 vButtonItems[3] = {}
-vButtonItems[3]["nombre"] = "PMesa";
-vButtonItems[3]["etiqueta"] = "Mesa de ayuda";
-vButtonItems[3]["imagen"] = "telefono";
-vButtonItems[3]["estilo"] = "I";
-vButtonItems[3]["onclick"] = "alert('No implementado')";
+vButtonItems[3]["nombre"] = "CobroNext";
+vButtonItems[3]["etiqueta"] = "Siguiente";
+vButtonItems[3]["imagen"] = "";
+vButtonItems[3]["onclick"] = "return sel_cobro(true)";
+vButtonItems[3]["estilo"] = "M";
 
 vButtonItems[4] = {}
-vButtonItems[4]["nombre"] = "CobroNext";
-vButtonItems[4]["etiqueta"] = "Siguiente";
+vButtonItems[4]["nombre"] = "CobroPrev";
+vButtonItems[4]["etiqueta"] = "Volver";
 vButtonItems[4]["imagen"] = "";
-vButtonItems[4]["onclick"] = "return sel_cobro(true)";
-vButtonItems[4]["estilo"] = "M";
+vButtonItems[4]["estilo"] = "I";
+vButtonItems[4]["onclick"] = "return sel_cobro(false)";
 
 vButtonItems[5] = {}
-vButtonItems[5]["nombre"] = "CobroPrev";
-vButtonItems[5]["etiqueta"] = "Volver";
+vButtonItems[5]["nombre"] = "OfertaNext";
+vButtonItems[5]["etiqueta"] = "Confírmar";
 vButtonItems[5]["imagen"] = "";
-vButtonItems[5]["estilo"] = "I";
-vButtonItems[5]["onclick"] = "return sel_cobro(false)";
+vButtonItems[5]["onclick"] = "return GuardarSolicitud('H')";
+vButtonItems[5]["estilo"] = "M";
 
 vButtonItems[6] = {}
-vButtonItems[6]["nombre"] = "OfertaNext";
-vButtonItems[6]["etiqueta"] = "Confírmar";
+vButtonItems[6]["nombre"] = "OfertaLimpiar";
+vButtonItems[6]["etiqueta"] = "Limpiar";
 vButtonItems[6]["imagen"] = "";
-vButtonItems[6]["onclick"] = "return GuardarSolicitud('H')";
-vButtonItems[6]["estilo"] = "M";
+vButtonItems[6]["estilo"] = "I";
+vButtonItems[6]["onclick"] = "return consulta.limpiar()";
 
 vButtonItems[7] = {}
-vButtonItems[7]["nombre"] = "OfertaLimpiar";
-vButtonItems[7]["etiqueta"] = "Limpiar";
+vButtonItems[7]["nombre"] = "TrabajoPrev";
+vButtonItems[7]["etiqueta"] = "Volver";
 vButtonItems[7]["imagen"] = "";
 vButtonItems[7]["estilo"] = "I";
 vButtonItems[7]["onclick"] = "return consulta.limpiar()";
 
 vButtonItems[8] = {}
-vButtonItems[8]["nombre"] = "VolverOferta";
-vButtonItems[8]["etiqueta"] = "Confirmar";
+vButtonItems[8]["nombre"] = "TrabajoNext";
+vButtonItems[8]["etiqueta"] = "Siguiente";
 vButtonItems[8]["imagen"] = "";
 vButtonItems[8]["estilo"] = "M";
-vButtonItems[8]["onclick"] = "return volverOferta()";
-
-vButtonItems[9] = {}
-vButtonItems[9]["nombre"] = "TrabajoPrev";
-vButtonItems[9]["etiqueta"] = "Volver";
-vButtonItems[9]["imagen"] = "";
-vButtonItems[9]["estilo"] = "I";
-vButtonItems[9]["onclick"] = "return consulta.limpiar()";
-
-vButtonItems[10] = {}
-vButtonItems[10]["nombre"] = "TrabajoNext";
-vButtonItems[10]["etiqueta"] = "Siguiente";
-vButtonItems[10]["imagen"] = "";
-vButtonItems[10]["estilo"] = "M";
-vButtonItems[10]["onclick"] = "return consulta.cobro_seleccionar()";
+vButtonItems[8]["onclick"] = "return consulta.cobro_seleccionar()";
 
 
 var vListButtons = new tListButton(vButtonItems, 'vListButtons');

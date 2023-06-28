@@ -225,8 +225,8 @@ function tnvAnalisis() {
 
     this.canvas_mostrar = function () {
         if (analisis.canvas.style.display === 'none')
-            this.canvas.show();
-        else this.canvas.hide();
+            analisis.canvas.show();
+        else analisis.canvas.hide();
     }
 
 

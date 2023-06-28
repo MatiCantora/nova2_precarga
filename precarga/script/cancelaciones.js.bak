@@ -40,7 +40,7 @@ objCancelaciones.limpiar = function () {
     objCancelaciones.totalMora = 0;
     objCancelaciones.LiberaCuota = 0;
 
-    $('tbCredVigente').innerHTML = ''
+    $('divCTotales').innerHTML = ''
 }
 
 
@@ -51,18 +51,19 @@ objCancelaciones.actualizar = function (nro_docu, tipo_docu, sexo, tipo) {
     this.limpiar();
 
     //$('divSocio').show();
-    nvFW.bloqueo_activar($('tbCredVigente'), 'blq_precarga_cs', 'Obteniendo información de saldos...')
+    nvFW.bloqueo_activar($('divCTotales'), 'blq_precarga_cs', 'Obteniendo información de saldos...')
 
     let objThis = this
     var rsC = new tRS();
     rsC.async = true
     rsC.onError = function (rsCS) {
-        rserror_handler("Error al consultar cancelaciones. Intente nuevamente.", 'blq_precarga_cs', 'tbCredVigente')
+        rserror_handler("Error al consultar cancelaciones. Intente nuevamente.", 'blq_precarga_cs', 'divCTotales')
     }
 
     rsC.onComplete = function (rsC) {
 
         let i = 0;
+        $('divCTotales').innerHTML = objCancelaciones.dibujar_totales(rsC.recordcount);
 
         while (!rsC.eof()) {
 
@@ -127,7 +128,7 @@ objCancelaciones.actualizar = function (nro_docu, tipo_docu, sexo, tipo) {
             //    checkAllCancelaciones(tipo);
         }
         $('divFlujoViejo').hide();
-        nvFW.bloqueo_desactivar($('tbCredVigente'), 'blq_precarga_cs')
+        nvFW.bloqueo_desactivar($('divCTotales'), 'blq_precarga_cs')
     }
 
     let filtro_calc_tipos = consulta.resultado.tiene_mora == '1' ? '1,3,4' : '1,4';
@@ -142,23 +143,27 @@ objCancelaciones.actualizar = function (nro_docu, tipo_docu, sexo, tipo) {
 
 
 //Dibujar totalizadores
-objCancelaciones.dibujar_totales = function () {
+objCancelaciones.dibujar_totales = function (cant) {
     let strHTML = '';
     //Div contenedor
-    strHTML += '<div id="divCTotales" class="box-product" style="text-align: center;">';
+    //strHTML += '<div id="divCTotales" class="box-product" style="text-align: center;">';
     //Div cancelaciones
-    strHTML += '<div id="tbCredVigente" style="overflow-y: auto; max-height: 270px; display: none"></div>';
-    //Div agrupador
-    strHTML += '<div style="display: flex; justify-content: space-evenly;">';
-    strHTML += '<div id="divcTotlaMora">Total mora: <span id="cTotlaMora">$0</span></div>';
-    strHTML += '<div id="divcCuotaLiberada">Cuota liberada: <span id="cCuotaLiberada">$0</span></div>';
-    strHTML += '</div>';
-    //Div saldo a cancelar
-    strHTML += '<div id="divcSaldoCancelar">Saldo a cancelar: <span id="cSaldoCancelar">$0</span></div>'
-    //Div mostrar cancelaciones
-    strHTML += '<div style="font-size: 1em" onclick="objCancelaciones.mostrarDivCancelaciones()"><a id="linkRefinanciar" href="javascript:;">Refinanciar</a></div>'
-    
-    strHTML += '</div>';
+    if (cant == 0)
+        strHTML += '<div id="divCMensaje" style="text-align: center;"><b>El socio no posee cancelaciones.</b></div>';
+    else {
+        strHTML += '<div id="tbCredVigente" style="overflow-y: auto; display: none"></div>'; //max-height: 270px; 
+        //Div agrupador
+        strHTML += '<div style="display: flex; justify-content: space-evenly;">';
+        strHTML += '<div id="divcTotlaMora">Total mora: <span id="cTotlaMora">$ 0.00</span></div>';
+        strHTML += '<div id="divcCuotaLiberada">Cuota liberada: <span id="cCuotaLiberada">$ 0.00</span></div>';
+        strHTML += '</div>';
+        //Div saldo a cancelar
+        strHTML += '<div id="divcSaldoCancelar">Saldo a cancelar: <span id="cSaldoCancelar">$ 0.00</span></div>'
+        //Div mostrar cancelaciones
+        strHTML += '<div class="btn-link" style="font-size: 1em;"><img class="box-btn-spand" onclick="return spandDetailOnclick(tbCredVigente, objCancelaciones.mostrarDivCancelaciones, objCancelaciones.mostrarDivCancelaciones)" src="/precarga/image/down.svg" /></div>'
+    }
+
+    //strHTML += '</div>';
 
     return strHTML;
 }
@@ -173,16 +178,16 @@ objCancelaciones.dibujar = function () {
             { class: '', type: 'titulo', desc: 'Crédito', style: '' },
             { class: '', type: 'titulo', desc: 'Banco', style: '' },
             { class: '', type: 'titulo', desc: 'Mutual', style: '' },
-            { class: '', type: 'radio', desc: 'Mora', style: '', funcion: 'objCancelaciones.rdCheckAll(\'mora\')', id: 'rdCheckAllMora', name: 'rdCheckAll', disabled: true },
-            { class: '', type: 'radio', desc: 'Saldo', style: '', funcion: 'objCancelaciones.rdCheckAll(\'cancelacion\')', id: 'rdCheckAllCancelaciones', name: 'rdCheckAll', disabled: true }
+            { class: '', type: 'radio', desc: 'Mora', style: '', funcion: 'objCancelaciones.rdCheckAll(\'mora\')', id: 'rdCheckAllMora', name: 'rdCheckAll', disabled: true, spanStyle: 'float: right;' },
+            { class: '', type: 'radio', desc: 'Saldo', style: '', funcion: 'objCancelaciones.rdCheckAll(\'cancelacion\')', id: 'rdCheckAllCancelaciones', name: 'rdCheckAll', disabled: true, spanStyle: 'float: right;' }
         ],
         detalle: [
             { class: '', type: 'checkbox', det: '', style: 'text-align: center;', funcion: 'objCancelaciones.mostrarCancelacion(%nro_credito%)', id: 'checkCr', name: '', disabled: false },
             { class: '', type: 'detalle', det: 'nro_credito', style: 'text-align: right;' },
             { class: '', type: 'detalle', det: 'banco', style: '' },
             { class: '', type: 'detalle', det: 'mutual', style: '' },
-            { class: '', type: 'detalle', desc: '$ 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoMora', name: '' },
-            { class: '', type: 'detalle', desc: '$ 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoCancelacion', name: '' }
+            { class: '', type: 'detalle', desc: '<span style="float: left">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoMora', name: '' },
+            { class: '', type: 'detalle', desc: '<span style="float: left">$</span> 0.00', det: '', style: 'text-align: right;', funcion: '', id: 'SaldoCancelacion', name: '' }
         ],
         detalleHidden: [
             { class: '', type: 'detalle', det: '', style: '', funcion: '', id: '', name: '', disabled: false },
@@ -242,14 +247,14 @@ objCancelaciones.dibujar = function () {
                 $('rdCheckAllCancelaciones').disabled = false;
                 $('rdCheckCancelacion' + creditoActual.nro_credito).disabled = false;
                 $('rdCheckCancelacion' + creditoActual.nro_credito).onclick = function () { objCancelaciones.btnCancela_onClick(creditoActual.nro_credito, creditoActual.orden_aparicion, true) };
-                $('tdSaldoCancelacion' + creditoActual.nro_credito).innerHTML = '$ ' + creditoActual['saldo_importe'];
+                $('tdSaldoCancelacion' + creditoActual.nro_credito).innerHTML = '<span style="float: left">$</span> ' + creditoActual['saldo_importe'];
                 this.valLiberaCuota(creditoActual)
                 break;
             case 'mora':
                 $('rdCheckAllMora').disabled = false;
                 $('rdCheckMora' + creditoActual.nro_credito).disabled = false;
                 $('rdCheckMora' + creditoActual.nro_credito).onclick = function () { objCancelaciones.btnCancela_onClick(creditoActual.nro_credito, creditoActual.orden_aparicion, true) };
-                $('tdSaldoMora' + creditoActual.nro_credito).innerHTML = '$ ' + creditoActual['saldo_importe'];
+                $('tdSaldoMora' + creditoActual.nro_credito).innerHTML = '<span style="float: left">$</span> ' + creditoActual['saldo_importe'];
                 break
         }
     }
@@ -265,7 +270,14 @@ objCancelaciones.dibujarTR = function (objColumnas, columnaTipo, trElement, cred
         if (!!element.id)
             columnElement.id = 'td' + element.id + nro_credito_actual;
 
+        let desc = !!element.desc ? element.desc : '';
+        desc += !!element.det ? creditoActual[element.det] : '';
+        columnElement.innerHTML = desc;
+
         if (element.type != 'detalle' && element.type != 'titulo') {
+            let spanInput = document.createElement('span');
+            spanInput.style.cssText = !!element.spanStyle ? element.spanStyle : '';
+
             let columnInput = document.createElement('input');
             columnInput.type = element.type
             if (!!element.funcion)
@@ -273,14 +285,12 @@ objCancelaciones.dibujarTR = function (objColumnas, columnaTipo, trElement, cred
             columnInput.id = element.id + nro_credito_actual;
             columnInput.name = element.name + nro_credito_actual;
             columnInput.disabled = element.disabled;
-            columnElement.appendChild(columnInput);
+            spanInput.appendChild(columnInput);
+            columnElement.appendChild(spanInput);
         }
 
-        let desc = !!element.desc ? element.desc : '';
-        desc += !!element.det ? creditoActual[element.det] : '';
-
-        let columnDesc = document.createTextNode(desc);
-        columnElement.appendChild(columnDesc);
+        //let columnDesc = document.createTextNode(desc);
+        //columnElement.appendChild(columnDesc);
         columnElement.className = element.class;
         if (!!element.colSpan)
             columnElement.colSpan = element.colSpan;
@@ -497,9 +507,9 @@ objCancelaciones.actualizarDatos = function () {
 
     analisis.actualizar();
 
-    $('cTotlaMora').innerHTML = '$' + this.totalMora;
-    $('cCuotaLiberada').innerHTML = '$' + this.LiberaCuota;
-    $('cSaldoCancelar').innerHTML = '$' + this.totalCancelaciones;
+    $('cTotlaMora').innerHTML = '$ ' + this.totalMora;
+    $('cCuotaLiberada').innerHTML = '$ ' + this.LiberaCuota;
+    $('cSaldoCancelar').innerHTML = '$ ' + this.totalCancelaciones;
 }
 
 
@@ -581,11 +591,8 @@ objCancelaciones.administrarPostergacion = function (nro_credito, nro_calc_tipo,
 
 
 objCancelaciones.mostrarDivCancelaciones = function () {
-    if ($('tbCredVigente').style.display === '') {
+    if ($('tbCredVigente').style.display === '')
         $('tbCredVigente').hide();
-        $('linkRefinanciar').innerHTML = 'Refinanciar';
-    } else {
+    else
         $('tbCredVigente').show();
-        $('linkRefinanciar').innerHTML = 'Ocultar';
-    }
 }

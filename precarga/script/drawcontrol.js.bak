@@ -613,6 +613,20 @@ vButtonItems[8]["imagen"] = "";
 vButtonItems[8]["estilo"] = "M";
 vButtonItems[8]["onclick"] = "return volverOferta()";
 
+vButtonItems[9] = {}
+vButtonItems[9]["nombre"] = "TrabajoPrev";
+vButtonItems[9]["etiqueta"] = "Volver";
+vButtonItems[9]["imagen"] = "";
+vButtonItems[9]["estilo"] = "I";
+vButtonItems[9]["onclick"] = "return consulta.limpiar()";
+
+vButtonItems[10] = {}
+vButtonItems[10]["nombre"] = "TrabajoNext";
+vButtonItems[10]["etiqueta"] = "Siguiente";
+vButtonItems[10]["imagen"] = "";
+vButtonItems[10]["estilo"] = "M";
+vButtonItems[10]["onclick"] = "return consulta.cobro_seleccionar()";
+
 
 var vListButtons = new tListButton(vButtonItems, 'vListButtons');
 vListButtons.loadImage("buscar", "image/search_16.png");
@@ -653,7 +667,7 @@ function cargarMenuLeft(vMenuLeft) {
     vMenuLeft.CargarMenuItemXML("<MenuItem id='1' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>inicio</icono><Desc>Inicio</Desc><Acciones><Ejecutar Tipo='script'><Codigo>consulta.limpiar()</Codigo></Ejecutar></Acciones></MenuItem>")
     vMenuLeft.CargarMenuItemXML("<MenuItem id='2' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>money</icono><Desc>Mis créditos</Desc><Acciones><Ejecutar Tipo='script'><Codigo>VerCreditos('V')</Codigo></Ejecutar></Acciones></MenuItem>")
     //vMenuLeft.CargarMenuItemXML("<MenuItem id='3' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Vendedor</Desc><Acciones><Ejecutar Tipo='script'><Codigo>selVendedor_onclick()</Codigo></Ejecutar></Acciones></MenuItem>")
-    vMenuLeft.CargarMenuItemXML("<MenuItem id='4' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>ventas</icono><Desc>Mis ventas</Desc><Acciones><Ejecutar Tipo='script'><Codigo>alert('No implementado')</Codigo></Ejecutar></Acciones></MenuItem>")
+    vMenuLeft.CargarMenuItemXML("<MenuItem id='4' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>ventas</icono><Desc>Mis ventas</Desc><Acciones><Ejecutar Tipo='script'><Codigo>precarga.show_modal_window({ url: 'estadisticas/stats_default.aspx', title: '<b>Seleccionar Vendedor</b>' })</Codigo></Ejecutar></Acciones></MenuItem>")
     vMenuLeft.CargarMenuItemXML("<MenuItem id='5' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>cartera</icono><Desc>Cartera activa</Desc><Acciones><Ejecutar Tipo='script'><Codigo>alert('No implementado')</Codigo></Ejecutar></Acciones></MenuItem>")
     vMenuLeft.CargarMenuItemXML("<MenuItem id='6' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>campania</icono><Desc>Campaña de ventas</Desc><Acciones><Ejecutar Tipo='script'><Codigo>alert('No implementado')</Codigo></Ejecutar></Acciones></MenuItem>")
     vMenuLeft.CargarMenuItemXML("<MenuItem id='7' style='cursor:pointer'><Lib TipoLib='offLine'>DocMNG</Lib><icono>categorias</icono><Desc>Categoría de vendedor</Desc><Acciones><Ejecutar Tipo='script'><Codigo>alert('No implementado')</Codigo></Ejecutar></Acciones></MenuItem>")

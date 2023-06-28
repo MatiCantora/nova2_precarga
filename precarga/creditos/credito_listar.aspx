@@ -44,12 +44,17 @@
                 cr_listar.filtro_isVisible = false
                 cr_listar.filtros_mostrar = function () {
                     if (!this.filtro_isVisible) {
+
                         $('filtro_creditos2').show();
-                        //$('lista_creditos').hide();
+                        $('divfiltrar').hide();
+                        $('divOcultarFiltro').show();
+                        $('divAplicarFiltro').show();
                     }
                     else {
                         $('filtro_creditos2').hide();
-                        //$('lista_creditos').show();
+                        $('divfiltrar').show();
+                        $('divOcultarFiltro').hide();
+                        $('divAplicarFiltro').hide();
                     }
                     this.filtro_isVisible = !this.filtro_isVisible
 
@@ -58,16 +63,6 @@
 
                     <script type="text/javascript" language="javascript" class="table_window">
 
-
-                       
-                        //var alert = function (msg) { Dialog.alert(msg, { className: "alphacube", width: 300, height: 100, okLabel: "cerrar" }); }
-                        //var win = nvFW.getMyWindow()
-
-
-                        //document.addEventListener("DOMContentLoaded", function (event) {
-                        //    $('lista_creditos').show();
-                        //});
-                       
 
                         var vButtonItems = {}
                         vButtonItems[0] = {}
@@ -82,7 +77,7 @@
                         vButtonItems[1]["etiqueta"] = "Mostrar filtros";
                         vButtonItems[1]["imagen"] = "";
                         vButtonItems[1]["onclick"] = "return cr_listar.filtros_mostrar()";
-                        vButtonItems[1]["estilo"] = "E"
+                        vButtonItems[1]["estilo"] = "M"
 
                         vButtonItems[2] = {}
                         vButtonItems[2]["nombre"] = "Buscar";
@@ -98,15 +93,20 @@
                         vButtonItems[3]["etiqueta"] = "Filtrar";
                         vButtonItems[3]["imagen"] = "";
                         vButtonItems[3]["onclick"] = "return aplicarFiltros()";
-                        vButtonItems[3]["estilo"] = "E"
+                        vButtonItems[3]["estilo"] = "M"
+
+                        vButtonItems[4] = {}
+                        vButtonItems[4]["nombre"] = "OcultarFiltro";
+                        vButtonItems[4]["etiqueta"] = "Ocultar filtro";
+                        vButtonItems[4]["imagen"] = "";
+                        vButtonItems[4]["onclick"] = "return cr_listar.filtros_mostrar()";
+                        vButtonItems[4]["estilo"] = "M"
 
                            
                         var vListButtons = new tListButton(vButtonItems, 'vListButtons');
                         vListButtons.loadImage("buscar", "/precarga/image/search_16.png");
                         vListButtons.loadImage("buscar", "/precarga/image/buscar.svg");
-                        /*vListButtons.loadImage("excel", "/FW/image/icons/excel.png");*/
-                        /*vListButtons.loadImage("eliminar", "/FW/image/icons/eliminar.svg");*/
-
+                       
                         var nro_vendedor = 0;
                         var nro_docu = 0;
                         var WinTipo = '';
@@ -119,16 +119,15 @@
                         var fe_desde = '';
 
                         function window_onload() {
-                            
 
-                          
                             vListButtons.MostrarListButton()
                             $('lista_creditos').show();
+                            $('divOcultarFiltro').hide();
+                            $('divAplicarFiltro').hide();
 
                             filtros = nvFW.getMyWindow().options.userData.filtros
                             
                             $("nro_docu").value = filtros["nro_docu"] == undefined ? "" : filtros["nro_docu"]
-                            /*var mes = filtros["mes"] == undefined ? "0" : filtros["mes"]*/
 
                             
                             if (filtros["month"] != undefined) {
@@ -156,44 +155,50 @@
                         }
 
                         function aplicarFiltros() {
-                            debugger
-                            if (($('fecha_desde').value == '') && ($('fecha_hasta').value == '') && $('estados_precarga').value && ($('nro_docu').value == '')) {
+                            
+                            if (($('fecha_desde').value == '') && ($('fecha_hasta').value == '') && $('estados_precarga').value == '' && ($('nro_docu').value == '')) {
                                 nvFW.alert('Ingrese un filtro para realizar la búsqueda')
                                 return
+                            } else {
+                                verCreditos()
                             }
+                        }
+
+
+                        function buscarDNI() {
+                            if ($('nro_docu').value == '') {
+                                nvFW.alert('Ingrese un DNI')
+                                return
+                            } else {
+                                verCreditos()
+                            }
+                        }
+
+                        function nro_docu_onkeypress(e) {
+                            var key
+                            if (window.event) // IE
+                                key = e.keyCode;
+                            else
+                                key = e.which;
+                            if (key == 13)
+                                credito_grupos.buscarDNI()
+
                         }
 
 
                         function verCreditos() {
 
                             var filtro = ""
-                            
-                            /*var estados = ''*/
 
                             estados = $('estados_precarga').value
                             fe_desde = $('fecha_desde').value
 
-                            //if (($('fecha_desde').value == '') && ($('fecha_hasta').value == '') && (estados == '') && ($('nro_docu').value == '')) {
-                            //    nvFW.alert('Ingrese un filtro para realizar la búsqueda')
-                            //    return
-                            //}
-
-
-
-                            filtro += "<fe_credito type='sql'><![CDATA[fe_credito >= convert(datetime,'" + fe_desde + "', 101)]]></fe_credito>"
-
                             
-                           /* filtro += "<fe_estado type='sql'><![CDATA[fe_estado >= convert(datetime,'" + $("fe_desde").value + "',103)]]></fe_estado>"*/
-                            
+                            filtro += "<fe_credito type='sql'><![CDATA[fe_credito >= convert(datetime,'" + fe_desde + "', 101)]]></fe_credito>" 
 
                             if ($('fecha_hasta').value != '')
                                 filtro += "<fe_credito type='sql'><![CDATA[fe_credito < convert(datetime,'" + $('fecha_hasta').value + "',101)+1]]></fe_credito>"
 
-                            //if (modo == 'V')
-                            //    filtro += "<nro_vendedor type='sql'><![CDATA[nro_vendedor in (" + dependientes + ")]]></nro_vendedor> " //"<nro_vendedor type='in'>" + dependientes + "</nro_vendedor>"
-                            //if (modo == 'S')
-                            //    $('nro_docu').value = nro_docu
-                            //filtro += "<nro_docu type='igual'>" + nro_docu + "</nro_docu>"        
 
                             if (estados != '')
                                 filtro += "<estado type='in'>" + estados + "</estado>"
@@ -202,23 +207,16 @@
                                 filtro += "<nro_docu type='igual'>" + $('nro_docu').value + "</nro_docu>"
 
                             var pageSize = 9
-                            //if (isMobile()) {
-                            //    pageSize = 3
-                            //}
-                            //"<criterio><select PageSize='" + pageSize + "'><filtro>" + filtro + "</filtro></select></criterio>",
+                            
                             nvFW.exportarReporte({
                                 filtroXML: nvFW.pageContents.creditos_mostrar,
                                 filtroWhere: "<criterio><select PageSize='" + pageSize + "'><filtro>" + filtro + "</filtro></select></criterio>",
-                                //params: "<criterio><params  /></criterio>",
                                 path_xsl: 'report/verCreditos/HTML_creditos_precarga.xsl',
                                 formTarget: 'iframe_cr',
                                 nvFW_mantener_origen: true,
                                 bloq_contenedor: $(document.documentElement),
                                 bloq_msg: 'Realizando búsqueda...'
                             })
-                           
-                     
-                            /*$('lista_creditos').show();*/
 
                         }
 
@@ -312,14 +310,7 @@
                         }
 
                         function window_onresize() {
-                            //try {
-                            //    var dif = Prototype.Browser.IE ? 5 : 2
-                            //    body_height = $$('body')[0].getHeight()
-                            //    div_filtro = $('divFiltro').getHeight()
-                            //    $('containerDiv').setStyle({ height: body_height - dif - 2 + 'px' })
-                            //    $('iframe_cr').setStyle({ height: body_height - div_filtro - dif - 10 + 'px' })
-                            //}
-                            //catch (e) { }
+                            
                         }
 
                     </script>
@@ -331,18 +322,16 @@
             <div class="conteinerCreditos" id="containerDiv">
 
 
-                    <div id="filtro_creditos2" style="display:none">
+                   <div id="filtro_creditos2" style="width: 100%; display:none">
                         <table class="tb1">
                             <tr class="tbLabel">
                                 <td>
                                   Fecha desde
                                 </td>
-                                <td>
+                                <td colspan="2">
                                 Fecha hasta
                                 </td>
-                                <td colspan="2">
-                                    DNI
-                                </td>
+                                
                             </tr>
                             <tr>
                                 <td>
@@ -350,47 +339,65 @@
                                         campos_defs.add('fecha_desde', { enDB: false, nro_campo_tipo: 103 })
                                     </script>
                                 </td>
-                                <td>
+                                <td colspan="3">
                                     <script type="text/javascript">
                                         campos_defs.add('fecha_hasta', { enDB: false, nro_campo_tipo: 103 })
                                     </script>
                                 </td>
-                                <td>
-                                    
-                                         <script type="text/javascript">
-                                             campos_defs.add('nro_docu', { enDB: false, nro_campo_tipo: 101 })
-                                         </script>
-                                        <!--<input type="number" placeholder="DNI" name="nro_docu" id="nro_docu" maxlength="10" />-->
-                                        
-
-                                </td>
-                                <td><div id="divBuscar"></div></td>
+                               
                             </tr>
-                            <tr class="tbLabel"><td colspan="4">Estados</td></tr>
+                            <tr class="tbLabel">
+                                <td>Estados</td>
+                                <td colspan="2">DNI </td>
+                            </tr>
                             <tr>
-                                <td colspan="4">
+                                <td>
                                     <div id="divCrFiltroRight">
 
                                         <%= nvFW.nvCampo_def.get_html_input("estados_precarga") %>
                                     </div>
                                 </td>
+
+                                 <td>    
+                                         <script type="text/javascript">
+                                             campos_defs.add('nro_docu', { enDB: false, nro_campo_tipo: 101 })
+                                         </script>
+                                </td>
+                                <td><div id="divBuscar"></div></td>
                             </tr>
                         </table>
                         
-                        <div>
+                        <%--<div>
                             <div id="divAplicarFiltro"></div>
-                        </div>
+                        </div>--%>
                     </div>
                 
    
                <div id="lista_creditos">
-                   <div id="divfiltrar"></div>
+                   <table>
+                       <tr>
+                           <td>
+                               <div id="divAplicarFiltro"></div>
+                           </td>
+
+                           <td>
+                               <div id="divfiltrar" class=""></div>
+                               <div id="divOcultarFiltro"></div>
+                           </td>
+
+                           
+
+                       </tr>
+
+                   </table>
+                        
+                   
                     <iframe name="iframe_cr" id="iframe_cr" loading="eager" frameborder="0"
                         src="/fw/enBlanco.htm"></iframe>
                </div>
               
                 
-            </div>
+        
 
         </body>
 

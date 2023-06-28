@@ -89,7 +89,7 @@
         <div id="menu_left_vidrio" onclick="mostrarMenuIzquierdo()" style="position: fixed; right: -540px; bottom: 0px; filter: alpha(opacity=0); opacity: 0.0; width: 50px;"></div>
 
 
-        <div id="div_contenedor">
+        <div id="div_contenedor" class="contenedor">
             <div id="divVendedor" class="ClaseGeneral TopContainer">
                 <div id="divVendedorLeft">
                     <div>
@@ -103,47 +103,51 @@
                     <div id="wizzardLeyenda" style="font-size: 1.3em;">Ingresa un DNI para iniciar búsqueda.</div>
                 </div>
                 <!-- Buscar Persona -->
-                <div id="divSelTrabajo" class="ClaseGeneral" style="width: 100%; margin-left: 0px; height: 100%;">
-                    <table id="tbBuscar">
+                <div id="divSelTrabajo" class="ClaseGeneral" <%--style="width: 100%; height: 100%;"--%>>
+                    <%--<table id="tbBuscar">
                         <tbody>
                             <tr>
-                                <td onclick="return rddoc_onclick()">
+                                <td onclick="return rddoc_onclick()">--%>
 
-                                    <div id="contBuscar">
-                                        <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='cuit' onclick="return rddoc_onclick()" />
-                                        <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='dni' onclick="return rddoc_onclick()" checked />
-                                        <input style="text-align: right; height: 30px" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
-                                        <div id="divPLimpiar"></div>
-                                        <div style="margin-top: 35%;">
-                                            <div id="divPBuscar" class="nextButton" />
+                                    <div id="tbBuscar" class="box-content">
+                                        <div style="margin-top: 7rem;">
+                                            <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='cuit' onclick="return rddoc_onclick()" />
+                                            <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='dni' onclick="return rddoc_onclick()" checked />
+                                            <input style="text-align: right;" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
+                                            <img onclick="return consulta.cliente_buscar()" src="/precarga/image/buscar.svg" />
                                         </div>
+                                        <div id="divPLimpiar">
+                                        </div>
+                                        <%--<div style="position: absolute; bottom: 0; top: 90%">
+                                            <div id="divPBuscar" class="nextButton" />
+                                        </div>--%>
                                     </div>
-                                </td>
+                            <%--    </td>
                             </tr>
 
                         </tbody>
-                    </table>
+                    </table>--%>
                     <div id="divTrabajos" style="width: 100%; height: 100%;">
                         <div id="divMostrarTrabajos" class="box-content"></div>
                         <div id="divBtnTrabajo" class="btn-footer">
-                            <div id="divTrabajoNext" style="min-width: 13%"></div>
                             <div id="divTrabajoPrev" style="min-width: 13%"></div>
+                            <div id="divTrabajoNext" style="min-width: 13%"></div>
                         </div>
                     </div>
                 </div>
-                <div id="divSelCobro" style="height: 100%;">
+                <div id="divSelCobro">
                     <div id="divTiposCobro" class="box-content"></div>
                     <div id="divBtnCobro" class="btn-footer">
-                        <div id="divCobroNext" style="min-width: 13%" class="nextButton"></div>
                         <div id="divCobroPrev" style="min-width: 13%"></div>
+                        <div id="divCobroNext" style="min-width: 13%" class="nextButton"></div>
                     </div>
                 </div>
 
-                <div id="divOfertaContenedor" style="height: 100%;">
+                <div id="divOfertaContenedor">
                     <div id="divOfertaResp" class="box-content"></div>
                     <%--REFACTORIZAR PLANES--%>
                     <div id="divPlanes" class="box-content" style="display: none">
-                        <div id="divFiltros" class="box-product">
+                        <div id="divFiltros">
                             <table class="tb1">
                                 <tr class="tbLabel">
                                     <td style="text-align: left !important" onclick='selplan_on_click()'>
@@ -234,9 +238,8 @@
                     </div>
                     <%--FIN PLANES--%>
                     <div id="divBtnOferta" class="btn-footer">
-                        <div id="divOfertaNext" style="min-width: 13%" class="nextButton"></div>
                         <div id="divOfertaLimpiar" style="min-width: 13%"></div>
-                        <div id="divVolverOferta" style="min-width: 13%; display: none"></div>
+                        <div id="divOfertaNext" style="min-width: 13%" class="nextButton"></div>
                     </div>
                 </div>
 

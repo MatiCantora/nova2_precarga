@@ -1,21 +1,13 @@
 ﻿
-#divSelTrabajo {
+/*#divSelTrabajo {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+}*/
 
-#contBuscar {
-    width: 250px;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
 
-#div_contenedor {
+.contenedor {
     width: 100%;
     height: 100%;
     display: flex;
@@ -81,7 +73,7 @@ body {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-    gap: 1.2em; 
+    gap: 1.2em;
     height: 60vh;
 }
 
@@ -147,18 +139,43 @@ body {
 }
 
 
+/*.btn-link {
+    position: absolute;
+    left: 92%;
+    top: -0.8rem;
+}*/
+
+/*.box-btn-spand {
+    width: 80%;
+    height: auto;
+}*/
+
 .btn-link {
-    position:absolute;
-    margin-left: 26%;
+    position: absolute;
+    width: 100%;
+    text-align: end;
+    pointer-events: none;
 }
 
+.box-btn-spand {
+    /*width: 4%;
+    height: auto;*/
+    width: 1.6rem;
+    pointer-events: auto;
+}
+
+@media only screen and (max-width: 1200px) {
+    /*.btn-link {
+        left: 86%;
+    }*/
+}
 
 @media only screen and (max-width: 768px) {
     .box-cda, #divDisponible, #divPropuestaMaxima, #divCTotales, .box-product2, .box-product {
         width: 90%;
     }
 
-    .btn-link {
-        margin-left: 70%;
+    .box-btn-spand {
+        width: unset;
     }
 }

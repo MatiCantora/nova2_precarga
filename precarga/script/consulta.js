@@ -49,6 +49,12 @@ consulta.limpiar = function () {
 
     nvFW.cache.clear();
 
+    //BORRAR
+    $('divFiltros').hide();
+    var divAMover = document.getElementById('divFiltros');
+    var contenedorDestino = document.getElementById('divPlanes');
+    contenedorDestino.appendChild(divAMover);
+
     consulta.cliente.nro_docu = 0
     consulta.cliente.cuit = ""
     consulta.cliente.nombre = ""
@@ -146,8 +152,6 @@ consulta.limpiar = function () {
     $('divProducto').hide()
     //$('divMostrarTrabajos').hide()
     $('divAnalisis').hide()
-
-    $('divVolverOferta').hide();
     //planes
     $('divPlanes').hide();
     $('divFiltros').hide();
@@ -307,10 +311,12 @@ consulta.cobro_seleccionar = function () {
         }
 
         $('divTiposCobro').innerHTML = ''
-        let strHTML = '<div class="box-product">';
-        strHTML += '<div style="text-align: center;"><b>Canal de cobro</b></div>';
+        let strHTML = '';
+        strHTML += consulta.dibujar_socio('divSocioTCobro');
+        //strHTML += '<div style="text-align: center;"><b>Canal de cobro</b></div>';
         let i = 0;
         while (!rs.eof()) {
+
             let strchecked = (i == 0) ? 'checked' : ''
             i++;
             cobro_array[i] = {}
@@ -319,15 +325,16 @@ consulta.cobro_seleccionar = function () {
             cobro_array[i]['nro_banco'] = rs.getdata('nro_banco');
             cobro_array[i]['abreviacion'] = rs.getdata('abreviacion');
 
-            strHTML += "<div onclick='selcobro(" + i + ")' style='cursor:pointer; display: flex;' >"
+            strHTML += '<div class="box-product">'
+            strHTML += "<div onclick='selcobro(" + i + ")' style='cursor:pointer; display: flex; align-items: center;' >"
             strHTML += "<div><input type='radio' name='rdcobro' id='rdcobro' value='" + i + "' " + strchecked + "/></div>"
             strHTML += "<div>&nbsp;" + ((rs.getdata('nro_banco') == undefined) ? rs.getdata('tipo_cobro') : rs.getdata('tipo_cobro') + " - " + rs.getdata('abreviacion')) + "</div>"
+            strHTML += '</div>';
             strHTML += '</div>';
 
             rs.movenext();
 
         }
-        strHTML += '</div>';
 
         $('divTiposCobro').insert({ bottom: strHTML });
         goToNextStep();
@@ -341,6 +348,20 @@ consulta.cobro_seleccionar = function () {
     }
     rs.open({ filtroXML: nvFW.pageContents["nosis_cda_def"], params: "<criterio><params nro_grupo='" + this.cliente.trabajo.nro_grupo + "'/></criterio>" })
 
+}
+
+
+consulta.dibujar_socio = function (id) {
+    //deberia estar en una cabecera
+    let idDiv = !!id ? 'id="' + id + '" ' : '';
+    let strHTML = '';
+    strHTML += '<div ' + idDiv + 'class="box-product2" style="color: black; text-align: center;">';
+    //Div datos personales
+    strHTML += '<div><b>' + consulta.cliente.razon_social + '</b></div>';
+    strHTML += '<div>DNI: ' + consulta.cliente.nro_docu + '</div>';
+    strHTML += '</div>';
+
+    return strHTML;
 }
 
 
@@ -623,11 +644,7 @@ consulta.trabajos_dibujar = function () {
     $('divMostrarTrabajos').innerHTML = ''
 
     let strHTML = "";
-    strHTML += '<div style="color: black; text-align: center;">';
-    //Div datos personales
-    strHTML += '<div><b>' + consulta.cliente.razon_social + '</b></div>';
-    strHTML += '<div>DNI: ' + consulta.cliente.nro_docu + '</div>';
-    strHTML += '</div>';
+    strHTML += consulta.dibujar_socio('divSocioTrabajo')
 
     let valtrabajo = [];
     let vBtntrabajoItems = {}
@@ -652,7 +669,7 @@ consulta.trabajos_dibujar = function () {
                 strHTML += '<div class="box-product">';
                 strHTML += '<div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">';
                 strHTML += '<div style="display: flex; gap: 1.4em;"><input name="rdTrabajo" id="rdTrabajo' + x + '" value="' + x + '" type="radio" ' + checked + ' />';
-                strHTML += '<div style="display: flex; flex-direction: column; align-items: center;"><div><b>' + trab.tipo + '</b></div><div>' + trab.sistema + ' - ' + trab.lote + '</div></div>';
+                strHTML += '<div style="display: flex; flex-direction: column;"><div><b>' + trab.tipo + '</b></div><div>' + trab.sistema + ' - ' + trab.lote + '</div></div>';
                 strHTML += '</div>'
                 strHTML += '<div id="divTrabajoCupo' + x + '" style="color: var(--celeste); font-weight: bolder; display: none"><div>Disponible</div><div style="text-align: right;" id="trabCupoDisponible' + x + '">$ 0</div></div>';
                 strHTML += '<div id="divBtnPremotor' + x + '"></div>';
@@ -1047,27 +1064,26 @@ consulta.cargar_oferta = function () {
     $('divOfertaResp').innerHTML = '';
 
     let strHTML = '';
-    strHTML += '<div id="divDatosSocio" style="color: black; text-align: center;">';
-    //Div datos personales
-    strHTML += '<div><b>' + consulta.cliente.razon_social + '</b></div>';
-    strHTML += '<div>DNI: ' + consulta.cliente.nro_docu + '</div>';
-    strHTML += '</div>';
+    strHTML += consulta.dibujar_socio('divDatosSocio');
+
     //Div dictamen
     strHTML += consulta.dibujar_dictamen();
     //Div Cancelaciones
     //Cargar total cancelaciones
-    strHTML += '<div id="divCTotales" class="box-product" style="text-align: center;"></div>';
+    strHTML += '<div id="divCTotales" class="box-product" style="text-align: center; position: relative;"></div>';
     //strHTML += objCancelaciones.dibujar_totales();
     
-    strHTML += '<div class="box-product" id="divDisponible"><span id="valorDisponible" style="color: var(--celeste);">DISPONIBLE $ ' + parseFloat(!!analisis.cuota_maxima ? analisis.cuota_maxima : '0').toFixed(2) + '</span>';
+    strHTML += '<div class="box-product" id="divDisponible" style="position: relative;">';
     //Analisis
-    strHTML += '<div id="divAnalisisCanvas" style="display: none"></div>'
-    strHTML += '<div id="divAnalisisNoVisibles" style="display: none"></div>'
-    strHTML += '<span><a onclick="return analisis.canvas_mostrar()" href="javascript:;">Ver</a></span>'
+    strHTML += '<div id="divAnalisisCanvas" style="display: none"></div>';
+    strHTML += '<span id="valorDisponible" style="color: var(--celeste);">DISPONIBLE $ ' + parseFloat(!!analisis.cuota_maxima ? analisis.cuota_maxima : '0').toFixed(2) + '</span>';
+    strHTML += '<div id="divAnalisisNoVisibles" style="display: none"></div>';
+    strHTML += '<span class="btn-link"><img id="imgAnalisisSpand" class="box-btn-spand" onclick="return spandDetailOnclick(analisis.canvas, analisis.canvas_mostrar, analisis.canvas_mostrar)" src="/precarga/image/down.svg" /></span>';
+    //strHTML += '<span><a onclick="return analisis.canvas_mostrar()" href="javascript:;">Ver</a></span>';
     strHTML += '</div>';
     //strHTML += dibujar_propuesta_maxima(this.cliente.trabajo.nro_grupo, 'divPropuestaMaxima');
     //Div Plan maximo
-    strHTML += '<div class="box-product" id="divPropuestaMaxima"></div>'
+    strHTML += '<div class="box-product" id="divPropuestaMaxima" style="position: relative;"></div>'
 
     strHTML += '</div>'
 

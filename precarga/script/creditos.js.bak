@@ -374,21 +374,28 @@ function getEstadoPosterior() {
 let win_estado
 function MostrarCredito(nro_credito, cambiar_estado) {
     let filtros = {}
-    let url = !cambiar_estado ? 'credito_mostrar.aspx?codesrvsw=true' : 'Credito_cambiar_estado.aspx?codesrvsw=true';
-    filtros['nro_credito'] = nro_credito
-    win_estado = createWindow2({
-        url: 'creditos/' + url,
+    let url = 'creditos/' + (!cambiar_estado ? 'credito_mostrar.aspx?codesrvsw=true' : 'Credito_cambiar_estado.aspx?codesrvsw=true');
+    filtros['nro_credito'] = nro_credito;
+
+    precarga.show_modal_window({
+        url: url,
         title: '<b>Crédito: ' + nro_credito + ' </b>',
-        maxHeight: 500,
-        minimizable: false,
-        maximizable: false,
-        draggable: true,
-        resizable: true,
+        userData: { filtros: filtros },
         onClose: Cambiar_estado_return
     });
+    //win_estado = createWindow2({
+    //    url: 'creditos/' + url,
+    //    title: '<b>Crédito: ' + nro_credito + ' </b>',
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    onClose: Cambiar_estado_return
+    //});
 
-    win_estado.options.userData = { filtros: filtros }
-    win_estado.showCenter(true)
+    //win_estado.options.userData = { filtros: filtros }
+    //win_estado.showCenter(true)
 
 }
 
@@ -401,23 +408,30 @@ function Cambiar_estado_return() {
         if (retorno.res.estado == "1") {
             var param = {}
             param['nro_credito'] = retorno.res.nro_credito
-            var win_enviotyc = window.top.createWindow2({
+
+            precarga.show_modal_window({
                 url: 'precarga_envio_tyc.aspx?crparam=' + retorno.res.nro_credito,
                 title: '<b>Enviar Terminos y condiciones</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 200,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
-                onClose: function () { }
+                userData: { param: param }
             });
-            win_enviotyc.options.userData = { param: param }
-            win_enviotyc.showCenter(true)
+
+            //var win_enviotyc = window.top.createWindow2({
+            //    url: 'precarga_envio_tyc.aspx?crparam=' + retorno.res.nro_credito,
+            //    title: '<b>Enviar Terminos y condiciones</b>',
+            //    centerHFromElement: window.top.$("contenedor"),
+            //    parentWidthElement: window.top.$("contenedor"),
+            //    parentWidthPercent: 0.9,
+            //    parentHeightElement: window.top.$("contenedor"),
+            //    parentHeightPercent: 0.9,
+            //    maxHeight: 200,
+            //    minimizable: false,
+            //    maximizable: false,
+            //    draggable: true,
+            //    resizable: true,
+            //    onClose: function () { }
+            //});
+            //win_enviotyc.options.userData = { param: param }
+            //win_enviotyc.showCenter(true)
 
         }
     }
@@ -443,7 +457,7 @@ function dibujar_credito(nro_credito) {
     let strHTML = '';
     strHTML += '<div id="divContentCrd" class="box-content">';
 
-    strHTML += '<div id="dicDatosSocioCrd">' + $('divDatosSocio').innerHTML + '</div>';
+    strHTML += '<div class="box-product2" id="dicDatosSocioCrd">' + $('divDatosSocio').innerHTML + '</div>';
     strHTML += '<div style="display: flex; justify-content: space-around; width: 50%; padding: 1em;">';
     strHTML += '<div style="color: black; font-size: 1.3em;">Crédito: ' + nro_credito + '</div>';
     strHTML += '<div>Ver datos del plan ></div>';
@@ -491,10 +505,10 @@ function dibujar_credito(nro_credito) {
     goToNextStep();
 
     //mover a onresize;
-    if (!!$('divContentCrd'))
-        $('divContentCrd').setStyle({
-            height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnLimpiarCrd").getHeight() + 'px'
-        });
+    //if (!!$('divContentCrd'))
+    //    $('divContentCrd').setStyle({
+    //        height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnLimpiarCrd").getHeight() + 'px'
+    //    });
 
 }
 
@@ -503,53 +517,68 @@ function dibujar_credito(nro_credito) {
 function editar_datos_socio(nro_credito) {
 
     //if ((permisos_precarga & 8192) == 0) {
-    if (!nvFW.tienePermiso("permisos_precarga", 14)) {
-        alert('No posee permiso para realizar esta acción.');
-        return;
-    }
+    //descomentar
+    //if (!nvFW.tienePermiso("permisos_precarga", 14)) {
+    //    alert('No posee permiso para realizar esta acción.');
+    //    return;
+    //}
 
-    let win_datos = window.top.createWindow2({
-        url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
-        title: '<b>Solicitud - ' + nro_credito + '</b>',
-        centerHFromElement: window.top.$("contenedor"),
-        parentWidthElement: window.top.$("contenedor"),
-        parentWidthPercent: 0.9,
-        parentHeightElement: window.top.$("contenedor"),
-        parentHeightPercent: 0.9,
-        maxHeight: 500,
-        minimizable: false,
-        maximizable: false,
-        draggable: true,
-        resizable: true,
-        destroyOnClose: true
-        //onClose: datos_return
-    });
     var param = {}
     param['nro_credito'] = nro_credito
-    win_datos.options.userData = { param: param }
-    win_datos.showCenter(true)
+
+    precarga.show_modal_window({
+        url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
+        title: '<b>Solicitud - ' + nro_credito + '</b>',
+        userData: { param: param }
+    });
+
+    //let win_datos = window.top.createWindow2({
+    //    url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
+    //    title: '<b>Solicitud - ' + nro_credito + '</b>',
+    //    centerHFromElement: window.top.$("contenedor"),
+    //    parentWidthElement: window.top.$("contenedor"),
+    //    parentWidthPercent: 0.9,
+    //    parentHeightElement: window.top.$("contenedor"),
+    //    parentHeightPercent: 0.9,
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    destroyOnClose: true
+    //    //onClose: datos_return
+    //});
+    
+    //win_datos.options.userData = { param: param }
+    //win_datos.showCenter(true)
 }
 
 
 function gestionar_archivos(nro_credito) {
     var param = {}
     param['nro_credito'] = nro_credito
-    let win_files = window.top.createWindow2({
+
+    precarga.show_modal_window({
         url: 'Credito_archivos.aspx?codesrvsw=true',
         title: '<b>Archivos - ' + nro_credito + '</b>',
-        centerHFromElement: window.top.$("contenedor"),
-        parentWidthElement: window.top.$("contenedor"),
-        parentWidthPercent: 0.9,
-        parentHeightElement: window.top.$("contenedor"),
-        parentHeightPercent: 0.9,
-        maxHeight: 500,
-        minimizable: false,
-        maximizable: false,
-        draggable: true,
-        resizable: true,
-        destroyOnClose: true
-        //onClose: MostrarArchivos_return
+        userData: { param: param }
     });
-    win_files.options.userData = { param: param }
-    win_files.showCenter(true)
+    //let win_files = window.top.createWindow2({
+    //    url: 'Credito_archivos.aspx?codesrvsw=true',
+    //    title: '<b>Archivos - ' + nro_credito + '</b>',
+    //    centerHFromElement: window.top.$("contenedor"),
+    //    parentWidthElement: window.top.$("contenedor"),
+    //    parentWidthPercent: 0.9,
+    //    parentHeightElement: window.top.$("contenedor"),
+    //    parentHeightPercent: 0.9,
+    //    maxHeight: 500,
+    //    minimizable: false,
+    //    maximizable: false,
+    //    draggable: true,
+    //    resizable: true,
+    //    destroyOnClose: true
+    //    //onClose: MostrarArchivos_return
+    //});
+    //win_files.options.userData = { param: param }
+    //win_files.showCenter(true)
 }

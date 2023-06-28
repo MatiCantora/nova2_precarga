@@ -244,6 +244,9 @@ function isMobile() {
     );
 }
 
+
+
+
 function createWindow2(parametros) {
     debugger
     //ubicacion

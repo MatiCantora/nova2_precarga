@@ -457,7 +457,8 @@ function dibujar_credito(nro_credito) {
     let strHTML = '';
     strHTML += '<div id="divContentCrd" class="box-content">';
 
-    strHTML += '<div id="dicDatosSocioCrd">' + $('divDatosSocio').innerHTML + '</div>';
+    strHTML += consulta.dibujar_socio('dicDatosSocioCrd');
+    //strHTML += '<div class="box-product2" id="dicDatosSocioCrd">' + $('divDatosSocio').innerHTML + '</div>';
     strHTML += '<div style="display: flex; justify-content: space-around; width: 50%; padding: 1em;">';
     strHTML += '<div style="color: black; font-size: 1.3em;">Crédito: ' + nro_credito + '</div>';
     strHTML += '<div>Ver datos del plan ></div>';
@@ -517,10 +518,11 @@ function dibujar_credito(nro_credito) {
 function editar_datos_socio(nro_credito) {
 
     //if ((permisos_precarga & 8192) == 0) {
-    if (!nvFW.tienePermiso("permisos_precarga", 14)) {
-        alert('No posee permiso para realizar esta acción.');
-        return;
-    }
+    //descomentar
+    //if (!nvFW.tienePermiso("permisos_precarga", 14)) {
+    //    alert('No posee permiso para realizar esta acción.');
+    //    return;
+    //}
 
     var param = {}
     param['nro_credito'] = nro_credito

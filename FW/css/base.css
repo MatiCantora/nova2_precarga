@@ -465,6 +465,22 @@ table.scroll {
 }
 
 
+/*SCROLLBAR*/
+::-webkit-scrollbar {
+    width: 0.6em;
+    height: 0.6em
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--azul);
+    border-radius: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    
+}
+
 /*@media screen and (max-device-width: 768px) {
     BODY {*/
         /*font: 100% Arial, Helvetica, sans-serif;*/

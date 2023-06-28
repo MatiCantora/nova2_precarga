@@ -1,21 +1,13 @@
 ﻿
-#divSelTrabajo {
+/*#divSelTrabajo {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+}*/
 
-#contBuscar {
-    width: 250px;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
 
-#div_contenedor {
+.contenedor {
     width: 100%;
     height: 100%;
     display: flex;
@@ -82,14 +74,18 @@ body {
     align-items: center;
     overflow-y: auto;
     gap: 1.2em;
+    height: 60vh;
 }
 
-#divBtnCobro, #divBtnOferta, .btn-footer {
+.btn-footer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     /*background-color: var(--fondo);*/
     text-align: center;
+    gap: 2.2em;
+    height: 6em;
 }
 
 .box-cda {
@@ -124,7 +120,7 @@ body {
     width: 50%;
 }
 
-#divDisponible, #divcTotlaMora, #divcCuotaLiberada, #divcSaldoCancelar {
+#valorDisponible, #divcTotlaMora, #divcCuotaLiberada, #divcSaldoCancelar {
     font-size: 1.3em;
     font-weight: bold;
 }
@@ -142,29 +138,44 @@ body {
     background-color: white;
 }
 
+
+/*.btn-link {
+    position: absolute;
+    left: 92%;
+    top: -0.8rem;
+}*/
+
+/*.box-btn-spand {
+    width: 80%;
+    height: auto;
+}*/
+
+.btn-link {
+    position: absolute;
+    width: 100%;
+    text-align: end;
+    pointer-events: none;
+}
+
+.box-btn-spand {
+    /*width: 4%;
+    height: auto;*/
+    width: 1.6rem;
+    pointer-events: auto;
+}
+
+@media only screen and (max-width: 1200px) {
+    /*.btn-link {
+        left: 86%;
+    }*/
+}
+
 @media only screen and (max-width: 768px) {
     .box-cda, #divDisponible, #divPropuestaMaxima, #divCTotales, .box-product2, .box-product {
         width: 90%;
     }
-}
 
-input[type=number], input[type=text], input[type=date] {
-    box-sizing: border-box;
-    width: 250px;
-    height: 30px;
-    border-radius: 6px;
-    border: 1.5px solid var(--azul);
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 1.05em;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin: 2px;
-    color: var(--azul);
-}
-
-input::placeholder {
-    color: var(--celeste);
-    text-align: left;
+    .box-btn-spand {
+        width: 100%;
+    }
 }

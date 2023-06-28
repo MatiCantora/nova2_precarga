@@ -4,7 +4,7 @@ var sit_bcra = 99
 
 function window_onload() {
 
-
+   
 
     cambioDeWidth = 1;
     consulta.cargar_operador();
@@ -25,16 +25,16 @@ function window_onload() {
 
     if (nvFW.pageContents["nro_credito"] != "") MostrarCredito(nvFW.pageContents['nro_credito'])
 
-
+    
 
     //ObtenerSucursalOperador()
     document.getElementById('nro_docu1').focus()
 
     //&& (permisos_precarga & 4)<= 0
     //if (!nvFW.tienePermiso('permisos_precarga', 2)) {
-    //$('divNoti').hide()
-    //$('divNotiR').hide()
-    //$('tbResultado').hide()
+        //$('divNoti').hide()
+        //$('divNotiR').hide()
+        //$('tbResultado').hide()
     //}
     //&& (permisos_precarga & 64) == 0
     //if (!nvFW.tienePermiso('permisos_precarga', 6))
@@ -74,12 +74,13 @@ function window_onload() {
     // ================ ESTADISTICAS ================ //
     //if (nvFW.tienePermiso('permisos_precarga', 16)) {
     //    estadisticas = [];
-    //    cargarValoresEstadisticas();
+        debugger
+        cargarValoresEstadisticas();
     //}
 
     // Mostrar el primer paso al cargar la página
     wizzard();
-
+    
     //$('divMenu').style.cssText += 'float: left; position: absolute;';
     window_onresize();
     vendedor_check()
@@ -151,23 +152,6 @@ function selcobro(nro_tipo_cobro_sel) {
 //############################################
 //##########----FUNCIONES UTILES----##########
 //############################################
-
-
-function spandDetailOnclick(idElementSpand, spandFunction, collapseFunction) {
-
-    if ($(idElementSpand).style.display === 'none') {
-        event.currentTarget.src = '/precarga/image/up.svg';
-        if (typeof spandFunction === 'function')
-            spandFunction();
-    } else {
-        event.currentTarget.src = '/precarga/image/down.svg';
-        if (typeof collapseFunction === 'function')
-            collapseFunction();
-    }
-    //event.elment
-
-
-}
 
 
 function rserror_handler(msg, bloq_id, element_id) {
@@ -273,11 +257,11 @@ function VerCDA(limpiaronclose = false) {
 
 function verTutoriales() {
     // window.open('https://youtu.be/k7QU1fab5Mo','_blank')
-
+    
     precarga.show_modal_window({
         url: 'tutoriales_precarga.aspx?codesrvsw=false',
         title: '<b>Tutoriales</b>',
-
+    
     });
 
 }

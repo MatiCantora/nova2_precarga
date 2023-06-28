@@ -138,6 +138,7 @@
     <% = Me.getHeadInit()%>
 
     <script type="text/javascript" language="javascript" class="table_window">
+        var nro_banco_cr=''
         var dataloaded=0
         var refloaded=0
         var datos_iniciales = $H({apellido: '', nombres: '', fe_naci: '',sexo:'',id_estado_civil:'',calle:'',numero:'',piso:'',depto:'',ciudad:'',postal_real:'',cod_prov:'',numTel:'',ref1_carac:'',ref1_numtel:'',ref1_apenom:'',ref2_carac:'',ref2_numtel:'',ref2_apenom:'',laboral_carac:'',laboral_numtel:'',laboral_lugar_trabajo:'',apellido_materno:''});
@@ -146,19 +147,22 @@
         var vButtonItems = {}
         vButtonItems[0] = {}
         vButtonItems[0]["nombre"] = "Guardar";
-        vButtonItems[0]["etiqueta"] = "guardar solicitud";
-        vButtonItems[0]["imagen"] = "guardar";
+        vButtonItems[0]["etiqueta"] = "Guardar Solicitud";
         vButtonItems[0]["onclick"] = "return guardar()";
+        vButtonItems[0]["imagen"] = "";
+
+        vButtonItems[0]["estilo"] = "M";
         vButtonItems[1] = {}
         vButtonItems[1]["nombre"] = "Cancelar";
         vButtonItems[1]["etiqueta"] = "Cancelar";
-        vButtonItems[1]["imagen"] = "cancelar";
         vButtonItems[1]["onclick"] = "return cancelar()";
-       
+        vButtonItems[1]["imagen"] = "";
+
+        vButtonItems[1]["estilo"] = "M";
+        
 
         var vListButtons = new tListButton(vButtonItems, 'vListButtons');
-        vListButtons.loadImage("guardar", "/FW/image/icons/guardar.png");
-        vListButtons.loadImage("cancelar", "/FW/image/icons/cancelar.png");
+       
         vListButtons.loadImage("verificar", "/FW/image/icons/confirmar.png");
 
         var win = nvFW.getMyWindow()
@@ -256,6 +260,7 @@
             estado_cr=rs.getdata('estado')                
             estado_desc_str=rs.getdata('estado_solicitud_desc') 
             str_fe_estado_sol=rs.getdata('str_fe_estado') 
+            nro_banco_cr=rs.getdata('nro_banco') 
               //si esta en estado pendiente y el usuario quiere verificar , realiza la pregunta. Sino, lo ignora y continua cargando             
              if (estado_str == "P" && verificarpendiente==1) {
                  Dialog.confirm("Este crédito ya posee una solicitud pendiente de aprobación ¿Desea continuar y editar la misma?",
@@ -434,10 +439,10 @@
                 campos_defs.set_value("postal", rs.getdata("CP"))
                 campos_defs.set_value("id_estado_civil",rs.getdata("estado_civil"))
                 campos_defs.set_value("email", rs.getdata("email"))
-                campos_defs.set_value("apellido_materno", rs.getdata("apellido_materno"))
-                
+                campos_defs.set_value("apellido_materno", rs.getdata("apellido_materno"))                
                 $("ciudad").value=rs.getdata("localidad")
                 campos_defs.set_value("fe_naci", rs.getdata("fecha_nacimiento"))
+                nro_banco_cr=rs.getdata('nro_banco')
             }//if
             dataloaded=1
 
@@ -717,7 +722,7 @@
                 return
             }
 
-            if (campos_defs.get_value('apellido_materno') == '') {
+            if (campos_defs.get_value('apellido_materno') == '' && nro_banco_cr=='800') { //control solo cuando es banco voii
                 alert("Complete el apellido materno por favor")
                 $('apellido_materno').focus()
                 return
@@ -1108,7 +1113,7 @@
     <div style="overflow: auto; -webkit-overflow-scrolling: touch" id="containerDiv">
         <table class="tb1" id="tbResultado" style="width: 100%; white-space: nowrap;">
             <tr>
-                <td class="Tit3" style="text-align: center;"><b>Datos personales</b></td>
+                <td class="Tit1" style="text-align: center;"><b>Datos personales</b></td>
             </tr>
             <tr>
                 <td>
@@ -1219,7 +1224,7 @@
 
         <table class="tb1" id="tbContactos" style="width: 100%; white-space: nowrap;">
             <tr>
-                <td class="Tit3" style="text-align: center;"><b>Contactos Telefónicos</b></td>
+                <td class="Tit1" style="text-align: center;"><b>Contactos Telefónicos</b></td>
             </tr>            
             <tr>
                 <td>
@@ -1282,7 +1287,7 @@
 
         <table class="tb1" id="tbSolicitud" style="width: 100%; white-space: nowrap;">            
             <tr>
-                <td style="font-size: smaller">*Campos obligatorios</td>
+                <td style="font-size: smaller; color: #4C66B7">*Campos obligatorios</td>
             </tr>
         </table>
         <table class="tb1">

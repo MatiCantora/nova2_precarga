@@ -144,7 +144,7 @@ consulta.limpiar = function () {
     $('divFiltros3Left').hide()
     $('divFiltros3Right').hide()
     $('divProducto').hide()
-    $('divMostrarTrabajos').hide()
+    //$('divMostrarTrabajos').hide()
     $('divAnalisis').hide()
 
     $('divVolverOferta').hide();
@@ -291,8 +291,9 @@ consulta.grupo_seleccionar = function () {
 }
 
 
-consulta.cobro_seleccionar = function (indice) {
+consulta.cobro_seleccionar = function () {
 
+    let indice = document.querySelector('input[name="rdTrabajo"]:checked').value;
     consulta.cliente.trabajo = consulta.cliente.trabajos[indice]
     nvFW.bloqueo_activar($(document.documentElement), 'blq_precarga', 'Obteniendo información comercial...')
     //$('divSelTrabajo').hide()
@@ -330,9 +331,10 @@ consulta.cobro_seleccionar = function (indice) {
 
         $('divTiposCobro').insert({ bottom: strHTML });
         goToNextStep();
-        $('divTiposCobro').setStyle({
-            height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnCobro").getHeight() + 'px'
-        });
+        $('divSelTrabajo').hide();
+        //$('divTiposCobro').setStyle({
+        //    height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnCobro").getHeight() + 'px'
+        //});
 
         nvFW.bloqueo_desactivar($(document.documentElement), 'blq_precarga');
 
@@ -396,43 +398,6 @@ consulta.evaluar = function () {
             //    $("btn2").ancestors()[0].ancestors()[0].ancestors()[0].ancestors()[0].setStyle({ width: "50%" }) //oculto el boton pendiente
             //}
 
-            //Cargar campo_def oferta
-            campos_defs.clear_list("cdef_oferta")
-            campos_defs.clear('cdef_oferta')
-            campos_defs.items.cdef_oferta.onchange = function (e, campo_def) {
-                //checkAllCancelaciones(1);
-                objCancelaciones.checkAllCrd(false);
-                planes_limpiar();
-                if (campos_defs.get_value(campo_def) != '')
-                    consulta.resultado_mostrar(campos_defs.items.cdef_oferta.input_select.selectedIndex);
-            }
-            var rsOferta = new tRS()
-            rsOferta.addField("id")
-            rsOferta.addField("campo")
-            rsOferta.addField("oferta")
-
-            for (var i = 0; i < consulta.resultado['ofertas'].length; i++) {
-                //Mock analisis -> borrar
-                switch (consulta.resultado['ofertas'][i].nro_analisis) {
-                    case '611':
-                        consulta.resultado['ofertas'][i].nro_analisis = 657;
-                        break;
-                    case '612':
-                        consulta.resultado['ofertas'][i].nro_analisis = 661;
-                        break;
-                    case '592':
-                        consulta.resultado['ofertas'][i].nro_analisis = 662;
-                        break;
-                    case '593':
-                        consulta.resultado['ofertas'][i].nro_analisis = 664;
-                        break;
-                }
-
-                rsOferta.addRecord({ id: i, campo: consulta.resultado['ofertas'][i].banco + ' - ' + consulta.resultado['ofertas'][i].mutual + ' - ' + consulta.resultado['ofertas'][i].Analisis + ' (' + consulta.resultado['ofertas'][i].nro_analisis + ')' });
-            }
-            campos_defs.items['cdef_oferta'].rs = rsOferta
-            campos_defs.set_first('cdef_oferta')
-
             //bcra_get_sit_html();
             //consulta.dibujar_dictamen();
 
@@ -440,7 +405,6 @@ consulta.evaluar = function () {
 
             //sit_bcra = consulta.resultado['bcra_sit']
 
-            $('divFlujoViejo').hide();
             consulta.cargar_oferta();
             return
 
@@ -620,7 +584,6 @@ function Persona_Trabajos_cargar(nro_docu) {
                 strHTML += "</td>"
                 strHTML += "</tr></table>"
                 $('divMostrarTrabajos').insert({ bottom: strHTML })
-                $('divMostrarTrabajos').show()
                 var vButtonItems = {}
                 vButtonItems[0] = {}
                 vButtonItems[0]["nombre"] = "GAceptar";
@@ -660,7 +623,8 @@ consulta.trabajos_dibujar = function () {
     $('divMostrarTrabajos').innerHTML = ''
 
     let strHTML = "";
-    strHTML += '<div style="color: black; text-align: center;">';
+    //deberia estar en una cabecera
+    strHTML += '<div class="box-product2" style="color: black; text-align: center;">';
     //Div datos personales
     strHTML += '<div><b>' + consulta.cliente.razon_social + '</b></div>';
     strHTML += '<div>DNI: ' + consulta.cliente.nro_docu + '</div>';
@@ -668,6 +632,7 @@ consulta.trabajos_dibujar = function () {
 
     let valtrabajo = [];
     let vBtntrabajoItems = {}
+    let checked = 'checked';
     for (var x in consulta.cliente.trabajos) {
         const trab = this.cliente.trabajos[x];
         if (trab['nro_sistema'] == 99999) {
@@ -684,15 +649,20 @@ consulta.trabajos_dibujar = function () {
                 vBtntrabajoItems[x]["onclick"] = "return consulta.consultar_cupo(" + trab.nro_docu + "," + trab.cuit + "," + trab.sce_id + "," + trab.clave_sueldo + ", " + x + ", trabajo_dibujar_cupo)";
                 vBtntrabajoItems[x]["estilo"] = "I";
 
-                strHTML += '<div class="box-product" onclick="return consulta.cobro_seleccionar(' + x + ')">';
+                // onclick="return consulta.cobro_seleccionar(' + x + ')"
+                strHTML += '<div class="box-product">';
                 strHTML += '<div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">';
-                strHTML += '<div style="display: flex; flex-direction: column; align-items: center;"><div><b>' + trab.tipo + '</b></div><div>' + trab.sistema + ' - ' + trab.lote + '</div></div>';
+                strHTML += '<div style="display: flex; gap: 1.4em;"><input name="rdTrabajo" id="rdTrabajo' + x + '" value="' + x + '" type="radio" ' + checked + ' />';
+                strHTML += '<div style="display: flex; flex-direction: column;"><div><b>' + trab.tipo + '</b></div><div>' + trab.sistema + ' - ' + trab.lote + '</div></div>';
+                strHTML += '</div>'
                 strHTML += '<div id="divTrabajoCupo' + x + '" style="color: var(--celeste); font-weight: bolder; display: none"><div>Disponible</div><div style="text-align: right;" id="trabCupoDisponible' + x + '">$ 0</div></div>';
                 strHTML += '<div id="divBtnPremotor' + x + '"></div>';
                 strHTML += '</div>';
                 strHTML += '</div>';
 
                 valtrabajo.push(JSON.parse('{ "tipo": "' + trab.tipo + '", "sistema": "' + trab.sistema + '", "lote": "' + trab.lote + '"}'));
+
+                checked = '';
             }
         }
         //    if (trab['nro_sistema'] == 99999)
@@ -720,7 +690,7 @@ function trabajo_dibujar_cupo(ofertas, i) {
 
 
 consulta.resultado_mostrar = function (oferta_index) { //displayProductosMotor
-
+   
     //var datos = motor['datos']
     //datos['rechaza_motor'] = motor['datos']['rechaza_motor'];
 
@@ -795,7 +765,7 @@ consulta.resultado_mostrar = function (oferta_index) { //displayProductosMotor
         //form1.importe_prevision_coseguro.value = 0
 
         $('divProducto').show()
-        $("divAnalisis").show()
+        //$("divAnalisis").show()
 
         $("divGrupo").show()
         $("divGrupoLeft").show()
@@ -821,8 +791,8 @@ consulta.resultado_mostrar = function (oferta_index) { //displayProductosMotor
 
         //$('divSocio').show()
 
-        analisis.canvas = $('divHaberes')
-        analisis.canvasNoVisible = $('divHaberesNoVisibles')
+        analisis.canvas = $('divAnalisisCanvas')
+        analisis.canvasNoVisible = $('divAnalisisNoVisibles')
 
 
         analisis.onAfterCharge = function () {
@@ -860,7 +830,7 @@ consulta.resultado_mostrar = function (oferta_index) { //displayProductosMotor
             //****************
             $('importe_max_cuota').innerHTML = "$ " + parseFloat(!!this.cuota_maxima ? this.cuota_maxima : '0').toFixed(2)
             if (!!$('divDisponible')) {
-                $('divDisponible').innerHTML = 'DISPONIBLE $' + parseFloat(!!this.cuota_maxima ? this.cuota_maxima : '0').toFixed(2);
+                $('valorDisponible').innerHTML = 'DISPONIBLE $ ' + parseFloat(!!this.cuota_maxima ? this.cuota_maxima : '0').toFixed(2);
             }
 
 
@@ -954,7 +924,10 @@ consulta.dibujar_dictamen = function () {
             break;
     }
     strHTML += '<div>' + objDictamen[dictamen].toUpperCase() + '</div>';
-    strHTML += '<div>Ver detalle ></div>';
+
+    let mensaje = '<b>' + objDictamen[dictamen].toUpperCase() + '</b>';
+    mensaje += '</br>' + (objDictamen[dictamen].toUpperCase() == 'VIABLE' ? '¡Vas bien!' : consulta.resultado.mensaje_usuario.replace(/\|/g, '</br>'));
+    strHTML += '<div onclick="alert(\'' + mensaje + '\')">Ver detalle ></div>';
     strHTML += '</div>';
 
     return strHTML;
@@ -1075,7 +1048,7 @@ consulta.cargar_oferta = function () {
     $('divOfertaResp').innerHTML = '';
 
     let strHTML = '';
-    strHTML += '<div id="divDatosSocio" style="color: black; text-align: center;">';
+    strHTML += '<div id="divDatosSocio" class="box-product2" style="color: black; text-align: center;">';
     //Div datos personales
     strHTML += '<div><b>' + consulta.cliente.razon_social + '</b></div>';
     strHTML += '<div>DNI: ' + consulta.cliente.nro_docu + '</div>';
@@ -1084,29 +1057,83 @@ consulta.cargar_oferta = function () {
     strHTML += consulta.dibujar_dictamen();
     //Div Cancelaciones
     //Cargar total cancelaciones
-    strHTML += objCancelaciones.dibujar_totales();
-
-    strHTML += '<div class="box-product" id="divDisponible" style="color: var(--celeste);">DISPONIBLE $' + parseFloat(!!analisis.cuota_maxima ? analisis.cuota_maxima : '0').toFixed(2) + '</div>';
+    strHTML += '<div id="divCTotales" class="box-product" style="text-align: center; position: relative;"></div>';
+    //strHTML += objCancelaciones.dibujar_totales();
+    
+    strHTML += '<div class="box-product" id="divDisponible" style="position: relative;">';
+    //Analisis
+    strHTML += '<div id="divAnalisisCanvas" style="display: none"></div>';
+    strHTML += '<span id="valorDisponible" style="color: var(--celeste);">DISPONIBLE $ ' + parseFloat(!!analisis.cuota_maxima ? analisis.cuota_maxima : '0').toFixed(2) + '</span>';
+    strHTML += '<div id="divAnalisisNoVisibles" style="display: none"></div>';
+    strHTML += '<span class="btn-link"><img id="imgAnalisisSpand" class="box-btn-spand" onclick="return spandDetailOnclick(analisis.canvas, analisis.canvas_mostrar, analisis.canvas_mostrar)" src="/precarga/image/down.svg" /></span>';
+    //strHTML += '<span><a onclick="return analisis.canvas_mostrar()" href="javascript:;">Ver</a></span>';
+    strHTML += '</div>';
     //strHTML += dibujar_propuesta_maxima(this.cliente.trabajo.nro_grupo, 'divPropuestaMaxima');
     //Div Plan maximo
-    strHTML += '<div class="box-product" id="divPropuestaMaxima"></div>'
+    strHTML += '<div class="box-product" id="divPropuestaMaxima" style="position: relative;"></div>'
 
     strHTML += '</div>'
 
     $('divOfertaResp').innerHTML = strHTML;
+
+    //cargar campo_def oferta - se mantiene por compatibilidad - refactorizar en boxes propuestas
+    consulta.cargar_campo_oferta();
     //Cargar cancelaciones
     objCancelaciones.actualizar(consulta.cliente.nro_docu, consulta.cliente.tipo_docu, consulta.cliente.sexo, 3);
     //Cargar planes
     btnBuscarPLanes_onclick();
 
     //mover a onresize
-    $('divOfertaResp').setStyle({
-        height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnOferta").getHeight() + 'px'
-    });
-    $('divPlanes').setStyle({ height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnOferta").getHeight() + 'px' });
+    //$('divOfertaResp').setStyle({
+    //    height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnOferta").getHeight() + 'px'
+    //});
+    //$('divPlanes').setStyle({ height: $$('body')[0].getHeight() - $("top_menu").getHeight() - $("divVendedorLeft").getHeight() - $("divWizardWrapper").getHeight() - $("divBtnOferta").getHeight() + 'px' });
 
     //propuesta maxima es el plan mayor?
 
+}
+
+
+//por compatibilidad
+consulta.cargar_campo_oferta = function () {
+    //Cargar campo_def oferta
+    campos_defs.clear_list("cdef_oferta")
+    campos_defs.clear('cdef_oferta')
+    campos_defs.items.cdef_oferta.onchange = function (e, campo_def) {
+        //checkAllCancelaciones(1);
+        objCancelaciones.checkAllCrd(false);
+        planes_limpiar();
+        if (campos_defs.get_value(campo_def) != '')
+            consulta.resultado_mostrar(campos_defs.items.cdef_oferta.input_select.selectedIndex);
+    }
+    var rsOferta = new tRS()
+    rsOferta.addField("id")
+    rsOferta.addField("campo")
+    rsOferta.addField("oferta")
+
+    for (var i = 0; i < consulta.resultado['ofertas'].length; i++) {
+        //Mock analisis -> borrar
+        switch (consulta.resultado['ofertas'][i].nro_analisis) {
+            case '611':
+                consulta.resultado['ofertas'][i].nro_analisis = 657;
+                break;
+            case '612':
+                consulta.resultado['ofertas'][i].nro_analisis = 661;
+                break;
+            case '592':
+                consulta.resultado['ofertas'][i].nro_analisis = 662;
+                break;
+            case '593':
+                consulta.resultado['ofertas'][i].nro_analisis = 664;
+                break;
+        }
+
+        rsOferta.addRecord({ id: i, campo: consulta.resultado['ofertas'][i].banco + ' - ' + consulta.resultado['ofertas'][i].mutual + ' - ' + consulta.resultado['ofertas'][i].Analisis + ' (' + consulta.resultado['ofertas'][i].nro_analisis + ')' });
+    }
+    campos_defs.items['cdef_oferta'].rs = rsOferta
+    campos_defs.set_first('cdef_oferta')
+
+    $('divFlujoViejo').hide();
 }
 
 

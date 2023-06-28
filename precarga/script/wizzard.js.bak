@@ -30,8 +30,8 @@ function wizzard() {
     stepsArray[0].element = 'tbBuscar';//primer paso
     stepsArray[0].leyenda = 'Ingresa un DNI para iniciar búsqueda.';
     stepsArray[1] = {}
-    stepsArray[1].element = 'divMostrarTrabajos';//segundo paso
-    stepsArray[1].leyenda = 'Necesitamos conocer el empleador.</br>Seleccione una opción para avanzar.';//segundo paso
+    stepsArray[1].element = 'divTrabajos';//segundo paso
+    stepsArray[1].leyenda = 'Necesitamos conocer el empleador.';//segundo paso
     stepsArray[2] = {}
     stepsArray[2].element = 'divSelCobro';//tercer paso
     stepsArray[2].leyenda = 'Seleccione un canal de cobro.';//tercer paso
@@ -105,7 +105,7 @@ function volverOferta() {
     $('divPlanes').hide();
     $('divFiltros').hide();
     //cancelaciones
-    $('tbCredVigente').hide();
+    //$('tbCredVigente').hide();
     //oferta
     $('divOfertaResp').show();
     $('divDisponible').show();

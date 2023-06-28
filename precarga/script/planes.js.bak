@@ -51,7 +51,7 @@ function Validar_datos() {
 
 
 function btnBuscarPLanes_onclick() {
-
+    debugger
     consulta.plan = {};
 
     let nro_grupo = consulta.cliente.trabajo.nro_grupo
@@ -265,7 +265,8 @@ function planes_limpiar() {
 
     let nro_plan_sel = !!consulta.plan.nro_plan ? consulta.plan.nro_plan : 0;
 
-    $('ifrplanes').src = 'enBlanco.htm';
+    if (!!$('ifrplanes'))
+        $('ifrplanes').src = 'enBlanco.htm';
     consulta.plan = {};
     if (!!form1.importe_cuota)
         form1.importe_cuota.value = 0;
@@ -279,11 +280,13 @@ function planes_limpiar() {
         analisis.actualizar();
     }
 
-    const tablePlanes = $('tbfiltros');
-    Array.from(tablePlanes.getElementsByTagName('input')).forEach((inputPlanes) => {
-        if (!!campos_defs.items[inputPlanes.id])
-            campos_defs.clear(inputPlanes.id);
-    })
+    if (!!$('tbfiltros')) {
+        const tablePlanes = $('tbfiltros');
+        Array.from(tablePlanes.getElementsByTagName('input')).forEach((inputPlanes) => {
+            if (!!campos_defs.items[inputPlanes.id])
+                campos_defs.clear(inputPlanes.id);
+        })
+    }
 }
 
 
@@ -316,12 +319,107 @@ function dibujar_propuesta(importe_neto, cuotas, importe_cuota) {
 
     //let strHTML = '<div>PROPUESTA MÁXIMA</div>';
     let strHTML = '<div>PROPUESTA</div>';
-    strHTML += '<div id="divMaxPlan">$' + (!!importe_neto ? importe_neto : '0') + '</div>';
-    strHTML += '<div id="divMaxCuotas">' + (!!cuotas ? cuotas + ' cuotas de <b>$' + importe_cuota + '</b>' : '0 cuotas de <b>$0</b>') + '</div>';
-    strHTML += '<div id="divPersonalizarPlanes" onclick="mostrarDivPlanes(true)"><a href="javascript:;">Personalizar propuesta</a></div>';
+    strHTML += '<div id="divMaxPlan">$ ' + (!!importe_neto ? Number.parseFloat(importe_neto).toFixed(2) : '0.00') + '</div>';
+    strHTML += '<div id="divMaxCuotas">' + (!!cuotas ? cuotas + ' cuotas de <b>$ ' + Number.parseFloat(importe_cuota).toFixed(2) + '</b>' : '0 cuotas de <b>$ 0.00</b>') + '</div>';
+    strHTML += '<div id="divPersonalizarPlanes" class="btn-link" ><img class="box-btn-spand" onclick="return mostrarDivPlanes(true)" src="/precarga/image/down.svg" /></div>';
 
     $('divPropuestaMaxima').innerHTML = strHTML;
 
+}
+
+
+//no se usa
+function dibujar_filtros_planes() {
+    let strHTML = '<div id="divFiltros">'
+    strHTML += '<table class="tb1">'
+    strHTML += '<tr class="tbLabel">'
+    strHTML += '<td style="text-align: left !important" onclick="selplan_on_click()">'
+    strHTML += '<input type="checkbox" style="border: none; display: none; vertical-align: middle;" id="selplan" onclick="selplan_on_click()" />&nbsp;Seleccionar Plan</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '<table class="tb1" id="tbfiltros" style="border-collapse: collapse; border: none; display: none">'
+    strHTML += '<tr>'
+    strHTML += '<td>'
+    strHTML += '<div id="divFiltrosLeft">'
+    strHTML += '<table class="tb1">'
+    strHTML += '<tr>'
+    strHTML += '<td class="Tit1" style="width: 50%"></td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Desde</td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Hasta</td>'
+    strHTML += '</tr>'
+    strHTML += '<tr>'
+    strHTML += '<td>Importe Retirado</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("retirado_desde", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("retirado_hasta", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '</div>'
+    strHTML += '<div id="divFiltrosRight">'
+    strHTML += '<table class="tb1">'
+    strHTML += '<tr>'
+    strHTML += '<td class="Tit1" style="width: 50%"></td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Desde</td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Hasta</td>'
+    strHTML += '</tr>'
+    strHTML += '<tr>'
+    strHTML += '<td>Importe Cuota</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("importe_cuota_desde", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("importe_cuota_hasta", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '</div>'
+    strHTML += '<div id="divFiltros2Left">'
+    strHTML += '<table class="tb1">'
+    strHTML += '<tr>'
+    strHTML += '<td class="Tit1" style="width: 50%"></td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Desde</td>'
+    strHTML += '<td class="Tit1" style="width: 25%">Hasta</td>'
+    strHTML += '</tr>'
+    strHTML += '<tr>'
+    strHTML += '<td>Cuotas</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("cuota_desde", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '<td>'
+    strHTML += '<script type="text/javascript">campos_defs.add("cuota_hasta", { enDB: false, nro_campo_tipo: 102 })</script>'
+    strHTML += '</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '</div>'
+    strHTML += '<div id="divFiltros2Right">'
+    strHTML += '</div>'
+    strHTML += '<div id="divFiltros3Left">'
+    strHTML += '<table class="tb1">'
+    strHTML += '<tr>'
+    strHTML += '<td class="Tit1" style="width: 50%"></td>'
+    strHTML += '</tr>'
+    strHTML += '<tr>'
+    strHTML += '<td style="width: 50%">'
+    strHTML += '<input type="checkbox" style="border: none" id="chkmax_disp" name="chkmax_disp" />'
+    strHTML += 'Importe máx. disp.</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '</div>'
+    strHTML += '<div style="width: 100%;" id="divFiltros3Right">'
+    strHTML += '<div style="display: flex; width: 100%; justify-content: center;">'
+    strHTML += '<div style="text-align: center; width: 25%;" id="divPlanBuscar"></div>'
+    strHTML += '</div>'
+    strHTML += '</div>'
+    strHTML += '</td>'
+    strHTML += '</tr>'
+    strHTML += '</table>'
+    strHTML += '<iframe style="width: 100%; height: 200px; border: none; display: none;" name="ifrplanes" id="ifrplanes" src="enBlanco.htm"></iframe>'
+    strHTML += '</div>'
+
+    return strHTML;
 }
 
 //function SeleccionarPlanesMostrar() {
