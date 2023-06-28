@@ -62,8 +62,8 @@
     <title>NOVA Precarga</title>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <link href="/FW/css/base.css" type="text/css" rel="stylesheet" />
-    <link href="css/cabe_precarga.css" type="text/css" rel="stylesheet" />
-    <link href="css/precarga.css?v=20220224" type="text/css" rel="stylesheet" />
+    <link href="../css/cabe_precarga.css" type="text/css" rel="stylesheet" />
+    <link href="../css/precarga.css" type="text/css" rel="stylesheet" />
     <link rel="shortcut icon" href="../image/icons/nv_admin.ico" />
    
     <script type="text/javascript" language='javascript' src="/FW/script/swfobject.js"></script>
@@ -172,7 +172,6 @@
 
         function ABMArchivos_return() {}
         
-        var win_rpt_impresion
         function btnPrintSolicitudes() {
            
             if (estado == null)
@@ -193,24 +192,12 @@
                 filtros['sexo'] = sexo
 
                 var nro_rpt_tipo = 1
-                win_rpt_impresion = window.top.createWindow2({
-                    url: 'RPT_impresion.aspx' ,//?nro_rpt_tipo=' + nro_rpt_tipo + '&nro_credito=' + nro_credito + '&nro_docu=' + nro_docu + '&tipo_docu=' + tipo_docu + '&sexo=' + sexo,
+                
+                window.top.precarga.show_modal_window({
+                    url: 'RPT_impresion.aspx',
                     title: '<b>Impresión de Reportes</b>',
-                    centerHFromElement: window.top.$("contenedor"),
-                    parentWidthElement: window.top.$("contenedor"),
-                    parentWidthPercent: 0.9,
-                    parentHeightElement: window.top.$("contenedor"),
-                    parentHeightPercent: 0.9,
-                    maxHeight: 500,
-                    //setHeightToContent: true,
-                    //setWidthMaxWindow: true,
-                    minimizable: false,
-                    maximizable: false,
-                    draggable: true,
-                    resizable: true
+                    userData: { filtros: filtros },
                 });
-                win_rpt_impresion.options.userData = { filtros: filtros }
-                win_rpt_impresion.showCenter(true)
             }    
         }
 
@@ -284,7 +271,6 @@
         var sincuenta = true;
 
         function credito_mostrar() {
-            debugger
             var importe_mano = 0
             var rsVerCredito = new tRS();
             rsVerCredito.name = 'rsVerCredito'
@@ -353,36 +339,42 @@
             $("notificado_sincuenta").value="0"
         }
 
-        
         function btnEnviarTyc(){
 
             if(estadoActual!="1"){
                 alert("No está permitida esta acción en el estado actual de crédito")
              return;
             }
-            var param = {}
-            param['nro_credito'] = nro_credito
-            var win_enviotyc = window.top.createWindow2({
-                url: 'precarga_envio_tyc.aspx?crparam='+nro_credito,
+            //var param = {}
+            //param['nro_credito'] = nro_credito
+            //var win_enviotyc = window.top.createWindow2({
+            //    url: 'precarga_envio_tyc.aspx?crparam='+nro_credito,
+            //    title: '<b>Enviar Terminos y condiciones</b>',
+            //    centerHFromElement: window.top.$("contenedor"),
+            //    parentWidthElement: window.top.$("contenedor"),
+            //    parentWidthPercent: 0.9,
+            //    parentHeightElement: window.top.$("contenedor"),
+            //    parentHeightPercent: 0.9,
+            //    maxHeight: 200,
+            //    minimizable: false,
+            //    maximizable: false,
+            //    draggable: true,
+            //    resizable: true,
+            //    onClose: function(){}
+            //});
+            //win_enviotyc.options.userData = { param: param }
+            //win_enviotyc.showCenter(true)
+
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+
+            window.top.precarga.show_modal_window({
+                url: 'precarga_envio_tyc.aspx?crparam=' + nro_credito,
                 title: '<b>Enviar Terminos y condiciones</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 200,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
-                onClose: function(){}
+                userData: { filtros: filtros },
+                onClose: function () { }
             });
-            win_enviotyc.options.userData = { param: param }
-            win_enviotyc.showCenter(true)
-
-
         }
-
 
         function window_onresize() {
             try {
@@ -409,10 +401,11 @@
         }
 
         function botones_cambiar_estados() {
+
             ismobile = (isMobile()) ? 'true' : 'false'
-            //var filtroXML = "<criterio><select vista='verCircuito_estado_credito_permisos'><campos>distinct estado,desc_estado,nro_credito,'" + ismobile + "' as ismobile</campos><orden></orden><filtro></filtro></select></criterio>"
-            //<estado type='in'>'H','M','R','G'</estado>
+
             var filtroWhere = "<nro_credito type='igual'>" + nro_credito + "</nro_credito><permiso_grupo type='igual'>'permisos_estado'</permiso_grupo>"
+
             nvFW.exportarReporte({
                 filtroXML: nvFW.pageContents.circuito_estados,
                 filtroWhere: "<criterio><select><filtro>" + filtroWhere + "</filtro></select></criterio>",
@@ -423,7 +416,6 @@
                 bloq_contenedor: 'iframe_cambiar_estado'
             })
         }
-
 
         function cambiar_estado(estadoacambiar) {
             estado = estadoacambiar
@@ -443,9 +435,9 @@
             });
         }
 
-
         var win_comentario
-        var confirma_datos_personales=0
+        var confirma_datos_personales = 0
+
         function btn_CambiarEstado(estado) {
             var msj_captura = ""
 
@@ -455,32 +447,32 @@
                 return
             }
 
-            
-            var rs = new tRS();  
-            //para los estados esperando tyc y esperando analisis controlo la fecha de vencimiento para creditos del cuad
-            if(estado=="1" || estado=="L"){
-                rs.open({ filtroXML: nvFW.pageContents["control_estado_vencimiento_cuad"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
-                if(!rs.eof()){
-                      if (rs.getdata('control_estado') == 'False'  || rs.getdata('control_estado') == false || rs.getdata('control_estado') == 0 || rs.getdata('control_estado') == '0') {
-                                      alert("Credito Fuera de Vigencia. Debe pasarlo a estado Baja para poder cargar un nuevo CAD por precarga")
-                                      return
-                      }          
-                }    
-            }  
-            
 
-            rs = new tRS();    
-            
+            var rs = new tRS();
+            //para los estados esperando tyc y esperando analisis controlo la fecha de vencimiento para creditos del cuad
+            if (estado == "1" || estado == "L") {
+                rs.open({ filtroXML: nvFW.pageContents["control_estado_vencimiento_cuad"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
+                if (!rs.eof()) {
+                    if (rs.getdata('control_estado') == 'False' || rs.getdata('control_estado') == false || rs.getdata('control_estado') == 0 || rs.getdata('control_estado') == '0') {
+                        alert("Credito Fuera de Vigencia. Debe pasarlo a estado Baja para poder cargar un nuevo CAD por precarga")
+                        return
+                    }
+                }
+            }
+
+
+            rs = new tRS();
+
             //si el estado a pasar es TYC, necesito que se verique si esta en cuad y si tiene datos personales/cuenta
-            if (estado == "1") {                 
+            if (estado == "1") {
                 //rs.open({filtroXML: nvFW.pageContents["califica_motor_cuad"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })                
                 //si califica para motor, hace falta confirmacion de datos personales y cuenta antes de pasar a TYC o operatorias varias
                 //if(califica_cuad_motor || nro_mutual==950){
-                if(1==1){ //esta restriccion aplica a todos
-                    if(!confirma_datos_personales){
-                        var param_datos={}
-                        param_datos['estado']=estado
-                        param_datos['nro_credito']=nro_credito
+                if (1 == 1) { //esta restriccion aplica a todos
+                    if (!confirma_datos_personales) {
+                        var param_datos = {}
+                        param_datos['estado'] = estado
+                        param_datos['nro_credito'] = nro_credito
                         var win_confirma_datos = window.top.createWindow2({
                             url: 'confirmar_datos_personales.aspx?nro_credito=' + nro_credito,
                             title: '<b>Confirmar datos personales y cuenta</b>',
@@ -495,69 +487,70 @@
                             draggable: true,
                             resizable: true,
                             onClose: function () {
-                                    
-                                    if (win_confirma_datos.options.userData.res == true) {
-                                        //si se confirman los datos tanto de cuenta como datos personas, cambia de estado
-                                        if(win_confirma_datos.options.userData.data.cuenta==1 && win_confirma_datos.options.userData.data.solicitud==1){
-                                        confirma_datos_personales=1
-                                        sincuenta=false;                                        
-                                        btn_CambiarEstado(estado)    
-                                        }
+
+                                if (win_confirma_datos.options.userData.res == true) {
+                                    //si se confirman los datos tanto de cuenta como datos personas, cambia de estado
+                                    if (win_confirma_datos.options.userData.data.cuenta == 1 && win_confirma_datos.options.userData.data.solicitud == 1) {
+                                        confirma_datos_personales = 1
+                                        sincuenta = false;
+                                        btn_CambiarEstado(estado)
                                     }
-                                }//onClose
+                                }
+                            }//onClose
                         });//win_confirma_datos
-                        win_confirma_datos.options.userData = { param: param_datos,res:false }
+                        win_confirma_datos.options.userData = { param: param_datos, res: false }
                         win_confirma_datos.showCenter(true)
                         return
                     }//para confirma_datos_personales
-                    
+
 
                     //califica x motor de cuad, debe respetar las siguiente restricciones
                     var mensaje_alerta = ""
                     rs = new tRS();
-                    rs.open({filtroXML: nvFW.pageContents["contiene_cuenta"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
-                    if(rs.eof()){
+                    rs.open({ filtroXML: nvFW.pageContents["contiene_cuenta"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
+                    if (rs.eof()) {
                         //no contiene cuenta cbu, se alerta
-                        mensaje_alerta="no contiene una cbu cargada"
+                        mensaje_alerta = "no contiene una cbu cargada"
                     }
                     rs = new tRS();
-                    rs.open({filtroXML: nvFW.pageContents["contiene_solicitud"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
-                    if(rs.eof()){
+                    rs.open({ filtroXML: nvFW.pageContents["contiene_solicitud"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
+                    if (rs.eof()) {
                         //no contiene solicitud pendiente, se alerta
-                        mensaje_alerta+=((mensaje_alerta!="")?" y no contiene una solicitud de datos personales":" no contiene una solicitud de datos personales")
+                        mensaje_alerta += ((mensaje_alerta != "") ? " y no contiene una solicitud de datos personales" : " no contiene una solicitud de datos personales")
                     }
-                    if(mensaje_alerta!=""){
-                       alert('Atención, el credito '+mensaje_alerta)
-                       return 
+                    if (mensaje_alerta != "") {
+                        alert('Atención, el credito ' + mensaje_alerta)
+                        return
                     }
-                 }//calificar por motor de cuad 
+                }//calificar por motor de cuad 
             }
-             
-            
-            //si esta sin cuenta y no esta notificado, muestro cartel de advertencia
-            if(sincuenta && $("notificado_sincuenta").value=="0"){
 
-              Dialog.confirm("No se ha cargado una cuenta bancaria ¿Desea continuar de todas formas?",
-                                        { width: 300,
-                                          className: "alphacube",
-                                          okLabel: "Si",
-                                          cancelLabel: "No",
-                                          onOk: function (w) {
-                                                $("notificado_sincuenta").value="1"
-                                                btn_CambiarEstado(estado)
-                                          }
-                                      })
-              return
+
+            //si esta sin cuenta y no esta notificado, muestro cartel de advertencia
+            if (sincuenta && $("notificado_sincuenta").value == "0") {
+
+                Dialog.confirm("No se ha cargado una cuenta bancaria ¿Desea continuar de todas formas?",
+                    {
+                        width: 300,
+                        className: "alphacube",
+                        okLabel: "Si",
+                        cancelLabel: "No",
+                        onOk: function (w) {
+                            $("notificado_sincuenta").value = "1"
+                            btn_CambiarEstado(estado)
+                        }
+                    })
+                return
             }
 
             if (msj_captura != '') {
                 alert(msj_captura)
                 return
             }
-            
+
             if (estado == '1') {//cuando se pasa a Esp Aceptacion TyC tienen que tener el parametro "id_gestion_firma_documental" definido                
                 rs = new tRS();
-                rs.open({filtroXML: nvFW.pageContents["parametro"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
+                rs.open({ filtroXML: nvFW.pageContents["parametro"], params: "<criterio><params nro_credito='" + nro_credito + "' /></criterio>" })
                 if (!rs.eof()) {
 
                     var parametro = 'id_gestion_firma_documental'
@@ -581,7 +574,7 @@
                             if (win_parametro.options.userData.res == true) {
                                 cambiar_estado(estado)
                             }
-                            }
+                        }
                     });
                     win_parametro.options.userData = { param: param }
                     win_parametro.showCenter(true)
@@ -591,7 +584,7 @@
             else {
                 nvFW.error_ajax_request('Credito_cambiar_estado.aspx', {
                     parameters: { modo: "A", nro_credito: nro_credito, estado: estado },
-                    onSuccess: function (err, transport) {                        
+                    onSuccess: function (err, transport) {
                         if (err.numError == 0) {
                             var retorno = {}
                             retorno["actualizar"] = true
@@ -604,70 +597,40 @@
                     }
                 });
             }
-            }
+        }
 
-        var win_comentarios
         function mostrarComentarios() {
-            win_comentarios = window.top.createWindow2({
-                className: 'alphacube',
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+
+            window.top.precarga.show_modal_window({
                 url: 'verCom_registro.aspx?nro_com_id_tipo=2&nro_com_grupo=17&collapsed_fck=0&id_tipo=' + nro_credito + '&nro_entidad=0',
                 title: '<b>Comentarios de Rechazo</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 500,
-                //setHeightToContent: true,
-                //setWidthMaxWindow: true,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true
+                userData: { filtros: filtros },
             });
-            win_comentarios.options.userData = { filtros: filtros }
-            win_comentarios.showCenter(true)
         }
 
-        var win_datos
-        function Editar_datos(){
+        function Editar_datos() {
 
-            if(!nvFW.tienePermiso("permisos_precarga", 14)) {
-                            alert('No posee permiso para realizar esta acción.')
-                            return
+            if (!nvFW.tienePermiso("permisos_precarga", 14)) {
+                alert('No posee permiso para realizar esta acción.')
+                return
             }
-            win_datos =  window.top.createWindow2({
-                url: 'solicitud_cargar.aspx?modo=V&nro_credito='+nro_credito,
-                title: '<b>Solicitud - '+nro_credito+'</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 500,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
+
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+
+            window.top.precarga.show_modal_window({
+                url: 'solicitud_cargar.aspx?modo=V&nro_credito=' + nro_credito,
+                title: '<b>Solicitud - ' + nro_credito + '</b>',
+                userData: { filtros: filtros },
                 onClose: datos_return
             });
-             var param = {}
-            param['nro_credito'] = nro_credito
-            win_datos.options.userData = { param: param }
-            win_datos.showCenter(true)
         }
 
-
-        function datos_return() {            
-            var retorno = win_datos.options.userData            
+        function datos_return() {
+            var retorno = window.top.options.userData
         }
-
-
-       
-
-
-
-
 
         function window_onresize() {
             try {
@@ -678,159 +641,141 @@
             catch (e) { }
         }
 
-        var win_cuenta
-        function CambiarCuenta(){
-            win_cuenta =  window.top.createWindow2({
-                url: 'Cuenta_seleccion.aspx?modo=V&nro_credito='+nro_credito,
-                title: '<b>Cuentas - credito '+nro_credito+'</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 300,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
+        function CambiarCuenta() {
+            var filtros = {}
+            filtros['nro_credito'] = nro_credito
+
+            window.top.precarga.show_modal_window({
+                url: 'Cuenta_seleccion.aspx?modo=V&nro_credito=' + nro_credito,
+                title: '<b>Cuentas - credito ' + nro_credito + '</b>',
+                userData: { filtros: filtros },
                 onClose: datos_cuenta_return
             });
-             var param = {}
-            param['nro_credito'] = nro_credito
-            win_cuenta.options.userData = { param: param }
-            win_cuenta.showCenter(true)
         }
 
-         function datos_cuenta_return() {            
+        function datos_cuenta_return() {
             var retorno = win_cuenta.options.userData
-            if (retorno)
-                {   //actualizo la visualizacion de los datos
-                    if( typeof retorno.cuenta_actualizada !="undefined"){
-                        if(retorno.cuenta_actualizada==1){
-                            credito_mostrar()
-                        }
+            if (retorno) {
+                if (typeof retorno.cuenta_actualizada != "undefined") {
+                    if (retorno.cuenta_actualizada == 1) {
+                        credito_mostrar()
                     }
                 }
+            }
         }
         
     </script>
 </head>
-<body onload="return window_onload()" onresize="return window_onresize()" style="height: 100%;
-    background-color: white; -webkit-text-size-adjust: none; overflow: auto;">
+<body onload="return window_onload()" onresize="return window_onresize()" style="height: 100%; background-color: white; -webkit-text-size-adjust: none; overflow: auto;">
     <input type="hidden" id="estado" />
-    <input type="hidden" id="notificado_sincuenta" value="0"/>
+    <input type="hidden" id="notificado_sincuenta" value="0" />
     <div style="overflow: auto; -webkit-overflow-scrolling: touch" id="containerDiv">
-       
-        <div id="DIV_Menu1" style="width: 100%"></div>
 
-        <div id="divCr1Left" style="width:100%">
+        <div id="DIV_Menu1" style="width: 100%; margin-bottom: 5px;"></div>
+
+        <div id="divCr1Left" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none;">
                 <tr>
-                <td class='Tit1' style="width: auto">Socio</td>
-                <td   class="td-prec-1 col-md-5 col-sm-4 btn"  onclick="return Editar_datos()" >
-                     <img  src="../image/editar.png"  class="hide-sm"> 
-                     <img style="margin-left: 22px;float: left;"  src="../image/editar.png"  class="hide-md" >&nbsp;
-                     <span  class="hide-sm" >Editar socio</span>
-                     <span  class="hide-md" >Editar</span>
-                </td>                    
+                    <td class='Tit1' style="width: auto; display:flex; align-items: center; cursor:pointer" onclick="return Editar_datos()">
+                        <img src="../image/editar.png" >
+                        <p>Socio</p>
+                    </td>
                 </tr>
-                <tr>
+                <tr style="height:30px">
                     <td colspan="2">
-                        <span id="sp_credito" style="display: none"></span><span id="sp_socio"></span>
+                        <span id="sp_credito" style="display: none"></span>
+                        <span id="sp_socio"></span>
                     </td>
                 </tr>
             </table>
-        </div>         
+        </div>
         <div id="divCr1Right" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none;">
                 <tr>
-                <td class='Tit1' style="width: 25%">Estado</td>
-                <td class='Tit1' style="width: 35%">F.Estado</td>
-                <td class='Tit1' style="width: 40%">Vendedor</td>
+                    <td class='Tit1' style="width: 25%">Estado</td>
+                    <td class='Tit1' style="width: 35%">F.Estado</td>
+                    <td class='Tit1' style="width: 40%">Vendedor</td>
                 </tr>
-                <tr>
-                <td style="height: 21px;"><a href="#" style='cursor: pointer' onclick="mostrarComentarios()"><span id="sp_estado"></span></a></td>
-                <td><span id="sp_fe_estado"></span></td>
-                <td><span id="sp_vendedor"></span></td>
+                <tr  style="height:30px">
+                    <td style="height: 21px;"><a href="#" style='cursor: pointer' onclick="mostrarComentarios()"><span id="sp_estado"></span></a></td>
+                    <td><span id="sp_fe_estado"></span></td>
+                    <td><span id="sp_vendedor"></span></td>
                 </tr>
             </table>
         </div>
         <div id="divCr2Left" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none">
                 <tr>
-                <td class='Tit1'>Banco</td>
+                    <td class='Tit1'>Banco</td>
                 </tr>
-                <tr>
-                <td><span id="sp_banco"></span></td>
+                <tr  style="height:30px">
+                    <td><span id="sp_banco"></span></td>
                 </tr>
             </table>
         </div>
         <div id="divCr2Right" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none">
                 <tr>
-                <td class='Tit1'>Mutual</td>
+                    <td class='Tit1'>Mutual</td>
                 </tr>
-                <tr>
-                <td><span id="sp_mutual"></span></td>
+                <tr  style="height:30px">
+                    <td><span id="sp_mutual"></span></td>
                 </tr>
             </table>
         </div>
         <table class="tb1" style="width: 100%">
             <tr>
-            <td  class="Tit1">Cuenta bancaria</td>
-            <td class="td-prec-1 col-md-2 col-sm-2 btn" id="editar" title="cambiar cuenta bancaria" onclick="CambiarCuenta()">
-                <img  src="../image/editar.png"  class="hide-sm"> 
-                 <img style="margin-left: 10px;float: left;"  src="../image/editar.png"  class="hide-md" >&nbsp;                
-                 <span  class="hide-sm" >Editar cbu</span>
-                 <span  class="hide-md" >Editar</span>
-            </td>                
+                <td class='Tit1' style="width: auto; display: flex; align-items: center; cursor: pointer" onclick="return CambiarCuenta()">
+                    <img src="../image/editar.png">
+                    <p>Cuenta Bancaria</p>
+                </td>
             </tr>
-            <tr>
-            <td colspan="2"><a href="javascript:;" id="cbudet" class="tooltip default" tip="">Cuenta CBU: </a></td>
+            <tr style="height: 30px">
+                <td colspan="2"><a href="javascript:;" id="cbudet" class="tooltip default" tip="">Cuenta CBU: </a></td>
             </tr>
         </table>
 
-        <div id="DIV_Menu2" style="width: 100%"></div>
+        <div id="DIV_Menu2" style="width: 100%; margin-bottom: 5px;"></div>
 
         <div id="divCr3Left" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none">
                 <tr>
-                <td class='Tit1' style="width: 35%">Cobro</td>
-                <td class='Tit1' style="width: 20%">Solicitado</td>
-                <td class='Tit1' style="width: 20%">Retirado</td>
-                <td class='Tit1'>Documentado</td>
+                    <td class='Tit1' style="width: 35%">Cobro</td>
+                    <td class='Tit1' style="width: 20%">Solicitado</td>
+                    <td class='Tit1' style="width: 20%">Retirado</td>
+                    <td class='Tit1'>Documentado</td>
                 </tr>
-                <tr>
-                <td style="text-align: left"><span id="sp_cobro"></span></td>
-                <td style="text-align: right">$ <span id="sp_solicitado"></span></td>
-                <td style="text-align: right">$ <span id="sp_retirado"></span></td>
-                <td style="text-align: right">$ <span id="sp_documentado"></span></td>
+                <tr  style="height:30px">
+                    <td style="text-align: left"><span id="sp_cobro"></span></td>
+                    <td style="text-align: right">$ <span id="sp_solicitado"></span></td>
+                    <td style="text-align: right">$ <span id="sp_retirado"></span></td>
+                    <td style="text-align: right">$ <span id="sp_documentado"></span></td>
                 </tr>
             </table>
         </div>
         <div id="divCr3Right" style="width: 100%">
             <table class="tb1" style="border-collapse: collapse; border: none">
                 <tr>
-                <td class='Tit1' style="width: 25%">Cuotas</td>
-                <td class='Tit1' style="width: 25%">Cancelado</td>
-                <td class='Tit1' style="width: 25%">En mano</td>
-                <td class='Tit1' style="width: 25%">Cuota Máxima</td>
+                    <td class='Tit1' style="width: 25%">Cuotas</td>
+                    <td class='Tit1' style="width: 25%">Cancelado</td>
+                    <td class='Tit1' style="width: 25%">En mano</td>
+                    <td class='Tit1' style="width: 25%">Cuota Máxima</td>
                 </tr>
-                <tr>
-                <td style="text-align: right"><span id="sp_cuotas"></span></td>
-                <td style="text-align: right">$ <span id="sp_cancelado"></span></td>
-                <td style="text-align: right">$ <span id="sp_en_mano"></span></td>
-                <td style="text-align: right">$ <span id="sp_cuota_max"></span></td>
+                <tr  style="height:30px">
+                    <td style="text-align: right"><span id="sp_cuotas"></span></td>
+                    <td style="text-align: right">$ <span id="sp_cancelado"></span></td>
+                    <td style="text-align: right">$ <span id="sp_en_mano"></span></td>
+                    <td style="text-align: right">$ <span id="sp_cuota_max"></span></td>
                 </tr>
             </table>
         </div>
         <table class="tb1" style="width: 100%">
             <tr class="tbLabel">
-            <td style="text-align: left !important">Cambiar estado a:</td>
+                <td style="text-align: left !important">Cambiar estado a:</td>
             </tr>
         </table>
-    <div style="overflow:auto;-webkit-overflow-scrolling:touch">
-        <iframe name="iframe_cambiar_estado" id="iframe_cambiar_estado" style="width: 100%; border: none"></iframe>
+        <div style="overflow: auto; -webkit-overflow-scrolling: touch">
+            <iframe name="iframe_cambiar_estado" id="iframe_cambiar_estado" style="width: 100%; border: none"></iframe>
         </div>
     </div>
 </body>

@@ -159,6 +159,7 @@ img[id^=vMenu_img] {
 }
 
 .mnuTB_O {
+	height: 30px;
 	width: 100% !important;
 	border-radius: 0em !important;
 	font: bold 13px Tahoma, Verdana, sans-serif !important;
@@ -173,6 +174,7 @@ img[id^=vMenu_img] {
 	padding: 3px;
 	cursor: pointer;
 	border-left: 1px solid white;
+	text-align: center;
 }
 
 .mnuCELL_OnOver_O {
@@ -182,7 +184,8 @@ img[id^=vMenu_img] {
 	color: #4C66B7;
 	padding: 3px;
 	cursor: pointer;
-	border-left: 1px solid white;
+	border: 1px solid var(--azul);
+	text-align: center;
 }
 
 .mnuTB_M {

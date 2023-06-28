@@ -26,16 +26,6 @@
     Dim operador As String = ""
     Dim operador_logueado As String = ""
 
-    'Dim host_dominio = ""
-    'Dim reg = "(\\.)+[a-z0-9\\.\\-]+[^\\/]"
-    'Dim dominio As String = nvApp.server_path
-    'For Each match As Match In Regex.Matches(nvApp.server_path, reg)
-    '    dominio = match.Value
-    'Next
-    'If (dominio.Length > 0) Then
-    '    dominio = dominio.Substring(1, dominio.ToString.Length - 1)
-    'End If
-
     If nro_credito <> "" Then
         Dim err = New tError()
         Dim sql As String = "select nro_credito"
@@ -116,11 +106,6 @@ var nro_credito = 0
 
             window_onresize()
             
-            //var nro_rpt_tipo = $('nro_rpt_tipo').value
-            //var nro_credito  = $('nro_credito').value
-            //var nro_docu = $('nro_docu').value
-            //var tipo_docu = $('tipo_docu').value
-            //var sexo = $('sexo').value
             var nro_print_tipo= 2  //2-pre impresos  3-Digitales
             var filtroWhere = ''
             
@@ -152,10 +137,6 @@ var nro_credito = 0
                         }
                     }
                 })
-
-               
-                
-
         }
 
         function window_onresize() {
@@ -305,13 +286,13 @@ var nro_credito = 0
    <script type="text/javascript">
     var DocumentMNG = new tDMOffLine;
     var vMenu = new tMenu('divMenu', 'vMenu');
-    Menus["vMenu"] = vMenu
-    Menus["vMenu"].alineacion = 'centro';
-    Menus["vMenu"].estilo = 'A';
-    Menus["vMenu"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 100%'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
-    Menus["vMenu"].CargarMenuItemXML("<MenuItem id='1'><Lib TipoLib='offLine'>DocMNG</Lib><icono>excel</icono><Desc>Exportar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>btnExportar_onclick()</Codigo></Ejecutar></Acciones></MenuItem>")
-    vMenu.loadImage("excel", '/fw/image/icons/excel.png')
-    vMenu.MostrarMenu()
+       Menus["vMenu"] = vMenu
+       Menus["vMenu"].alineacion = 'centro';
+       Menus["vMenu"].estilo = 'O';
+       Menus["vMenu"].CargarMenuItemXML("<MenuItem id='0' style='WIDTH: 90%'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc></Desc></MenuItem>")
+       Menus["vMenu"].CargarMenuItemXML("<MenuItem id='1' style='WIDTH: 10%'><Lib TipoLib='offLine'>DocMNG</Lib><icono>excel</icono><Desc>Exportar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>btnExportar_onclick()</Codigo></Ejecutar></Acciones></MenuItem>")
+       vMenu.loadImage("excel", '/fw/image/icons/excel.png')
+       vMenu.MostrarMenu()
    </script>
    <form action="RPT_exportar_destino.aspx" method="post" name="form" id="form" target="_blank" style='display:none'>
         <input type="hidden" name="rpt_defs" id="rpt_defs" value=""/>

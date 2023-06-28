@@ -55,12 +55,16 @@
                         vButtonItems[0]["etiqueta"] = "Imprimir Reportes";
                         vButtonItems[0]["imagen"] = "imprimir";
                         vButtonItems[0]["onclick"] = "return RPT_imprimir('HTML','')";
+                        vButtonItems[0]["estilo"] = "M";
+						
 
                         vButtonItems[1] = new Array();
                         vButtonItems[1]["nombre"] = "Enviar";
                         vButtonItems[1]["etiqueta"] = "Enviar Correo a:";
                         vButtonItems[1]["imagen"] = "mail";
                         vButtonItems[1]["onclick"] = "return selEnviarA_onclick()";            
+                        vButtonItems[1]["estilo"] = "M";
+						
                          
                         var vListButton = new tListButton(vButtonItems, 'vListButton');
                         vListButton.loadImage("imprimir", '/fw/image/icons/imprimir.png')
@@ -214,8 +218,9 @@
 											  </td>
 			 	         </tr>
             </table>
+					
             <div id="div_lst_creditos" style="width:100%;overflow:auto">
-                <table class="tb1" id="tbDetalle">
+                <table class="tb1 highlightTROver highlightEven layout_fixed" id="tbDetalle">
                     <xsl:apply-templates select="xml/rs:data/z:row" />
                 </table>
             </div>
@@ -295,7 +300,7 @@
 			</xsl:choose>
 			
 
-			<td style='text-align: center; width:4%' >				
+			<td style='text-align: center; width:7%; height: 30px;border-radius: 6px' >				
                 <input type="checkbox" style="width:100%;border:0px">
                     <xsl:attribute name="id">check_<xsl:value-of select="@nro_rpt_def"/></xsl:attribute>
 					<xsl:attribute name="name">check_<xsl:value-of select="@nro_rpt_def"/></xsl:attribute>
@@ -338,9 +343,10 @@
 					</xsl:attribute>
 				</input>
 			</td>
-      <td style='width:61%'>							
-          <xsl:value-of select="@rpt_descripcion"/>
-      </td>
+			
+			<td style='width:90%; padding-left: 5px; ;height: 30px;border-radius: 6px'>							
+                  <xsl:value-of select="@rpt_descripcion"/>
+              </td>
 		</tr>
 	</xsl:template>
 </xsl:stylesheet>

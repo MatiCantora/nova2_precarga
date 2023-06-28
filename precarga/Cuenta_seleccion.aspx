@@ -110,18 +110,14 @@
         vButtonItems[0]["etiqueta"] = "guardar";
         vButtonItems[0]["imagen"] = "guardar";
         vButtonItems[0]["onclick"] = "return guardar()";
-        
-         vButtonItems[1] = {}
-        vButtonItems[1]["nombre"] = "Agregar";
-        vButtonItems[1]["etiqueta"] = "Agregar";
-        vButtonItems[1]["imagen"] = "agregar";
-        vButtonItems[1]["onclick"] = "return agregar()";
-       /*vButtonItems[2] = {}
-        vButtonItems[2]["nombre"] = "Eliminar";
-        vButtonItems[2]["etiqueta"] = "Eliminar";
-        vButtonItems[2]["imagen"] = "eliminar";
-        vButtonItems[2]["onclick"] = "return eliminar()";*/
+        vButtonItems[0]["estilo"] = "M";
 
+        var vMenu1 = new tMenu('DIV_Menu1', 'vMenu1');
+        vMenu1.alineacion = 'derecho';
+        vMenu1.estilo = 'O'
+        vMenu1.loadImage("agregar", "/FW/image/icons/agregar.png");
+        vMenu1.CargarMenuItemXML("<MenuItem id='0' style='width: 85%'><Lib TipoLib='offLine'>DocMNG</Lib><icono></icono><Desc>Cuentas Bancarias</Desc></MenuItem>")
+        vMenu1.CargarMenuItemXML("<MenuItem id='2' style='width: 15%'><Lib TipoLib='offLine'>DocMNG</Lib><icono>agregar</icono><Desc>Agregar</Desc><Acciones><Ejecutar Tipo='script'><Codigo>agregar()</Codigo></Ejecutar></Acciones></MenuItem>")
 
         var vListButtons = new tListButton(vButtonItems, 'vListButtons');
         vListButtons.loadImage("guardar", "/FW/image/icons/guardar.png");
@@ -132,18 +128,13 @@
         var win = nvFW.getMyWindow()
         var nro_credito = '<%= nro_credito%>'
         
-        
         function window_onload() { 
-
+            vMenu1.MostrarMenu();
             ismobile = (parent.isMobile()) ? true : false
             vListButtons.MostrarListButton()            
             cargar_cuentas_persona()            
             window_onresize()
-            
-            
         }
-
-
 
         function cargar_cuentas_persona() {
             nvFW.bloqueo_activar($(document.body), 'Cargando cuentas');
@@ -163,12 +154,9 @@
              nvFW.bloqueo_desactivar($(document.body), 'Cargando cuentas');    
             }
             rs.open(nvFW.pageContents.cuentas, '', "<nro_entidad type='igual'>" + $F("nro_entidad") + "</nro_entidad>")
-            
-            
         }
 
         function selcuenta(id_cuenta){
-            
             $("id_cuenta_selected").value=id_cuenta
              $$("input[name='cuenta']").each(function(e){
                 
@@ -178,15 +166,8 @@
                 }
              })
         }
-
-        
-       
-                
-      
-
        
         function window_onresize() {
-            
             try {
                 
                 if (ismobile) {
@@ -195,7 +176,6 @@
                 else {
                     $("tblistado").setStyle({fontSize:"13px"})
                 }
-                
              var hbody=$$("body")[0].getHeight()            
              $("containerDiv").setStyle({height:hbody.toString()+"px"})                
              var hhead=$("tbhead").getHeight()
@@ -211,34 +191,34 @@
         function eliminar(){            
             nvFW.getMyWindow().close()
         }
+
         var win_abm
-        var estados="HPRXM" 
-        function agregar(){
-            if(estados.indexOf($F("estado"))>=0){
-             win_abm =  window.top.createWindow2({
-                url: 'Cuenta_ABM.aspx?modo=V&nro_entidad='+$F("nro_entidad"),
-                title: '<b>ingrese banco y cbu</b>',
-                centerHFromElement: window.top.$("contenedor"),
-                parentWidthElement: window.top.$("contenedor"),
-                parentWidthPercent: 0.9,
-                parentHeightElement: window.top.$("contenedor"),
-                parentHeightPercent: 0.9,
-                maxHeight: 150,
-                minimizable: false,
-                maximizable: false,
-                draggable: true,
-                resizable: true,
-                onClose: datos_return
-            });
-            
-            win_abm.options.userData = {}
-            win_abm.showCenter(true)   
-        }else{
-            alert("El estado en que se encuentra el credito, no se pueden agregar cuentas")
+        var estados = "HPRXM" 
+
+        function agregar() {
+            if (estados.indexOf($F("estado")) >= 0) {
+                win_abm = window.top.createWindow2({
+                    url: 'Cuenta_ABM.aspx?modo=V&nro_entidad=' + $F("nro_entidad"),
+                    title: '<b>ingrese banco y cbu</b>',
+                    centerHFromElement: window.top.$("contenedor"),
+                    parentWidthElement: window.top.$("contenedor"),
+                    parentWidthPercent: 0.9,
+                    parentHeightElement: window.top.$("contenedor"),
+                    parentHeightPercent: 0.9,
+                    maxHeight: 150,
+                    minimizable: false,
+                    maximizable: false,
+                    draggable: true,
+                    resizable: true,
+                    onClose: datos_return
+                });
+
+                win_abm.options.userData = {}
+                win_abm.showCenter(true)
+            } else {
+                alert("El estado en que se encuentra el credito, no se pueden agregar cuentas")
+            }
         }
-             
-            
-        }//agregar
 
         function datos_return(){            
             if(win_abm.options.userData['add']==1){
@@ -246,61 +226,57 @@
             }
         }
 
+        function guardar() {
+            if (estados.indexOf($F("estado")) >= 0) {
+                var id_cuenta = 0
+                $$("input[name='cuenta']").each(function (e) {
+                    if (e.checked) {
+                        id_cuenta = $(e).readAttribute("id_cuenta")
+                    }
+                });
+                if (id_cuenta == 0) {
+                    alert("No ha seleccionado una cuenta")
+                    return
+                }
+                Dialog.confirm("¿Desea realizar el cambio de cbu para este credito?",
+                    {
+                        width: 300,
+                        className: "alphacube",
+                        okLabel: "Si",
+                        cancelLabel: "No",
+                        onOk: function (w) {
+                            changecbu(id_cuenta, nro_credito)
+                            w.close();
+                            return
+                        },
 
-        function guardar(){
-             if(estados.indexOf($F("estado"))>=0){
-            var id_cuenta=0
-            $$("input[name='cuenta']").each(function(e){ if(e.checked){
-                id_cuenta = $(e).readAttribute("id_cuenta")
+                        onCancel: function (w) {
+                            w.close();
+                        }
+                    });//dialog
+            } else {
+                alert("No se permite realizar esta acción en el estado en que se encuentra el crédito")
             }
+        }
+
+        function changecbu(id_cuenta, nro_credito) {
+            nvFW.error_ajax_request('Cuenta_seleccion.aspx', {
+                parameters: { modo: 'C', id_cuenta: id_cuenta, nro_credito: nro_credito },
+                bloq_msg: 'actualizando crédito...',
+                onSuccess: function (err, transport) {
+                    if (err.numError == 0) {
+                        console.log("credito actualizado")
+                        $("id_cuenta_selected").value = id_cuenta
+                        selcuenta($F("id_cuenta_selected"))
+                        win.options.userData['cuenta_actualizada'] = 1
+                        win.close();
+                    }
+                    else {
+                        nvFW.alert(err.mensaje)
+                    }
+                }
             });
-            if(id_cuenta==0){
-                alert("No ha seleccionado una cuenta")
-                return
-            }
-
-            Dialog.confirm("¿Desea realizar el cambio de cbu para este credito?",
-                                       {
-                                           width: 300,
-                                           className: "alphacube",
-                                           okLabel: "Si",
-                                           cancelLabel: "No",
-                                           onOk: function (w) {
-                                               changecbu(id_cuenta,nro_credito)
-                                               w.close();
-                                               return
-                                           },
-
-                                           onCancel: function (w) {                                               
-                                               w.close();
-                                           }
-                                       });//dialog
-        }else{
-            alert("No se permite realizar esta acción en el estado en que se encuentra el crédito")
         }
-        }
-
-        function changecbu(id_cuenta,nro_credito){
-            nvFW.error_ajax_request('Cuenta_seleccion.aspx', {parameters: { modo: 'C', id_cuenta: id_cuenta, nro_credito: nro_credito},
-             bloq_msg: 'actualizando crédito...',
-             onSuccess: function (err, transport) {                                  
-                                        if (err.numError == 0) {                     
-                                            console.log("credito actualizado")
-                                            $("id_cuenta_selected").value=id_cuenta
-                                            selcuenta($F("id_cuenta_selected"))
-                                            win.options.userData['cuenta_actualizada']=1
-                                            win.close();
-                                        }
-                                        else
-                                        {
-                                        nvFW.alert(err.mensaje)
-                                        }                         
-                                    }
-                                });     
-
-
-}
-
 
     </script>
 </head>
@@ -309,29 +285,29 @@
     <input type="hidden" value="<%=id_cuenta %>" id="id_cuenta_selected" />
     <input type="hidden" value="<%=estado %>" id="estado" />
     <div style="overflow: auto; -webkit-overflow-scrolling: touch" id="containerDiv">
-        <table class="tb1" id="tbhead" style="width: 100%; white-space: nowrap;">
-            <tr>
-                <td class="Tit3" style="text-align: center;">Cuentas bancarias</td>
-                <td style="width: 120px" title="Agregar cuenta bancaria" >
-                    <div style="width: 120px" id="divAgregar" />
-                </td>
-            </tr>
-        </table>
+        <div id="DIV_Menu1" style="width: 100%"></div>
+
         <table class="tb1 highlightEven highlightTROver" id="tbcab" style="width: 100%;">
-            <head><tr><th style="width:7%"></th><th style="width:47%;text-align:left">banco</th><th style="width:auto;text-align:left">cbu</th></tr></head>
+            <thead>
+                <tr>
+                    <th style="width: 7%"></th>
+                    <th style="width: 47%; text-align: left">banco</th>
+                    <th style="width: auto; text-align: left">cbu</th>
+                </tr>
+            </thead>
         </table>
         <div id="divlistado" style="width: 100%; overflow-y: auto">
-        <table class="tb1 highlightEven highlightTROver" style="width: 100%;text-align: left" >             
-            <tbody id="tblistado">                
-            </tbody>
-        </table>    
+            <table class="tb1 highlightEven highlightTROver" style="width: 100%; text-align: left">
+                <tbody id="tblistado">
+                </tbody>
+            </table>
         </div>
-        
+
         <table class="tb1" id="botonera">
-            <tr>            
-            <td style="text-align: center;width: 100%">                
-                <div style="margin: auto" id="divGuardar" />
-            </td>
+            <tr>
+                <td style="text-align: center; width: 100%">
+                    <div style="display: flex; justify-content: center; align-items: center; width: 80px; margin-inline: auto; margin-top: 10px" id="divGuardar" />
+                </td>
             </tr>
         </table>
     </div>

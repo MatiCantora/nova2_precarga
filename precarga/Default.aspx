@@ -62,7 +62,10 @@
                 <td id='data_user' style='text-align: right; vertical-align: middle; display: none' nowrap>
                     <div id="menu_right" style="background-color: white; display: inline"></div>
                 </td>
-                <td style="width: 20%;" id="imgMenuDerecho"></td>
+                <td style="width: 20%;" id="imgMenuDerecho" class="imgSession">
+                    <img src="./image/sesion_cerrar.svg" alt="" onclick="nvSesion.cerrar()" />
+                    <img src="./image/sesion_bloquear.svg" alt="" onclick="nvSesion.bloquear()" />
+                </td>
             </tr>
         </table>
 
@@ -72,7 +75,11 @@
         <div id="divMenu" style="z-index: 1; background-color: white; height: 100%; transition: .3s all; border-right: 3px solid #E3E0E3; overflow: hidden; width: 250px; position: absolute">
             <div id="divInfoVendedor" style="background-color: var(--azul); color: var(--blanco); vertical-align: middle; padding-top: 25px; padding-bottom: 25px; display: flex; align-items: center; gap: 10px; padding-left: 15px;">
                 <img src="/precarga/image/star.svg" />
-                <span id="strVendedor" class="Seller"></span>
+                <div style="display: flex; flex-direction: column">
+                    <span id="strVendedor" class="Seller"></span>
+                    <span id="strCategoria" class="Seller" style="font-weight: bold">Categoria Bronze</span>
+                </div>
+
             </div>
             <div id="divMenuLeft" style="height: 100%; width: 100%"></div>
             <div id="divMenuLeftMobile" style="height: 100%; width: 100%; padding-left: 15px;"></div>
@@ -105,7 +112,7 @@
                                     <div id="contBuscar">
                                         <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='cuit' onclick="return rddoc_onclick()" />
                                         <input style="vertical-align: bottom; display: none;" type='radio' name='rddoc' id='rddoc' value='dni' onclick="return rddoc_onclick()" checked />
-                                        <input style="text-align: right; height:30px" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
+                                        <input style="text-align: right; height: 30px" placeholder="Ingresar DNI" type="number" name="nro_docu1" id="nro_docu1" onclick="return detectSwipe($('menu_left_mobile'), 'colapsar')" onkeydown="return btnBuscar_trabajo_onkeydown(event)">
                                         <div id="divPLimpiar"></div>
                                         <div style="margin-top: 35%;">
                                             <div id="divPBuscar" class="nextButton" />

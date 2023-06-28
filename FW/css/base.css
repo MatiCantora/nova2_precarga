@@ -338,11 +338,14 @@ table.scroll {
 }
 
 .Tit1 {
-    background-color: rgb(76,102,183, 0.2) !Important;
+    background-color: rgb(76,102,183, 0.2);
+    border-left: 1px solid white;
     font-size: 1.04em !Important;
     color: #4C66B7;
-    border-radius: 12px;
+    border-radius: 5px;
     padding: 0px 0.35em 0px 0.35em;
+    height: 25px;
+    gap: 12px
 }
 
 .Tit2 {
