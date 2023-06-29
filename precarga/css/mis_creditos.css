@@ -98,13 +98,27 @@ body {
     margin: 10px;
 }
 
+
+
+@media screen and (max-device-width: 800px) {
+    #lista_grupos {
+        width: 95vw;
+    }
+}
+
+@media screen and (min-device-width: 800px) {
+    #lista_grupos {
+        width: 80vw;
+    }
+}
+
+
 #lista_grupos {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    width: 50vw;
-    min-width: 350px;
+    
     height: 70%;
 }
 

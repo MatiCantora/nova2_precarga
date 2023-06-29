@@ -103,14 +103,15 @@ precarga.window_resize = function () {
 }
 
 precarga.isMobile = function () {
-    return (
-        (navigator.userAgent.match(/Android/i)) ||
-        (navigator.userAgent.match(/webOS/i)) ||
-        (navigator.userAgent.match(/iPhone/i)) ||
-        (navigator.userAgent.match(/iPod/i)) ||
-        (navigator.userAgent.match(/iPad/i)) ||
-        (navigator.userAgent.match(/BlackBerry/i))
-    );
+    return navigator.userAgentData.mobile
+    //return (
+    //    (navigator.userAgent.match(/Android/i)) ||
+    //    (navigator.userAgent.match(/webOS/i)) ||
+    //    (navigator.userAgent.match(/iPhone/i)) ||
+    //    (navigator.userAgent.match(/iPod/i)) ||
+    //    (navigator.userAgent.match(/iPad/i)) ||
+    //    (navigator.userAgent.match(/BlackBerry/i))
+    //);
 }
 
 precarga.window_pos = function () {
@@ -129,10 +130,11 @@ precarga.window_pos = function () {
     }
     else {
         var margin_height = 40
+        var margin_width = 16
         var co_top_menu = Position.cumulativeOffset($("top_menu"))
         res.top = co_top_menu.top + $("top_menu").offsetHeight
         var co_vMenuLeft = Position.cumulativeOffset($('vMenuLeft.menuMobile'))
-        res.left = co_vMenuLeft.left + $("vMenuLeft.menuMobile").offsetWidth
+        res.left = co_vMenuLeft.left + $("vMenuLeft.menuMobile").offsetWidth +24
         res.width = $$("BODY")[0].clientWidth - (res.left * 2)
         res.height = $$("BODY")[0].clientHeight - res.top - margin_height
     }

@@ -39,6 +39,9 @@
     <script type="text/javascript" src="script/default.aspx.js"></script>
     <script type="text/javascript" src="script/consulta.js"></script>
 
+    <%--<script type="text/javascript" src="/FW/script/tBox.js"></script>
+    <link href="/FW/css/tBox.css" type="text/css" rel="stylesheet" />--%>
+
     <% = Me.getHeadInit()%>
 
 </head>
@@ -79,7 +82,6 @@
                     <span id="strVendedor" class="Seller"></span>
                     <span id="strCategoria" class="Seller" style="font-weight: bold">Categoria Bronze</span>
                 </div>
-
             </div>
             <div id="divMenuLeft" style="height: 100%; width: 100%"></div>
             <div id="divMenuLeftMobile" style="height: 100%; width: 100%; padding-left: 15px;"></div>
@@ -102,6 +104,25 @@
                     </div>
                     <div id="wizzardLeyenda" style="font-size: 1.3em;">Ingresa un DNI para iniciar búsqueda.</div>
                 </div>
+                <!--JMO-->
+               <%-- <script type="text/javascript">
+                    
+                    var box1 = new tBox("divVendedor", 'box1', {
+                        title: "Titulo", footer: "Texto de abajo",
+                        insert_position: "top",
+                        content: 'Ese es el texto del contenido',
+                        collapsed: false
+                    })
+
+                    var box2 = new tBox("divVendedor", 'box2', {
+                        title: "Titulo", footer: "Texto de abajo", collapsible: false,
+                        style: "b2",
+                        content: 'Ese es el texto del contenido'
+                    })
+                    //box.create()
+
+                </script>--%>
+
                 <!-- Buscar Persona -->
                 <div id="divSelTrabajo" class="ClaseGeneral" <%--style="width: 100%; height: 100%;"--%>>
                     <%--<table id="tbBuscar">
